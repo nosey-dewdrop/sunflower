@@ -73,6 +73,7 @@ struct TimerView: View {
     @State private var sessionStartTime: Date?
     @State private var showFlowerEarned = false
     @State private var showFlowerDied = false
+    @State private var tappedTree: FocusTag?
 
     private var currentSettings: UserSettings {
         if let first = settings.first {
@@ -95,8 +96,23 @@ struct TimerView: View {
             Color.grassGreen
                 .ignoresSafeArea()
 
-            // Flower drops scattered on background
+            // Trees and flowers on background
             GeometryReader { geo in
+                // Trees from tags
+                ForEach(tags) { tag in
+                    if tag.appleCount > 0 {
+                        TreeSprite(tag: tag)
+                            .position(
+                                x: tag.treePositionX * geo.size.width,
+                                y: tag.treePositionY * geo.size.height
+                            )
+                            .onTapGesture {
+                                tappedTree = tag
+                            }
+                    }
+                }
+
+                // Flower drops
                 ForEach(flowers) { flower in
                     FlowerSprite(flowerType: flower.flowerType, size: flower.displaySize)
                         .position(
@@ -228,6 +244,10 @@ struct TimerView: View {
         .sheet(isPresented: $showSummary) {
             SummaryView()
                 .presentationDetents([.large])
+        }
+        .sheet(item: $tappedTree) { tag in
+            TreeDetailSheet(tag: tag)
+                .presentationDetents([.medium])
         }
         .onAppear {
             setupTimer()
@@ -467,6 +487,128 @@ struct TagPickerSheet: View {
             .navigationTitle("Select Tag")
             .navigationBarTitleDisplayMode(.inline)
             .toolbarColorScheme(.dark, for: .navigationBar)
+        }
+    }
+}
+
+// MARK: - Tree Sprite
+
+struct TreeSprite: View {
+    let tag: FocusTag
+
+    var body: some View {
+        VStack(spacing: 0) {
+            // Tree crown with apples
+            ZStack {
+                // Crown
+                Image(systemName: "tree.fill")
+                    .font(.system(size: tag.treeSizePoints))
+                    .foregroundColor(Color(hex: tag.colorHex).opacity(0.8))
+
+                // Apples (show up to 5 visually)
+                let visibleApples = min(tag.appleCount, 5)
+                ForEach(0..<visibleApples, id: \.self) { i in
+                    Circle()
+                        .fill(Color.red)
+                        .frame(width: 6, height: 6)
+                        .offset(
+                            x: CGFloat([-8, 10, -4, 12, 0][i]),
+                            y: CGFloat([-6, -2, 4, 6, -10][i])
+                        )
+                }
+            }
+
+            // Label
+            Text(tag.name)
+                .font(.system(size: 8, weight: .bold, design: .rounded))
+                .foregroundColor(.cream)
+                .padding(.horizontal, 4)
+                .padding(.vertical, 1)
+                .background(Color.darkGreen.opacity(0.6))
+                .clipShape(Capsule())
+        }
+    }
+}
+
+// MARK: - Tree Detail Sheet
+
+struct TreeDetailSheet: View {
+    let tag: FocusTag
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.darkGreen.ignoresSafeArea()
+
+                VStack(spacing: 24) {
+                    // Big tree
+                    ZStack {
+                        Image(systemName: "tree.fill")
+                            .font(.system(size: 80))
+                            .foregroundColor(Color(hex: tag.colorHex))
+
+                        let visibleApples = min(tag.appleCount, 8)
+                        ForEach(0..<visibleApples, id: \.self) { i in
+                            Circle()
+                                .fill(Color.red)
+                                .frame(width: 10, height: 10)
+                                .offset(
+                                    x: CGFloat([-18, 22, -8, 28, 0, -24, 14, 6][i]),
+                                    y: CGFloat([-14, -4, 10, 14, -22, 6, 20, -8][i])
+                                )
+                        }
+                    }
+                    .padding(.top, 20)
+
+                    // Tag name
+                    HStack(spacing: 8) {
+                        Circle()
+                            .fill(Color(hex: tag.colorHex))
+                            .frame(width: 12, height: 12)
+                        Text(tag.name)
+                            .font(.system(size: 24, weight: .bold, design: .rounded))
+                            .foregroundColor(.cream)
+                    }
+
+                    // Stats
+                    HStack(spacing: 20) {
+                        TreeStat(icon: "apple.logo", value: "\(tag.appleCount)", label: "apples")
+                        TreeStat(icon: "clock.fill", value: "\(tag.totalFocusMinutes)", label: "minutes")
+                        TreeStat(icon: "tree.fill", value: tag.treeSize, label: "size")
+                    }
+
+                    // Planted date
+                    Text("planted \(tag.createdAt.formatted(.dateTime.month().day().year()))")
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .foregroundColor(.cream.opacity(0.5))
+
+                    Spacer()
+                }
+            }
+            .navigationTitle("Tree Details")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbarColorScheme(.dark, for: .navigationBar)
+        }
+    }
+}
+
+struct TreeStat: View {
+    let icon: String
+    let value: String
+    let label: String
+
+    var body: some View {
+        VStack(spacing: 4) {
+            Image(systemName: icon)
+                .font(.title3)
+                .foregroundColor(.warmYellow)
+            Text(value)
+                .font(.system(size: 20, weight: .bold, design: .rounded))
+                .foregroundColor(.cream)
+            Text(label)
+                .font(.system(size: 11, weight: .regular, design: .rounded))
+                .foregroundColor(.cream.opacity(0.6))
         }
     }
 }
