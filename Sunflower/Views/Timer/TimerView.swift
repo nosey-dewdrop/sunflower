@@ -129,11 +129,12 @@ struct TimerView: View {
                                     )
                             }
 
-                            // Timer UI - FocusPomo layout
+                            // Timer UI - exact FocusPomo layout
                             VStack(spacing: 0) {
                                 Spacer()
+                                    .frame(height: screen.size.height * 0.35)
 
-                                // Countdown - tap to pick duration
+                                // Countdown
                                 Button {
                                     if !timerManager.isRunning {
                                         pickerMinutes = currentSettings.pomoDuration / 60
@@ -141,8 +142,8 @@ struct TimerView: View {
                                     }
                                 } label: {
                                     Text(timerManager.timeString)
-                                        .font(.system(size: 72, weight: .bold, design: .rounded))
-                                        .foregroundColor(.cream)
+                                        .font(.system(size: 80, weight: .bold, design: .rounded))
+                                        .foregroundColor(.white)
                                         .contentTransition(.numericText())
                                         .animation(.default, value: timerManager.timeRemaining)
                                 }
@@ -152,30 +153,30 @@ struct TimerView: View {
                                     showTagPicker = true
                                 } label: {
                                     HStack(spacing: 4) {
-                                        Text(selectedTag?.name ?? "select tag")
-                                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                                        Text(selectedTag?.name ?? "Study")
+                                            .font(.system(size: 17, weight: .regular, design: .rounded))
                                         Image(systemName: "chevron.right")
                                             .font(.system(size: 12))
                                     }
-                                    .foregroundColor(.cream.opacity(0.7))
+                                    .foregroundColor(.white.opacity(0.6))
                                 }
-                                .padding(.top, 8)
+                                .padding(.top, 4)
 
                                 Spacer()
 
-                                // Start Focus / Stop button at bottom
+                                // Start Focus button
                                 Button {
                                     handleMainButton()
                                 } label: {
                                     Text(timerManager.isRunning ? "Stop" : "Start Focus")
                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                        .foregroundColor(.cream)
-                                        .padding(.horizontal, 40)
-                                        .padding(.vertical, 14)
-                                        .background(Color.darkGreen.opacity(0.6))
+                                        .foregroundColor(.white.opacity(0.9))
+                                        .padding(.horizontal, 36)
+                                        .padding(.vertical, 16)
+                                        .background(Color.white.opacity(0.15))
                                         .clipShape(Capsule())
                                 }
-                                .padding(.bottom, 80)
+                                .padding(.bottom, screen.size.height * 0.1)
                             }
                         }
                         .frame(height: screen.size.height)
