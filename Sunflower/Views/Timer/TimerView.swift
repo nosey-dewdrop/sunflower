@@ -209,12 +209,6 @@ struct TimerView: View {
                 VStack {
                     Spacer()
 
-                    // Flower icon on top
-                    Image(systemName: "sun.max.fill")
-                        .font(.system(size: 40))
-                        .foregroundColor(.warmYellow)
-                        .padding(.bottom, 16)
-
                     // Horizontal ruler picker
                     HorizontalRulerPicker(selectedMinutes: $pickerMinutes)
                         .frame(height: 80)
