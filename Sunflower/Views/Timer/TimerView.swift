@@ -87,183 +87,148 @@ struct TimerView: View {
     }
 
     var body: some View {
-        ZStack {
-            Color.grassGreen
-                .ignoresSafeArea()
+        GeometryReader { screen in
+            ZStack {
+                // Scrollable content: timer + summary below
+                ScrollView(.vertical, showsIndicators: false) {
+                    VStack(spacing: 0) {
+                        // === TIMER SECTION ===
+                        ZStack {
+                            Color.grassGreen
 
-            // Garden: draggable items, trees, flowers
-            GeometryReader { geo in
-                // Garden items (from market)
-                ForEach(gardenItems) { item in
-                    DraggableGardenItem(item: item, geoSize: geo.size)
-                }
-
-                // Trees from tags
-                ForEach(tags) { tag in
-                    if tag.appleCount > 0 {
-                        TreeSprite(tag: tag)
-                            .position(
-                                x: tag.treePositionX * geo.size.width,
-                                y: tag.treePositionY * geo.size.height
-                            )
-                            .onTapGesture {
-                                tappedTree = tag
+                            // Garden items
+                            ForEach(gardenItems) { item in
+                                DraggableGardenItem(item: item, geoSize: screen.size)
                             }
+
+                            // Trees from tags
+                            ForEach(tags) { tag in
+                                if tag.appleCount > 0 {
+                                    TreeSprite(tag: tag)
+                                        .position(
+                                            x: tag.treePositionX * screen.size.width,
+                                            y: tag.treePositionY * screen.size.height
+                                        )
+                                        .onTapGesture {
+                                            tappedTree = tag
+                                        }
+                                }
+                            }
+
+                            // Flower drops
+                            ForEach(flowers) { flower in
+                                FlowerSprite(flowerType: flower.flowerType, size: flower.displaySize)
+                                    .position(
+                                        x: flower.positionX * screen.size.width,
+                                        y: flower.positionY * screen.size.height
+                                    )
+                            }
+
+                            // Timer UI
+                            VStack(spacing: 24) {
+                                Spacer().frame(height: 60)
+
+                                // Tag selector pill
+                                Button {
+                                    showTagPicker = true
+                                } label: {
+                                    HStack(spacing: 6) {
+                                        if let tag = selectedTag {
+                                            Circle()
+                                                .fill(Color(hex: tag.colorHex))
+                                                .frame(width: 10, height: 10)
+                                            Text(tag.name)
+                                                .font(.system(size: 14, weight: .semibold, design: .rounded))
+                                        } else {
+                                            Text("select tag")
+                                                .font(.system(size: 14, weight: .regular, design: .rounded))
+                                        }
+                                    }
+                                    .padding(.horizontal, 16)
+                                    .padding(.vertical, 8)
+                                    .background(Color.darkGreen.opacity(0.7))
+                                    .foregroundColor(.cream)
+                                    .clipShape(Capsule())
+                                }
+
+                                Spacer()
+
+                                Text(timerManager.phase.rawValue)
+                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                                    .foregroundColor(.warmYellow)
+
+                                // Countdown - tap to pick duration
+                                Button {
+                                    if !timerManager.isRunning {
+                                        pickerMinutes = currentSettings.pomoDuration / 60
+                                        showDurationPicker = true
+                                    }
+                                } label: {
+                                    Text(timerManager.timeString)
+                                        .font(.system(size: 72, weight: .bold, design: .rounded))
+                                        .foregroundColor(.cream)
+                                        .shadow(color: .darkGreen, radius: 0, x: 2, y: 2)
+                                        .contentTransition(.numericText())
+                                        .animation(.default, value: timerManager.timeRemaining)
+                                }
+
+                                // Start/Stop
+                                Button {
+                                    handleMainButton()
+                                } label: {
+                                    Text(timerManager.isRunning ? "STOP" : "START")
+                                        .font(.system(size: 24, weight: .bold, design: .rounded))
+                                        .foregroundColor(timerManager.isRunning ? .cream : .darkGreen)
+                                        .padding(.horizontal, 40)
+                                        .padding(.vertical, 14)
+                                        .background(timerManager.isRunning ? Color.brown.opacity(0.8) : Color.warmYellow)
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                }
+
+                                Spacer()
+                            }
+                        }
+                        .frame(height: screen.size.height)
+
+                        // === SUMMARY SECTION (scroll down) ===
+                        SummaryView()
+                            .frame(minHeight: screen.size.height)
                     }
                 }
 
-                // Flower drops (earned from sessions)
-                ForEach(flowers) { flower in
-                    FlowerSprite(flowerType: flower.flowerType, size: flower.displaySize)
-                        .position(
-                            x: flower.positionX * geo.size.width,
-                            y: flower.positionY * geo.size.height
-                        )
-                }
-            }
-
-            VStack(spacing: 24) {
-                Spacer()
-                    .frame(height: 60)
-
-                // Tag selector pill
-                Button {
-                    showTagPicker = true
-                } label: {
-                    HStack(spacing: 6) {
-                        if let tag = selectedTag {
-                            Circle()
-                                .fill(Color(hex: tag.colorHex))
-                                .frame(width: 10, height: 10)
-                            Text(tag.name)
-                                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                        } else {
-                            Text("select tag")
-                                .font(.system(size: 14, weight: .regular, design: .rounded))
-                        }
-                    }
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 8)
-                    .background(Color.darkGreen.opacity(0.7))
-                    .foregroundColor(.cream)
-                    .clipShape(Capsule())
-                }
-
-                Spacer()
-
-                // Phase indicator
-                Text(timerManager.phase.rawValue)
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                    .foregroundColor(.warmYellow)
-
-                // Big countdown (tap to change duration)
-                Button {
-                    if !timerManager.isRunning {
-                        pickerMinutes = currentSettings.pomoDuration / 60
-                        withAnimation(.spring(duration: 0.3)) {
-                            showDurationPicker.toggle()
-                        }
-                    }
-                } label: {
-                    Text(timerManager.timeString)
-                        .font(.system(size: 72, weight: .bold, design: .rounded))
-                        .foregroundColor(.cream)
-                        .shadow(color: .darkGreen, radius: 0, x: 2, y: 2)
-                        .contentTransition(.numericText())
-                        .animation(.default, value: timerManager.timeRemaining)
-                }
-
-                // Start/Stop button
-                Button {
-                    handleMainButton()
-                } label: {
-                    Text(timerManager.isRunning ? "STOP" : "START")
-                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundColor(timerManager.isRunning ? .cream : .darkGreen)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 14)
-                        .background(timerManager.isRunning ? Color.brown.opacity(0.8) : Color.warmYellow)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                }
-
-                Spacer()
-            }
-
-            // Flower earned overlay
-            if showFlowerEarned {
-                VStack {
-                    Spacer()
-                    Text("flower earned!")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundColor(.warmYellow)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(Color.darkGreen.opacity(0.9))
-                        .clipShape(Capsule())
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    Spacer().frame(height: 100)
-                }
-                .animation(.spring(duration: 0.5), value: showFlowerEarned)
-            }
-
-            // Duration picker - just appears over everything, no overlay
-            if showDurationPicker {
-                VStack {
-                    Spacer()
-
-                    // Selected minutes display
-                    Text("\(pickerMinutes)")
-                        .font(.system(size: 48, weight: .bold, design: .rounded))
-                        .foregroundColor(.cream)
-                        .contentTransition(.numericText())
-                        .animation(.default, value: pickerMinutes)
-
-                    // Horizontal ruler picker
-                    HorizontalRulerPicker(selectedMinutes: $pickerMinutes)
-                        .frame(height: 60)
-                        .padding(.horizontal, 20)
-
-                    // Done button
-                    Button {
-                        currentSettings.pomoDuration = pickerMinutes * 60
-                        timerManager.reset(duration: pickerMinutes * 60)
-                        try? modelContext.save()
-                        withAnimation(.spring(duration: 0.3)) {
-                            showDurationPicker = false
-                        }
-                    } label: {
-                        Text("Done")
-                            .font(.system(size: 18, weight: .semibold, design: .rounded))
-                            .foregroundColor(.darkGreen)
-                            .padding(.horizontal, 40)
+                // Overlays on top of everything
+                if showFlowerEarned {
+                    VStack {
+                        Spacer()
+                        Text("flower earned!")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundColor(.warmYellow)
+                            .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.cream)
+                            .background(Color.darkGreen.opacity(0.9))
                             .clipShape(Capsule())
+                        Spacer().frame(height: 100)
                     }
-                    .padding(.top, 16)
-
-                    Spacer()
+                    .animation(.spring(duration: 0.5), value: showFlowerEarned)
                 }
-                .transition(.opacity)
-            }
 
-            // Flower died overlay
-            if showFlowerDied {
-                VStack {
-                    Spacer()
-                    Text("your flower died...")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundColor(.red)
-                        .padding(.horizontal, 24)
-                        .padding(.vertical, 12)
-                        .background(Color.darkGreen.opacity(0.9))
-                        .clipShape(Capsule())
-                        .transition(.move(edge: .bottom).combined(with: .opacity))
-                    Spacer().frame(height: 100)
+                if showFlowerDied {
+                    VStack {
+                        Spacer()
+                        Text("your flower died...")
+                            .font(.system(size: 20, weight: .bold, design: .rounded))
+                            .foregroundColor(.red)
+                            .padding(.horizontal, 24)
+                            .padding(.vertical, 12)
+                            .background(Color.darkGreen.opacity(0.9))
+                            .clipShape(Capsule())
+                        Spacer().frame(height: 100)
+                    }
+                    .animation(.spring(duration: 0.5), value: showFlowerDied)
                 }
-                .animation(.spring(duration: 0.5), value: showFlowerDied)
             }
         }
+        .ignoresSafeArea()
         .sheet(isPresented: $showTagPicker) {
             TagPickerSheet(selectedTag: $selectedTag, tags: tags)
                 .presentationDetents([.medium])
@@ -272,21 +237,16 @@ struct TimerView: View {
             TreeDetailSheet(tag: tag)
                 .presentationDetents([.medium])
         }
-        .gesture(
-            DragGesture(minimumDistance: 50)
-                .onEnded { value in
-                    if value.translation.height < -50 {
-                        showMarket = true
-                    } else if value.translation.height > 50 {
-                        showSummary = true
-                    }
+        .fullScreenCover(isPresented: $showDurationPicker) {
+            DurationPickerView(
+                pickerMinutes: $pickerMinutes,
+                onDone: {
+                    currentSettings.pomoDuration = pickerMinutes * 60
+                    timerManager.reset(duration: pickerMinutes * 60)
+                    try? modelContext.save()
+                    showDurationPicker = false
                 }
-        )
-        .sheet(isPresented: $showMarket) {
-            MarketView()
-        }
-        .sheet(isPresented: $showSummary) {
-            SummaryView()
+            )
         }
         .onAppear {
             setupTimer()
@@ -653,6 +613,59 @@ struct TreeStat: View {
             Text(label)
                 .font(.system(size: 11, weight: .regular, design: .rounded))
                 .foregroundColor(.cream.opacity(0.6))
+        }
+    }
+}
+
+// MARK: - Duration Picker (fullscreen cover, like FocusPomo)
+
+struct DurationPickerView: View {
+    @Binding var pickerMinutes: Int
+    let onDone: () -> Void
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        ZStack {
+            Color.darkGreen.ignoresSafeArea()
+
+            VStack {
+                Spacer()
+
+                // Big minutes display
+                Text("\(pickerMinutes)")
+                    .font(.system(size: 64, weight: .bold, design: .rounded))
+                    .foregroundColor(.cream)
+                    .contentTransition(.numericText())
+                    .animation(.default, value: pickerMinutes)
+
+                Text("minutes")
+                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                    .foregroundColor(.cream.opacity(0.5))
+
+                Spacer().frame(height: 40)
+
+                // Ruler
+                HorizontalRulerPicker(selectedMinutes: $pickerMinutes)
+                    .frame(height: 60)
+                    .padding(.horizontal, 20)
+
+                Spacer().frame(height: 40)
+
+                // Done button
+                Button {
+                    onDone()
+                } label: {
+                    Text("Done")
+                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                        .foregroundColor(.darkGreen)
+                        .padding(.horizontal, 50)
+                        .padding(.vertical, 14)
+                        .background(Color.cream)
+                        .clipShape(Capsule())
+                }
+
+                Spacer()
+            }
         }
     }
 }
