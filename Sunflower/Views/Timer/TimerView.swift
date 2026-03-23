@@ -174,13 +174,17 @@ struct TimerView: View {
                                 }
                                 .padding(.top, 4)
 
-                                // Start Focus button
+                                // Start button
                                 Button {
                                     handleMainButton()
                                 } label: {
-                                    Text(timerManager.isRunning ? "Stop" : "Start Focus")
+                                    Text(timerManager.isRunning ? "Stop" : "Start")
                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
                                         .foregroundColor(.white.opacity(0.9))
+                                        .padding(.horizontal, 36)
+                                        .padding(.vertical, 16)
+                                        .background(Color.white.opacity(0.15))
+                                        .clipShape(Capsule())
                                 }
                                 .padding(.top, 12)
 
