@@ -46,8 +46,12 @@ class TimerManager {
     }
 
     var timeString: String {
-        let minutes = timeRemaining / 60
+        let hours = timeRemaining / 3600
+        let minutes = (timeRemaining % 3600) / 60
         let seconds = timeRemaining % 60
+        if hours > 0 {
+            return String(format: "%d:%02d:%02d", hours, minutes, seconds)
+        }
         return String(format: "%02d:%02d", minutes, seconds)
     }
 

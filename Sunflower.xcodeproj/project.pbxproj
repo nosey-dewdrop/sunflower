@@ -15,7 +15,7 @@
 
 		62FE260CDED5C873388D846D /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519C893BDA425DE369F755B3 /* SummaryView.swift */; };
 		7B1FC471E08C553EAAF24F3A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E713783AA43D9B63E1F012E /* UserSettings.swift */; };
-		85958D7CD42B4BC846B057FE /* PixelFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */; };
+
 		A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514646F1B10516E79D7D0143 /* TimerView.swift */; };
 		B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16438E21E0B2C4E54ECB72BA /* FlowerDrop.swift */; };
 
@@ -43,7 +43,7 @@
 		8AC160622868CADE0EB86F3C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		97896476C6062C62E4007761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9820D40291546EB3256A10EF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
-		9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelFont.swift; sourceTree = "<group>"; };
+
 		BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		DD22EE33FF44AA55BB66CC11 /* GardenItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenItem.swift; sourceTree = "<group>"; };
 		FF22AA33BB44CC55DD66EE11 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
@@ -65,7 +65,6 @@
 			children = (
 				9820D40291546EB3256A10EF /* Color+Hex.swift */,
 				BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */,
-				9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -214,7 +213,7 @@
 				B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */,
 				CFE21D46735215F66A92280B /* FocusSession.swift in Sources */,
 				F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */,
-				85958D7CD42B4BC846B057FE /* PixelFont.swift in Sources */,
+
 				F16DA1FE207B85236C50DA23 /* SettingsView.swift in Sources */,
 				5A51DFFF6555D77E5E36B496 /* StatsView.swift in Sources */,
 				62FE260CDED5C873388D846D /* SummaryView.swift in Sources */,
