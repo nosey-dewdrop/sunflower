@@ -26,13 +26,10 @@ extension Color {
     }
 
     // App color palette
-    static let bgDark = Color(hex: "1A2E1A")       // dark background
-    static let grassGreen = Color(hex: "4A7C59")    // timer background, highlights
-    static let darkGreen = Color(hex: "2D5A3D")     // button bg, subtle
-    static let lightGreen = Color(hex: "6B9B7A")    // secondary text/accent
-    static let warmYellow = Color(hex: "F4D35E")    // primary accent (sunflower)
-    static let cream = Color(hex: "FAF0CA")          // light text alternative
-    static let amber = Color(hex: "E8A838")          // warm accent (banner, current time)
+    static let grassGreen = Color(hex: "4A7C59")
+    static let darkGreen = Color(hex: "2D5A3D")
+    static let lightGreen = Color(hex: "6B9B7A")
+    static let warmYellow = Color(hex: "F4D35E")
+    static let cream = Color(hex: "FAF0CA")
     static let brown = Color(hex: "8B6914")
-    static let cardBg = Color.white.opacity(0.08)   // card backgrounds
 }
