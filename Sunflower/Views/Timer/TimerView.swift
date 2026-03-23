@@ -72,6 +72,7 @@ struct TimerView: View {
     @State private var showFlowerDied = false
     @State private var tappedTree: FocusTag?
     @State private var showDurationPicker = false
+    @State private var showMarket = false
     @State private var pickerMinutes: Int = 25
 
     private var currentSettings: UserSettings {
@@ -123,6 +124,22 @@ struct TimerView: View {
             VStack(spacing: 24) {
                 Spacer()
                     .frame(height: 60)
+
+                // Market icon (top right)
+                HStack {
+                    Spacer()
+                    Button {
+                        showMarket = true
+                    } label: {
+                        Image(systemName: "storefront.fill")
+                            .font(.system(size: 18))
+                            .foregroundColor(.cream.opacity(0.7))
+                            .padding(8)
+                            .background(Color.darkGreen.opacity(0.5))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.horizontal, 20)
 
                 // Tag selector pill
                 Button {
@@ -269,6 +286,9 @@ struct TimerView: View {
         .sheet(item: $tappedTree) { tag in
             TreeDetailSheet(tag: tag)
                 .presentationDetents([.medium])
+        }
+        .sheet(isPresented: $showMarket) {
+            MarketView()
         }
         .onAppear {
             setupTimer()
