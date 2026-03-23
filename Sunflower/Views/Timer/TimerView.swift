@@ -183,12 +183,15 @@ struct TimerView: View {
 
                         // === SUMMARY SECTION (scroll down) ===
                         SummaryView()
-                            .frame(minHeight: screen.size.height)
+                            .frame(height: screen.size.height)
                             .id("summary")
                     }
                 }
+                .scrollTargetBehavior(.paging)
                 .onAppear {
-                    scrollProxy.scrollTo("timer", anchor: .top)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+                        scrollProxy.scrollTo("timer", anchor: .top)
+                    }
                 }
                 }
 
