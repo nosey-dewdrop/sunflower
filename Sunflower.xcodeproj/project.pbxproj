@@ -12,13 +12,13 @@
 		2DA68F7E0090203EC44403F1 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9820D40291546EB3256A10EF /* Color+Hex.swift */; };
 		4018FA7D849296C16674B84E /* SunflowerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234FC6BBB2E20377E211E2A1 /* SunflowerApp.swift */; };
 		5A51DFFF6555D77E5E36B496 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A076D1FAE3E5910D6DA8D6B /* StatsView.swift */; };
-		5EBBACF15297B5E956127767 /* PixelifySans-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 54B29C6806118AC9C5717514 /* PixelifySans-Bold.ttf */; };
+
 		62FE260CDED5C873388D846D /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519C893BDA425DE369F755B3 /* SummaryView.swift */; };
 		7B1FC471E08C553EAAF24F3A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E713783AA43D9B63E1F012E /* UserSettings.swift */; };
 		85958D7CD42B4BC846B057FE /* PixelFont.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */; };
 		A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514646F1B10516E79D7D0143 /* TimerView.swift */; };
 		B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16438E21E0B2C4E54ECB72BA /* FlowerDrop.swift */; };
-		CD52AD13067F8B3910CBD383 /* PixelifySans-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E1B5EC9A5465051D4092E3D2 /* PixelifySans-Regular.ttf */; };
+
 		CFE21D46735215F66A92280B /* FocusSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF7624920C6AE9BB03830C4 /* FocusSession.swift */; };
 		F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8097FA49454B6330F7799975 /* FocusTag.swift */; };
 		F16DA1FE207B85236C50DA23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC160622868CADE0EB86F3C /* SettingsView.swift */; };
@@ -33,7 +33,7 @@
 		4AF7624920C6AE9BB03830C4 /* FocusSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSession.swift; sourceTree = "<group>"; };
 		514646F1B10516E79D7D0143 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		519C893BDA425DE369F755B3 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
-		54B29C6806118AC9C5717514 /* PixelifySans-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PixelifySans-Bold.ttf"; sourceTree = "<group>"; };
+
 		5A076D1FAE3E5910D6DA8D6B /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		7C432B2C400E5D7CFE900B70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8097FA49454B6330F7799975 /* FocusTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTag.swift; sourceTree = "<group>"; };
@@ -41,7 +41,7 @@
 		97896476C6062C62E4007761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9820D40291546EB3256A10EF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelFont.swift; sourceTree = "<group>"; };
-		E1B5EC9A5465051D4092E3D2 /* PixelifySans-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "PixelifySans-Regular.ttf"; sourceTree = "<group>"; };
+
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -92,16 +92,7 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
-		76F91B05A72B7C935ED3E32D /* Fonts */ = {
-			isa = PBXGroup;
-			children = (
-				54B29C6806118AC9C5717514 /* PixelifySans-Bold.ttf */,
-				E1B5EC9A5465051D4092E3D2 /* PixelifySans-Regular.ttf */,
-			);
-			path = Fonts;
-			sourceTree = "<group>";
-		};
-		8F456665844BBCE0B8E30B81 /* Products */ = {
+			8F456665844BBCE0B8E30B81 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				255135C73ADAF1AFCE33D479 /* Sunflower.app */,
@@ -133,7 +124,7 @@
 				7C432B2C400E5D7CFE900B70 /* Info.plist */,
 				234FC6BBB2E20377E211E2A1 /* SunflowerApp.swift */,
 				072F8EDEC6D4F9B5D54C3F98 /* Extensions */,
-				76F91B05A72B7C935ED3E32D /* Fonts */,
+
 				10333BD52F07AB83411591F4 /* Models */,
 				09A0577EE7DA9E3C1CC87FA0 /* Views */,
 			);
@@ -200,8 +191,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				15F9E55885A90B8C6E650E2D /* Assets.xcassets in Resources */,
-				5EBBACF15297B5E956127767 /* PixelifySans-Bold.ttf in Resources */,
-				CD52AD13067F8B3910CBD383 /* PixelifySans-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
