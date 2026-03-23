@@ -71,6 +71,8 @@ struct TimerView: View {
     @State private var showFlowerEarned = false
     @State private var showFlowerDied = false
     @State private var tappedTree: FocusTag?
+    @State private var showDurationPicker = false
+    @State private var pickerMinutes: Int = 25
 
     private var currentSettings: UserSettings {
         if let first = settings.first {
@@ -152,13 +154,22 @@ struct TimerView: View {
                     .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundColor(.warmYellow)
 
-                // Big countdown
-                Text(timerManager.timeString)
-                    .font(.system(size: 72, weight: .bold, design: .rounded))
-                    .foregroundColor(.cream)
-                    .shadow(color: .darkGreen, radius: 0, x: 2, y: 2)
-                    .contentTransition(.numericText())
-                    .animation(.default, value: timerManager.timeRemaining)
+                // Big countdown (tap to change duration)
+                Button {
+                    if !timerManager.isRunning {
+                        pickerMinutes = currentSettings.pomoDuration / 60
+                        withAnimation(.spring(duration: 0.3)) {
+                            showDurationPicker.toggle()
+                        }
+                    }
+                } label: {
+                    Text(timerManager.timeString)
+                        .font(.system(size: 72, weight: .bold, design: .rounded))
+                        .foregroundColor(.cream)
+                        .shadow(color: .darkGreen, radius: 0, x: 2, y: 2)
+                        .contentTransition(.numericText())
+                        .animation(.default, value: timerManager.timeRemaining)
+                }
 
                 // Start/Stop button
                 Button {
@@ -191,6 +202,46 @@ struct TimerView: View {
                     Spacer().frame(height: 100)
                 }
                 .animation(.spring(duration: 0.5), value: showFlowerEarned)
+            }
+
+            // Duration picker overlay (transparent, inline)
+            if showDurationPicker {
+                VStack {
+                    Spacer()
+
+                    // Flower icon on top
+                    Image(systemName: "sun.max.fill")
+                        .font(.system(size: 40))
+                        .foregroundColor(.warmYellow)
+                        .padding(.bottom, 16)
+
+                    // Horizontal ruler picker
+                    HorizontalRulerPicker(selectedMinutes: $pickerMinutes)
+                        .frame(height: 80)
+                        .padding(.horizontal, 20)
+
+                    // Done button
+                    Button {
+                        currentSettings.pomoDuration = pickerMinutes * 60
+                        timerManager.reset(duration: pickerMinutes * 60)
+                        try? modelContext.save()
+                        withAnimation(.spring(duration: 0.3)) {
+                            showDurationPicker = false
+                        }
+                    } label: {
+                        Text("Done")
+                            .font(.system(size: 18, weight: .semibold, design: .rounded))
+                            .foregroundColor(.darkGreen)
+                            .padding(.horizontal, 40)
+                            .padding(.vertical, 12)
+                            .background(Color.cream)
+                            .clipShape(Capsule())
+                    }
+                    .padding(.top, 16)
+
+                    Spacer()
+                }
+                .transition(.opacity)
             }
 
             // Flower died overlay
@@ -584,6 +635,70 @@ struct TreeStat: View {
                 .font(.system(size: 11, weight: .regular, design: .rounded))
                 .foregroundColor(.cream.opacity(0.6))
         }
+    }
+}
+
+// MARK: - Horizontal Ruler Picker
+
+struct HorizontalRulerPicker: View {
+    @Binding var selectedMinutes: Int
+    let minValue = 5
+    let maxValue = 120
+    let step = 5
+
+    var body: some View {
+        GeometryReader { geo in
+            let centerX = geo.size.width / 2
+            let tickSpacing: CGFloat = 30
+            let totalTicks = (maxValue - minValue) / step + 1
+            let offset = centerX - CGFloat((selectedMinutes - minValue) / step) * tickSpacing
+
+            ZStack {
+                // Ruler ticks and numbers
+                HStack(spacing: 0) {
+                    ForEach(0..<totalTicks, id: \.self) { i in
+                        let value = minValue + i * step
+                        let isMajor = value % 10 == 0
+
+                        VStack(spacing: 4) {
+                            Text("\(value)")
+                                .font(.system(size: value == selectedMinutes ? 32 : 16, weight: value == selectedMinutes ? .bold : .regular, design: .rounded))
+                                .foregroundColor(value == selectedMinutes ? .cream : .cream.opacity(0.3))
+
+                            Rectangle()
+                                .fill(value == selectedMinutes ? Color.cream : Color.cream.opacity(isMajor ? 0.4 : 0.2))
+                                .frame(width: 2, height: isMajor ? 20 : 12)
+                        }
+                        .frame(width: tickSpacing)
+                    }
+                }
+                .offset(x: offset - tickSpacing / 2)
+                .gesture(
+                    DragGesture()
+                        .onChanged { value in
+                            let dragTicks = -Int(round(value.translation.width / tickSpacing))
+                            let base = (selectedMinutes - minValue) / step
+                            let newIndex = max(0, min(totalTicks - 1, base + dragTicks))
+                            let newValue = minValue + newIndex * step
+                            if newValue != selectedMinutes {
+                                selectedMinutes = newValue
+                            }
+                        }
+                )
+
+                // Center indicator
+                VStack(spacing: 0) {
+                    Spacer()
+                    Rectangle()
+                        .fill(Color.warmYellow)
+                        .frame(width: 3, height: 24)
+                    Image(systemName: "triangle.fill")
+                        .font(.system(size: 8))
+                        .foregroundColor(.warmYellow)
+                }
+            }
+        }
+        .clipped()
     }
 }
 
