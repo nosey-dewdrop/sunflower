@@ -21,32 +21,36 @@ class TimerManager {
     func start(duration: Int) {
         totalTime = duration
         timeRemaining = duration
-        isRunning = true
         phase = .focus
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            if self.timeRemaining > 0 {
-                self.timeRemaining -= 1
-            } else {
-                self.stop()
-                self.onFocusComplete?()
-            }
-        }
+        startTimer()
     }
 
     func startBreak(duration: Int, isLong: Bool) {
         totalTime = duration
         timeRemaining = duration
-        isRunning = true
         phase = isLong ? .longBreak : .shortBreak
+        startTimer()
+    }
+
+    func resume() {
+        startTimer()
+    }
+
+    private func startTimer() {
+        isRunning = true
+        timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             guard let self else { return }
             if self.timeRemaining > 0 {
                 self.timeRemaining -= 1
             } else {
                 self.stop()
-                self.phase = .idle
-                self.onBreakComplete?()
+                if self.phase == .focus {
+                    self.onFocusComplete?()
+                } else {
+                    self.phase = .idle
+                    self.onBreakComplete?()
+                }
             }
         }
     }
@@ -76,6 +80,7 @@ class TimerManager {
 
 struct TimerView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @Query private var settings: [UserSettings]
     @Query private var tags: [FocusTag]
     @Query private var flowers: [FlowerDrop]
@@ -90,6 +95,7 @@ struct TimerView: View {
     @State private var sessionStartTime: Date?
     @State private var currentPomoCount: Int = 1
     @State private var pomosBeforeLong: Int = 4
+    @State private var showFlowerEarned = false
 
     private var currentSettings: UserSettings {
         if let first = settings.first {
@@ -114,12 +120,14 @@ struct TimerView: View {
                 .ignoresSafeArea()
 
             // Flower drops scattered on background
-            ForEach(flowers) { flower in
-                FlowerSprite(flowerType: flower.flowerType)
-                    .position(
-                        x: flower.positionX * UIScreen.main.bounds.width,
-                        y: flower.positionY * UIScreen.main.bounds.height
-                    )
+            GeometryReader { geo in
+                ForEach(flowers) { flower in
+                    FlowerSprite(flowerType: flower.flowerType)
+                        .position(
+                            x: flower.positionX * geo.size.width,
+                            y: flower.positionY * geo.size.height
+                        )
+                }
             }
 
             VStack(spacing: 24) {
@@ -136,10 +144,10 @@ struct TimerView: View {
                                 .fill(Color(hex: tag.colorHex))
                                 .frame(width: 10, height: 10)
                             Text(tag.name)
-                                .pixelFont(size: 14, bold: true)
+                                .font(.system(size: 14, weight: .semibold, design: .rounded))
                         } else {
                             Text("select tag")
-                                .pixelFont(size: 14)
+                                .font(.system(size: 14, weight: .regular, design: .rounded))
                         }
                     }
                     .padding(.horizontal, 16)
@@ -157,7 +165,7 @@ struct TimerView: View {
                         Image(systemName: "chevron.down")
                             .font(.caption)
                         Text("today")
-                            .pixelFont(size: 10)
+                            .font(.system(size: 10, weight: .regular, design: .rounded))
                     }
                     .foregroundColor(.cream.opacity(0.6))
                 }
@@ -166,31 +174,34 @@ struct TimerView: View {
 
                 // Phase indicator
                 Text(timerManager.phase.rawValue)
-                    .pixelFont(size: 18, bold: true)
+                    .font(.system(size: 18, weight: .bold, design: .rounded))
                     .foregroundColor(.warmYellow)
 
                 // Big countdown
                 Text(timerManager.timeString)
-                    .pixelFont(size: 72, bold: true)
+                    .font(.system(size: 72, weight: .bold, design: .rounded))
                     .foregroundColor(.cream)
                     .shadow(color: .darkGreen, radius: 0, x: 2, y: 2)
+                    .contentTransition(.numericText())
+                    .animation(.default, value: timerManager.timeRemaining)
 
                 // Start/Stop button
                 Button {
                     handleMainButton()
                 } label: {
                     Text(buttonLabel)
-                        .pixelFont(size: 24, bold: true)
+                        .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundColor(timerManager.isRunning ? .cream : .darkGreen)
                         .padding(.horizontal, 40)
                         .padding(.vertical, 14)
                         .background(timerManager.isRunning ? Color.brown.opacity(0.8) : Color.warmYellow)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .scaleEffect(timerManager.isRunning ? 0.98 : 1.0)
                 }
 
                 // Cycle indicator
                 Text("pomodoro \(currentPomoCount)/\(pomosBeforeLong)")
-                    .pixelFont(size: 14)
+                    .font(.system(size: 14, weight: .regular, design: .rounded))
                     .foregroundColor(.cream.opacity(0.7))
 
                 Spacer()
@@ -200,10 +211,27 @@ struct TimerView: View {
                     Image(systemName: "flame.fill")
                         .foregroundColor(.warmYellow)
                     Text("\(todayCompletedCount) today")
-                        .pixelFont(size: 16, bold: true)
+                        .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundColor(.cream)
                 }
                 .padding(.bottom, 40)
+            }
+
+            // Flower earned overlay
+            if showFlowerEarned {
+                VStack {
+                    Spacer()
+                    Text("flower earned!")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(.warmYellow)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(Color.darkGreen.opacity(0.9))
+                        .clipShape(Capsule())
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    Spacer().frame(height: 100)
+                }
+                .animation(.spring(duration: 0.5), value: showFlowerEarned)
             }
         }
         .sheet(isPresented: $showTagPicker) {
@@ -216,6 +244,10 @@ struct TimerView: View {
         }
         .onAppear {
             setupTimer()
+            restoreBackgroundState()
+        }
+        .onChange(of: scenePhase) { oldPhase, newPhase in
+            handleScenePhaseChange(to: newPhase)
         }
     }
 
@@ -228,6 +260,8 @@ struct TimerView: View {
         }
         return "SKIP"
     }
+
+    // MARK: - Setup
 
     private func setupTimer() {
         let s = currentSettings
@@ -243,14 +277,19 @@ struct TimerView: View {
             timerManager.timeRemaining = currentSettings.pomoDuration
             timerManager.totalTime = currentSettings.pomoDuration
         }
+
+        NotificationManager.shared.requestPermission()
     }
+
+    // MARK: - Button Actions
 
     private func handleMainButton() {
         if timerManager.isRunning {
-            // Stop pressed
             let elapsed = timerManager.elapsedSeconds
             let wasInFocus = timerManager.phase == .focus
             timerManager.stop()
+            NotificationManager.shared.cancelAll()
+            clearBackgroundState()
 
             if wasInFocus && elapsed >= 60 {
                 let session = FocusSession(
@@ -268,9 +307,9 @@ struct TimerView: View {
             timerManager.timeRemaining = currentSettings.pomoDuration
             timerManager.totalTime = currentSettings.pomoDuration
         } else {
-            // Start new focus session
             sessionStartTime = Date()
             timerManager.start(duration: currentSettings.pomoDuration)
+            NotificationManager.shared.scheduleTimerComplete(in: currentSettings.pomoDuration, isFocus: true)
         }
     }
 
@@ -284,7 +323,6 @@ struct TimerView: View {
         )
         modelContext.insert(session)
 
-        // Spawn flower
         let flower = FlowerDrop(
             flowerType: FlowerDrop.randomType(),
             positionX: Double.random(in: 0.1...0.9),
@@ -293,16 +331,115 @@ struct TimerView: View {
         modelContext.insert(flower)
         try? modelContext.save()
 
+        NotificationManager.shared.cancelAll()
+
+        // Show flower earned feedback
+        withAnimation {
+            showFlowerEarned = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            withAnimation {
+                showFlowerEarned = false
+            }
+        }
+
         // Advance cycle
         if currentPomoCount >= pomosBeforeLong {
             currentPomoCount = 1
             timerManager.startBreak(duration: currentSettings.longBreakDuration, isLong: true)
+            NotificationManager.shared.scheduleTimerComplete(in: currentSettings.longBreakDuration, isFocus: false)
         } else {
             currentPomoCount += 1
             timerManager.startBreak(duration: currentSettings.shortBreakDuration, isLong: false)
+            NotificationManager.shared.scheduleTimerComplete(in: currentSettings.shortBreakDuration, isFocus: false)
         }
     }
+
+    // MARK: - Background State
+
+    private func handleScenePhaseChange(to phase: ScenePhase) {
+        switch phase {
+        case .background:
+            guard timerManager.isRunning else { return }
+            saveBackgroundState()
+            timerManager.stop()
+
+        case .active:
+            restoreBackgroundState()
+
+        default:
+            break
+        }
+    }
+
+    private func saveBackgroundState() {
+        let endTime = Date().addingTimeInterval(TimeInterval(timerManager.timeRemaining))
+        let defaults = UserDefaults.standard
+        defaults.set(endTime.timeIntervalSince1970, forKey: "timerEndTime")
+        defaults.set(timerManager.phase.rawValue, forKey: "timerPhase")
+        defaults.set(timerManager.totalTime, forKey: "timerTotalTime")
+        defaults.set(currentPomoCount, forKey: "currentPomoCount")
+        defaults.set(true, forKey: "isTimerRunning")
+        if let start = sessionStartTime {
+            defaults.set(start.timeIntervalSince1970, forKey: "sessionStartTime")
+        }
+    }
+
+    private func restoreBackgroundState() {
+        let defaults = UserDefaults.standard
+        guard defaults.bool(forKey: "isTimerRunning") else { return }
+
+        let endTimeInterval = defaults.double(forKey: "timerEndTime")
+        guard endTimeInterval > 0 else { return }
+
+        let endTime = Date(timeIntervalSince1970: endTimeInterval)
+        let remaining = Int(endTime.timeIntervalSinceNow)
+        let phaseStr = defaults.string(forKey: "timerPhase") ?? ""
+        let savedPhase = TimerPhase(rawValue: phaseStr) ?? .focus
+        let savedTotalTime = defaults.integer(forKey: "timerTotalTime")
+        let savedPomoCount = defaults.integer(forKey: "currentPomoCount")
+
+        let sessionStartInterval = defaults.double(forKey: "sessionStartTime")
+        if sessionStartInterval > 0 {
+            sessionStartTime = Date(timeIntervalSince1970: sessionStartInterval)
+        }
+        if savedPomoCount > 0 {
+            currentPomoCount = savedPomoCount
+        }
+
+        clearBackgroundState()
+
+        if remaining <= 0 {
+            // Timer completed while in background
+            if savedPhase == .focus {
+                handleFocusComplete()
+            } else {
+                // Break completed in background
+                timerManager.phase = .idle
+                timerManager.timeRemaining = currentSettings.pomoDuration
+                timerManager.totalTime = currentSettings.pomoDuration
+            }
+        } else {
+            // Timer still running, resume
+            timerManager.totalTime = savedTotalTime
+            timerManager.timeRemaining = remaining
+            timerManager.phase = savedPhase
+            timerManager.resume()
+        }
+    }
+
+    private func clearBackgroundState() {
+        let defaults = UserDefaults.standard
+        defaults.set(false, forKey: "isTimerRunning")
+        defaults.removeObject(forKey: "timerEndTime")
+        defaults.removeObject(forKey: "timerPhase")
+        defaults.removeObject(forKey: "timerTotalTime")
+        defaults.removeObject(forKey: "sessionStartTime")
+        defaults.removeObject(forKey: "currentPomoCount")
+    }
 }
+
+// MARK: - Flower Sprite
 
 struct FlowerSprite: View {
     let flowerType: String
@@ -336,6 +473,8 @@ struct FlowerSprite: View {
     }
 }
 
+// MARK: - Tag Picker
+
 struct TagPickerSheet: View {
     @Binding var selectedTag: FocusTag?
     let tags: [FocusTag]
@@ -349,10 +488,10 @@ struct TagPickerSheet: View {
                 if tags.isEmpty {
                     VStack(spacing: 12) {
                         Text("no tags yet")
-                            .pixelFont(size: 18)
+                            .font(.system(size: 18, weight: .regular, design: .rounded))
                             .foregroundColor(.cream)
                         Text("add tags in settings")
-                            .pixelFont(size: 14)
+                            .font(.system(size: 14, weight: .regular, design: .rounded))
                             .foregroundColor(.cream.opacity(0.6))
                     }
                 } else {
@@ -364,7 +503,7 @@ struct TagPickerSheet: View {
                             } label: {
                                 HStack {
                                     Text("no tag")
-                                        .pixelFont(size: 16)
+                                        .font(.system(size: 16, weight: .regular, design: .rounded))
                                         .foregroundColor(.cream)
                                     Spacer()
                                     if selectedTag == nil {
@@ -387,7 +526,7 @@ struct TagPickerSheet: View {
                                             .fill(Color(hex: tag.colorHex))
                                             .frame(width: 14, height: 14)
                                         Text(tag.name)
-                                            .pixelFont(size: 16)
+                                            .font(.system(size: 16, weight: .regular, design: .rounded))
                                             .foregroundColor(.cream)
                                         Spacer()
                                         if selectedTag?.id == tag.id {

@@ -22,6 +22,7 @@
 		CFE21D46735215F66A92280B /* FocusSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF7624920C6AE9BB03830C4 /* FocusSession.swift */; };
 		F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8097FA49454B6330F7799975 /* FocusTag.swift */; };
 		F16DA1FE207B85236C50DA23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC160622868CADE0EB86F3C /* SettingsView.swift */; };
+		AA11BB22CC33DD44EE55FF66 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,7 +42,7 @@
 		97896476C6062C62E4007761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9820D40291546EB3256A10EF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelFont.swift; sourceTree = "<group>"; };
-
+		BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -58,6 +59,7 @@
 			isa = PBXGroup;
 			children = (
 				9820D40291546EB3256A10EF /* Color+Hex.swift */,
+				BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */,
 				9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */,
 			);
 			path = Extensions;
@@ -212,6 +214,7 @@
 				62FE260CDED5C873388D846D /* SummaryView.swift in Sources */,
 				4018FA7D849296C16674B84E /* SunflowerApp.swift in Sources */,
 				A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */,
+				AA11BB22CC33DD44EE55FF66 /* NotificationManager.swift in Sources */,
 				7B1FC471E08C553EAAF24F3A /* UserSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
