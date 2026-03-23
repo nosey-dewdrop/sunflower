@@ -7,6 +7,7 @@ struct SettingsView: View {
     @Query(sort: \FocusTag.createdAt) private var tags: [FocusTag]
 
     @State private var showAddTag = false
+    @State private var showMarket = false
     @State private var newTagName = ""
 
     private var settings: UserSettings {
@@ -29,6 +30,30 @@ struct SettingsView: View {
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.cream)
                         .padding(.top, 60)
+
+                    // Market
+                    Button {
+                        showMarket = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "storefront.fill")
+                                .font(.system(size: 18))
+                            Text("Market")
+                                .font(.system(size: 16, weight: .semibold, design: .rounded))
+                            Spacer()
+                            HStack(spacing: 4) {
+                                Image(systemName: "bitcoinsign.circle.fill")
+                                    .font(.system(size: 12))
+                                Text("\(settings.coins)")
+                                    .font(.system(size: 14, weight: .bold, design: .rounded))
+                            }
+                            .foregroundColor(.warmYellow)
+                        }
+                        .foregroundColor(.cream)
+                        .padding()
+                        .background(Color.grassGreen.opacity(0.5))
+                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    }
 
                     // Timer settings
                     SectionHeader(title: "timer")
@@ -123,6 +148,9 @@ struct SettingsView: View {
             }
         } message: {
             Text("Enter a name for the new tag")
+        }
+        .sheet(isPresented: $showMarket) {
+            MarketView()
         }
     }
 }

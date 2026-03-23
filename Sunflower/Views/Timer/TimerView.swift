@@ -71,7 +71,6 @@ struct TimerView: View {
     @State private var selectedTag: FocusTag?
     @State private var showTagPicker = false
     @State private var showSummary = false
-    @State private var showMarket = false
     @State private var sessionStartTime: Date?
     @State private var showFlowerEarned = false
     @State private var showFlowerDied = false
@@ -132,33 +131,6 @@ struct TimerView: View {
             VStack(spacing: 24) {
                 Spacer()
                     .frame(height: 60)
-
-                // Top bar: coins + market
-                HStack {
-                    // Coin balance
-                    HStack(spacing: 4) {
-                        Image(systemName: "bitcoinsign.circle.fill")
-                            .foregroundColor(.warmYellow)
-                        Text("\(currentSettings.coins)")
-                            .font(.system(size: 14, weight: .bold, design: .rounded))
-                            .foregroundColor(.warmYellow)
-                    }
-
-                    Spacer()
-
-                    // Market button
-                    Button {
-                        showMarket = true
-                    } label: {
-                        Image(systemName: "storefront.fill")
-                            .font(.system(size: 18))
-                            .foregroundColor(.cream)
-                            .padding(8)
-                            .background(Color.darkGreen.opacity(0.7))
-                            .clipShape(Circle())
-                    }
-                }
-                .padding(.horizontal, 20)
 
                 // Tag selector pill
                 Button {
@@ -282,9 +254,6 @@ struct TimerView: View {
         .sheet(item: $tappedTree) { tag in
             TreeDetailSheet(tag: tag)
                 .presentationDetents([.medium])
-        }
-        .sheet(isPresented: $showMarket) {
-            MarketView()
         }
         .onAppear {
             setupTimer()
