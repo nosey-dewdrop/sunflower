@@ -10,101 +10,120 @@ struct SettingsView: View {
     @State private var newTagName = ""
 
     private var settings: UserSettings {
-        if let first = settingsList.first {
-            return first
-        }
-        let newSettings = UserSettings()
-        modelContext.insert(newSettings)
+        if let first = settingsList.first { return first }
+        let s = UserSettings()
+        modelContext.insert(s)
         try? modelContext.save()
-        return newSettings
+        return s
     }
 
     var body: some View {
         ZStack {
-            Color.darkGreen.ignoresSafeArea()
+            Color(hex: "1A1A2E").ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    Text("Settings")
+                    // Welcome header
+                    Text("Welcome ^ ^")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundColor(.cream)
+                        .foregroundColor(.white)
                         .padding(.top, 60)
 
-                    // Timer settings
-                    SectionHeader(title: "timer")
+                    Text("What I do today is important because I am exchanging a day of my life for it.")
+                        .font(.system(size: 15, weight: .regular, design: .rounded))
+                        .foregroundColor(.white.opacity(0.5))
 
-                    SettingsPicker(
-                        title: "focus duration",
-                        value: Binding(
-                            get: { settings.pomoDuration / 60 },
-                            set: { settings.pomoDuration = $0 * 60 }
-                        ),
-                        range: Array(stride(from: 5, through: 60, by: 5)),
-                        suffix: "min"
+                    // Premium banner
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Sunflower Plus")
+                            .font(.system(size: 18, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+                        Text("Grow your garden, unlock more")
+                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                            .foregroundColor(.white.opacity(0.7))
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(18)
+                    .background(
+                        LinearGradient(colors: [Color(hex: "C75050"), Color(hex: "D4845A")], startPoint: .leading, endPoint: .trailing)
                     )
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
 
-                    // Preferences
-                    SectionHeader(title: "preferences")
+                    // Timer section
+                    SettingsSectionHeader(title: "Timer")
 
-                    SettingsToggle(
-                        title: "notifications",
-                        isOn: Binding(
-                            get: { settings.notificationsEnabled },
-                            set: { settings.notificationsEnabled = $0 }
-                        )
-                    )
-
-                    SettingsToggle(
-                        title: "week starts monday",
-                        isOn: Binding(
-                            get: { settings.weekStartMonday },
-                            set: { settings.weekStartMonday = $0 }
-                        )
-                    )
-
-                    // Tags
-                    SectionHeader(title: "tags")
-
-                    ForEach(tags) { tag in
-                        HStack {
-                            Circle()
-                                .fill(Color(hex: tag.colorHex))
-                                .frame(width: 14, height: 14)
-                            Text(tag.name)
-                                .font(.system(size: 16, weight: .regular, design: .rounded))
-                                .foregroundColor(.cream)
-                            Spacer()
-                            Button {
-                                modelContext.delete(tag)
-                                try? modelContext.save()
-                            } label: {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.cream.opacity(0.4))
-                            }
-                        }
-                        .padding()
-                        .background(Color.grassGreen.opacity(0.4))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                    SettingsCard {
+                        SettingsRow(title: "Focus Duration", trailing: "\(settings.pomoDuration / 60) min") {}
                     }
 
-                    Button {
-                        showAddTag = true
-                    } label: {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                            Text("add tag")
-                                .font(.system(size: 16, weight: .regular, design: .rounded))
+                    // Tags section
+                    SettingsSectionHeader(title: "Tags")
+
+                    SettingsCard {
+                        ForEach(tags) { tag in
+                            HStack {
+                                Circle()
+                                    .fill(Color(hex: tag.colorHex))
+                                    .frame(width: 12, height: 12)
+                                Text(tag.name)
+                                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                                    .foregroundColor(.white)
+                                Spacer()
+                                Button {
+                                    modelContext.delete(tag)
+                                    try? modelContext.save()
+                                } label: {
+                                    Image(systemName: "xmark")
+                                        .font(.system(size: 12))
+                                        .foregroundColor(.white.opacity(0.3))
+                                }
+                            }
+                            .padding(.vertical, 4)
+
+                            if tag.id != tags.last?.id {
+                                Divider().background(Color.white.opacity(0.08))
+                            }
                         }
-                        .foregroundColor(.warmYellow)
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.grassGreen.opacity(0.2))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                        Button {
+                            showAddTag = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus")
+                                    .font(.system(size: 14))
+                                Text("Add Tag")
+                                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                            }
+                            .foregroundColor(Color(hex: "D4845A"))
+                            .padding(.top, 4)
+                        }
+                    }
+
+                    // Notifications section
+                    SettingsSectionHeader(title: "Notifications")
+
+                    SettingsCard {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Focus Reminder")
+                                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                                    .foregroundColor(.white)
+                                Text("You will receive notification after you finish focus.")
+                                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.4))
+                            }
+                            Spacer()
+                            Toggle("", isOn: Binding(
+                                get: { settings.notificationsEnabled },
+                                set: { settings.notificationsEnabled = $0 }
+                            ))
+                            .tint(Color(hex: "D4845A"))
+                        }
                     }
 
                     Spacer(minLength: 40)
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 20)
             }
         }
         .alert("New Tag", isPresented: $showAddTag) {
@@ -118,89 +137,62 @@ struct SettingsView: View {
                 try? modelContext.save()
                 newTagName = ""
             }
-            Button("Cancel", role: .cancel) {
-                newTagName = ""
-            }
+            Button("Cancel", role: .cancel) { newTagName = "" }
         } message: {
             Text("Enter a name for the new tag")
         }
     }
 }
 
-struct SectionHeader: View {
-    let title: String
+// MARK: - Settings Components
 
+struct SettingsSectionHeader: View {
+    let title: String
     var body: some View {
         Text(title)
-            .font(.system(size: 14, weight: .bold, design: .rounded))
-            .foregroundColor(.warmYellow)
+            .font(.system(size: 14, weight: .semibold, design: .rounded))
+            .foregroundColor(.white.opacity(0.4))
             .textCase(.uppercase)
     }
 }
 
-struct SettingsPicker: View {
-    let title: String
-    @Binding var value: Int
-    let range: [Int]
-    let suffix: String
-
+struct SettingsCard<Content: View>: View {
+    @ViewBuilder let content: Content
     var body: some View {
-        HStack {
-            Text(title)
-                .font(.system(size: 15, weight: .regular, design: .rounded))
-                .foregroundColor(.cream)
-            Spacer()
-            HStack(spacing: 12) {
-                Button {
-                    if let idx = range.firstIndex(of: value), idx > 0 {
-                        value = range[idx - 1]
-                    }
-                } label: {
-                    Image(systemName: "minus.circle.fill")
-                        .foregroundColor(.cream.opacity(0.6))
-                }
-
-                Text("\(value)\(suffix.isEmpty ? "" : " \(suffix)")")
-                    .font(.system(size: 16, weight: .bold, design: .rounded))
-                    .foregroundColor(.warmYellow)
-                    .frame(minWidth: 60)
-
-                Button {
-                    if let idx = range.firstIndex(of: value), idx < range.count - 1 {
-                        value = range[idx + 1]
-                    }
-                } label: {
-                    Image(systemName: "plus.circle.fill")
-                        .foregroundColor(.cream.opacity(0.6))
-                }
-            }
+        VStack(alignment: .leading, spacing: 8) {
+            content
         }
-        .padding()
-        .background(Color.grassGreen.opacity(0.4))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
+        .padding(16)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white.opacity(0.08))
+        .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
 
-struct SettingsToggle: View {
+struct SettingsRow: View {
     let title: String
-    @Binding var isOn: Bool
+    let trailing: String
+    let action: () -> Void
 
     var body: some View {
-        HStack {
-            Text(title)
-                .font(.system(size: 15, weight: .regular, design: .rounded))
-                .foregroundColor(.cream)
-            Spacer()
-            Toggle("", isOn: $isOn)
-                .tint(.warmYellow)
+        Button(action: action) {
+            HStack {
+                Text(title)
+                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                    .foregroundColor(.white)
+                Spacer()
+                Text(trailing)
+                    .font(.system(size: 15, weight: .regular, design: .rounded))
+                    .foregroundColor(.white.opacity(0.4))
+                Image(systemName: "chevron.right")
+                    .font(.system(size: 12))
+                    .foregroundColor(.white.opacity(0.3))
+            }
         }
-        .padding()
-        .background(Color.grassGreen.opacity(0.4))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
 #Preview {
     SettingsView()
-        .modelContainer(for: [FocusTag.self, FocusSession.self, FlowerDrop.self, UserSettings.self], inMemory: true)
+        .modelContainer(for: [FocusTag.self, FocusSession.self, FlowerDrop.self, UserSettings.self, GardenItem.self], inMemory: true)
 }

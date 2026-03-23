@@ -2,165 +2,320 @@ import SwiftUI
 import SwiftData
 
 struct SummaryView: View {
-    @Environment(\.modelContext) private var modelContext
     @Query private var allSessions: [FocusSession]
-    @Query private var tags: [FocusTag]
+    @Query private var flowers: [FlowerDrop]
 
     private var todaySessions: [FocusSession] {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: Date())
-        return allSessions
-            .filter { $0.startedAt >= startOfDay }
-            .sorted { $0.startedAt > $1.startedAt }
+        return allSessions.filter { $0.startedAt >= startOfDay }
     }
 
-    private var completedCount: Int {
+    private var totalFlowers: Int {
         todaySessions.filter { $0.completed }.count
     }
 
-    private var abandonedCount: Int {
-        todaySessions.filter { $0.abandoned }.count
+    private var totalFocusHours: Int {
+        todaySessions.reduce(0) { $0 + $1.duration } / 3600
     }
 
     private var totalFocusMinutes: Int {
-        todaySessions.reduce(0) { $0 + $1.duration } / 60
+        (todaySessions.reduce(0) { $0 + $1.duration } % 3600) / 60
     }
 
-    private var tagBreakdown: [(tag: String, color: String, minutes: Int)] {
-        var dict: [String: (color: String, seconds: Int)] = [:]
-        for session in todaySessions {
-            let name = session.tag?.name ?? "untagged"
-            let color = session.tag?.colorHex ?? "999999"
-            dict[name, default: (color: color, seconds: 0)].seconds += session.duration
+    private var allTimeFlowers: Int {
+        allSessions.filter { $0.completed }.count
+    }
+
+    private var allTimeFocusHours: Int {
+        allSessions.reduce(0) { $0 + $1.duration } / 3600
+    }
+
+    private var allTimeFocusMinutes: Int {
+        (allSessions.reduce(0) { $0 + $1.duration } % 3600) / 60
+    }
+
+    private var todayCompletedCount: Int {
+        todaySessions.filter { $0.completed }.count
+    }
+
+    private var todayAbandonedCount: Int {
+        todaySessions.filter { $0.abandoned }.count
+    }
+
+    private var todayFocusHours: Int {
+        todaySessions.filter { $0.completed }.reduce(0) { $0 + $1.duration } / 3600
+    }
+
+    private var thisWeekFocusHours: Int {
+        let calendar = Calendar.current
+        let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
+        let weekSessions = allSessions.filter { $0.startedAt >= startOfWeek && $0.completed }
+        return weekSessions.reduce(0) { $0 + $1.duration } / 3600
+    }
+
+    // Weekly dots data
+    private var weekDays: [(letter: String, hasData: Bool)] {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+        let weekday = calendar.component(.weekday, from: today)
+        let mondayOffset = (weekday + 5) % 7
+        let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today)!
+
+        let letters = ["M", "T", "W", "T", "F", "S", "S"]
+        return (0..<7).map { i in
+            let day = calendar.date(byAdding: .day, value: i, to: monday)!
+            let nextDay = calendar.date(byAdding: .day, value: 1, to: day)!
+            let hasSession = allSessions.contains { $0.startedAt >= day && $0.startedAt < nextDay && $0.completed }
+            return (letter: letters[i], hasData: hasSession)
         }
-        return dict.map { (tag: $0.key, color: $0.value.color, minutes: $0.value.seconds / 60) }
-            .sorted { $0.minutes > $1.minutes }
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.darkGreen.ignoresSafeArea()
+        ZStack {
+            Color(hex: "1A1A2E").ignoresSafeArea()
 
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 20) {
-                        // Date
-                        Text(Date(), format: .dateTime.weekday(.wide).month(.wide).day())
-                            .pixelFont(size: 16, bold: true)
-                            .foregroundColor(.warmYellow)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 20) {
 
-                        // Stats row
-                        HStack(spacing: 16) {
-                            StatBox(value: "\(todaySessions.count)", label: "started")
-                            StatBox(value: "\(completedCount)", label: "completed")
-                            StatBox(value: "\(abandonedCount)", label: "abandoned")
+                    // Header
+                    HStack {
+                        Image(systemName: "chevron.up")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.5))
+                            .padding(10)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(Circle())
+
+                        Spacer()
+
+                        HStack(spacing: 12) {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 12))
+                                .foregroundColor(.white.opacity(0.5))
+                            Text("Today")
+                                .font(.system(size: 15, weight: .medium, design: .rounded))
+                                .foregroundColor(.white.opacity(0.8))
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 12))
+                                .foregroundColor(.white.opacity(0.5))
                         }
+                        .padding(.horizontal, 14)
+                        .padding(.vertical, 8)
+                        .background(Color.white.opacity(0.1))
+                        .clipShape(Capsule())
 
-                        // Total focus time
-                        HStack {
-                            Image(systemName: "clock.fill")
-                                .foregroundColor(.warmYellow)
-                            Text("\(totalFocusMinutes) min focused today")
-                                .pixelFont(size: 16, bold: true)
-                                .foregroundColor(.cream)
-                        }
-                        .padding()
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .background(Color.grassGreen.opacity(0.5))
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-
-                        // Tag breakdown
-                        if !tagBreakdown.isEmpty {
-                            Text("by tag")
-                                .pixelFont(size: 14, bold: true)
-                                .foregroundColor(.cream.opacity(0.7))
-
-                            ForEach(tagBreakdown, id: \.tag) { item in
-                                HStack {
-                                    Circle()
-                                        .fill(Color(hex: item.color))
-                                        .frame(width: 10, height: 10)
-                                    Text(item.tag)
-                                        .pixelFont(size: 14)
-                                        .foregroundColor(.cream)
-                                    Spacer()
-                                    Text("\(item.minutes) min")
-                                        .pixelFont(size: 14, bold: true)
-                                        .foregroundColor(.warmYellow)
-                                }
-                            }
-                        }
-
-                        // Timeline
-                        if !todaySessions.isEmpty {
-                            Text("timeline")
-                                .pixelFont(size: 14, bold: true)
-                                .foregroundColor(.cream.opacity(0.7))
-
-                            ForEach(todaySessions) { session in
-                                HStack {
-                                    VStack(alignment: .leading, spacing: 2) {
-                                        Text(session.startedAt, format: .dateTime.hour().minute())
-                                            .pixelFont(size: 13)
-                                            .foregroundColor(.cream.opacity(0.6))
-                                        HStack(spacing: 4) {
-                                            if let tag = session.tag {
-                                                Circle()
-                                                    .fill(Color(hex: tag.colorHex))
-                                                    .frame(width: 8, height: 8)
-                                                Text(tag.name)
-                                                    .pixelFont(size: 13)
-                                                    .foregroundColor(.cream)
-                                            }
-                                        }
-                                    }
-                                    Spacer()
-                                    VStack(alignment: .trailing, spacing: 2) {
-                                        Text("\(session.duration / 60) min")
-                                            .pixelFont(size: 13, bold: true)
-                                            .foregroundColor(.cream)
-                                        if session.completed {
-                                            Text("completed")
-                                                .pixelFont(size: 10)
-                                                .foregroundColor(.warmYellow)
-                                        } else if session.abandoned {
-                                            Text("abandoned")
-                                                .pixelFont(size: 10)
-                                                .foregroundColor(.red.opacity(0.7))
-                                        }
-                                    }
-                                }
-                                .padding(.vertical, 4)
-                            }
-                        }
+                        Image(systemName: "plus")
+                            .font(.system(size: 14, weight: .semibold))
+                            .foregroundColor(.white.opacity(0.5))
+                            .padding(10)
+                            .background(Color.white.opacity(0.1))
+                            .clipShape(Circle())
                     }
-                    .padding()
+                    .padding(.top, 16)
+
+                    // Summary title
+                    HStack(spacing: 8) {
+                        Text("Summary")
+                            .font(.system(size: 28, weight: .bold, design: .rounded))
+                            .foregroundColor(.white)
+
+                        Text("BETA")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 8)
+                            .padding(.vertical, 3)
+                            .background(Color(hex: "C75050"))
+                            .clipShape(Capsule())
+                    }
+
+                    Text(Date().formatted(.dateTime.month().day()) + " ,Today")
+                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                        .foregroundColor(.white.opacity(0.5))
+
+                    // Total Flowers | Total Focus card
+                    HStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Total Flowers")
+                                .font(.system(size: 13, weight: .regular, design: .rounded))
+                                .foregroundColor(.white.opacity(0.6))
+                            HStack(spacing: 6) {
+                                Text("🌻")
+                                    .font(.system(size: 20))
+                                Text("\(allTimeFlowers)")
+                                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        Rectangle()
+                            .fill(Color.white.opacity(0.1))
+                            .frame(width: 1)
+                            .padding(.vertical, 8)
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Total Focus")
+                                .font(.system(size: 13, weight: .regular, design: .rounded))
+                                .foregroundColor(.white.opacity(0.6))
+                            HStack(spacing: 2) {
+                                Text("\(allTimeFocusHours)")
+                                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                                Text("h")
+                                    .font(.system(size: 14, weight: .regular, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.5))
+                                Text("\(allTimeFocusMinutes)")
+                                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                                Text("m")
+                                    .font(.system(size: 14, weight: .regular, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.5))
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 16)
+                    }
+                    .padding(16)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                    // Focus Trend
+                    Text("Focus Trend")
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+
+                    VStack(spacing: 20) {
+                        // Today's Focus | This Week
+                        HStack(spacing: 0) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Today's Focus")
+                                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.6))
+                                HStack(spacing: 2) {
+                                    Text("\(todayFocusHours)")
+                                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                                        .foregroundColor(.white)
+                                    Text("h")
+                                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                                        .foregroundColor(.white.opacity(0.5))
+                                }
+                                Text("——")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.white.opacity(0.2))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Rectangle()
+                                .fill(Color.white.opacity(0.1))
+                                .frame(width: 1)
+                                .padding(.vertical, 8)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("This Week")
+                                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                                    .foregroundColor(.white.opacity(0.6))
+                                HStack(spacing: 2) {
+                                    Text("\(thisWeekFocusHours)")
+                                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                                        .foregroundColor(.white)
+                                    Text("h")
+                                        .font(.system(size: 14, weight: .regular, design: .rounded))
+                                        .foregroundColor(.white.opacity(0.5))
+                                }
+                                Text("——")
+                                    .font(.system(size: 10))
+                                    .foregroundColor(.white.opacity(0.2))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.leading, 16)
+                        }
+
+                        // Weekly dots
+                        HStack(spacing: 16) {
+                            ForEach(Array(weekDays.enumerated()), id: \.offset) { _, day in
+                                VStack(spacing: 6) {
+                                    Circle()
+                                        .fill(day.hasData ? Color.green : Color.white.opacity(0.15))
+                                        .frame(width: 20, height: 20)
+                                    Text(day.letter)
+                                        .font(.system(size: 11, weight: .medium, design: .rounded))
+                                        .foregroundColor(.white.opacity(0.5))
+                                }
+                            }
+                        }
+                        .frame(maxWidth: .infinity)
+                    }
+                    .padding(16)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                    // Show All button
+                    Button {} label: {
+                        Text("Show All")
+                            .font(.system(size: 16, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.6))
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 14)
+                            .background(Color.white.opacity(0.08))
+                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                    }
+
+                    // Flower Details
+                    Text("Flower Details")
+                        .font(.system(size: 18, weight: .bold, design: .rounded))
+                        .foregroundColor(.white)
+
+                    HStack(spacing: 0) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Today's Flowers")
+                                .font(.system(size: 13, weight: .regular, design: .rounded))
+                                .foregroundColor(.white.opacity(0.6))
+                            HStack(spacing: 6) {
+                                Text("🌻")
+                                    .font(.system(size: 20))
+                                Text("\(todayCompletedCount)")
+                                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                            }
+                            Text("——")
+                                .font(.system(size: 10))
+                                .foregroundColor(.white.opacity(0.2))
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+
+                        Rectangle()
+                            .fill(Color.white.opacity(0.1))
+                            .frame(width: 1)
+                            .padding(.vertical, 8)
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("Abandoned")
+                                .font(.system(size: 13, weight: .regular, design: .rounded))
+                                .foregroundColor(.white.opacity(0.6))
+                            HStack(spacing: 6) {
+                                Text("🥀")
+                                    .font(.system(size: 20))
+                                Text("\(todayAbandonedCount)")
+                                    .font(.system(size: 28, weight: .bold, design: .rounded))
+                                    .foregroundColor(.white)
+                            }
+                            Text("——")
+                                .font(.system(size: 10))
+                                .foregroundColor(.white.opacity(0.2))
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.leading, 16)
+                    }
+                    .padding(16)
+                    .background(Color.white.opacity(0.08))
+                    .clipShape(RoundedRectangle(cornerRadius: 14))
+
+                    Spacer(minLength: 40)
                 }
+                .padding(.horizontal, 20)
             }
-            .navigationTitle("Today")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.dark, for: .navigationBar)
         }
-    }
-}
-
-struct StatBox: View {
-    let value: String
-    let label: String
-
-    var body: some View {
-        VStack(spacing: 4) {
-            Text(value)
-                .pixelFont(size: 24, bold: true)
-                .foregroundColor(.warmYellow)
-            Text(label)
-                .pixelFont(size: 11)
-                .foregroundColor(.cream.opacity(0.7))
-        }
-        .frame(maxWidth: .infinity)
-        .padding(.vertical, 12)
-        .background(Color.grassGreen.opacity(0.5))
-        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 }
 
