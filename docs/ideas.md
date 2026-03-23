@@ -10,3 +10,16 @@
 - focus mode integration with ios focus
 - goal/tag tree system: add a goal → a tree is planted on the garden. each focus session grows the tree and adds an apple. tap tree to see details (total time, session count, apple count). drag and drop to place trees
 - widget and lock screen timer display like focuspomo
+- tip jar with themed tiers: plant a seed ($0.99), grow a flower ($2.99), build a garden ($4.99), sunflower forever ($9.99)
+- premium flower/tree species packs as IAP ($0.99-$2.99 each)
+- seasonal limited-edition plants (cherry blossom in spring, pumpkin in fall) for FOMO
+- garden themes/backgrounds as IAP (night sky, beach, snow)
+- ambient sound packs (rain, lo-fi, birds, cafe) with some locked behind premium
+- garden expansion plots as IAP
+- real tree planting partnership (spend virtual coins to plant real trees, like Forest)
+- custom product pages for different audiences (studytok, adhd, professionals)
+- spotify integration (high demand keyword, zero competition in metadata)
+- localization: japanese, korean, chinese for studytok markets
+- live activities for timer on lock screen and dynamic island
+- standby mode support for iphone dock timer display
+- pixel grid garden: 24h = 1440 min max, each focus session fills pixels on a grid instead of random flower drops. no overlap, planned positions. daily garden resets, past gardens archived
