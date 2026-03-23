@@ -96,6 +96,7 @@ struct TimerView: View {
     @State private var currentPomoCount: Int = 1
     @State private var pomosBeforeLong: Int = 4
     @State private var showFlowerEarned = false
+    @State private var showFlowerDied = false
 
     private var currentSettings: UserSettings {
         if let first = settings.first {
@@ -233,6 +234,23 @@ struct TimerView: View {
                 }
                 .animation(.spring(duration: 0.5), value: showFlowerEarned)
             }
+
+            // Flower died overlay
+            if showFlowerDied {
+                VStack {
+                    Spacer()
+                    Text("your flower died...")
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
+                        .foregroundColor(.red)
+                        .padding(.horizontal, 24)
+                        .padding(.vertical, 12)
+                        .background(Color.darkGreen.opacity(0.9))
+                        .clipShape(Capsule())
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                    Spacer().frame(height: 100)
+                }
+                .animation(.spring(duration: 0.5), value: showFlowerDied)
+            }
         }
         .sheet(isPresented: $showTagPicker) {
             TagPickerSheet(selectedTag: $selectedTag, tags: tags)
@@ -244,7 +262,7 @@ struct TimerView: View {
         }
         .onAppear {
             setupTimer()
-            restoreBackgroundState()
+            restoreBreakState()
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(to: newPhase)
@@ -289,7 +307,6 @@ struct TimerView: View {
             let wasInFocus = timerManager.phase == .focus
             timerManager.stop()
             NotificationManager.shared.cancelAll()
-            clearBackgroundState()
 
             if wasInFocus && elapsed >= 60 {
                 let session = FocusSession(
@@ -355,87 +372,101 @@ struct TimerView: View {
         }
     }
 
-    // MARK: - Background State
+    // MARK: - Background State (Forest Mode)
+    // If you leave the app during focus → your flower dies, session abandoned.
+    // During breaks → timer continues in background normally.
 
     private func handleScenePhaseChange(to phase: ScenePhase) {
         switch phase {
         case .background:
             guard timerManager.isRunning else { return }
-            saveBackgroundState()
-            timerManager.stop()
+
+            if timerManager.phase == .focus {
+                // FOREST MODE: leaving during focus = flower dies
+                let elapsed = timerManager.elapsedSeconds
+                timerManager.stop()
+                NotificationManager.shared.cancelAll()
+
+                if elapsed >= 60 {
+                    let session = FocusSession(
+                        tag: selectedTag,
+                        startedAt: sessionStartTime ?? Date(),
+                        duration: elapsed,
+                        completed: false,
+                        abandoned: true
+                    )
+                    modelContext.insert(session)
+                    try? modelContext.save()
+                }
+
+                timerManager.phase = .idle
+                timerManager.timeRemaining = currentSettings.pomoDuration
+                timerManager.totalTime = currentSettings.pomoDuration
+
+                // Flag to show death message when returning
+                UserDefaults.standard.set(true, forKey: "flowerDied")
+            } else {
+                // During break → save state, continue in background
+                saveBreakState()
+                timerManager.stop()
+            }
 
         case .active:
-            restoreBackgroundState()
+            // Check if flower died
+            if UserDefaults.standard.bool(forKey: "flowerDied") {
+                UserDefaults.standard.set(false, forKey: "flowerDied")
+                withAnimation {
+                    showFlowerDied = true
+                }
+                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
+                    withAnimation {
+                        showFlowerDied = false
+                    }
+                }
+            }
+
+            // Restore break state if needed
+            restoreBreakState()
 
         default:
             break
         }
     }
 
-    private func saveBackgroundState() {
+    private func saveBreakState() {
         let endTime = Date().addingTimeInterval(TimeInterval(timerManager.timeRemaining))
         let defaults = UserDefaults.standard
-        defaults.set(endTime.timeIntervalSince1970, forKey: "timerEndTime")
-        defaults.set(timerManager.phase.rawValue, forKey: "timerPhase")
-        defaults.set(timerManager.totalTime, forKey: "timerTotalTime")
-        defaults.set(currentPomoCount, forKey: "currentPomoCount")
-        defaults.set(true, forKey: "isTimerRunning")
-        if let start = sessionStartTime {
-            defaults.set(start.timeIntervalSince1970, forKey: "sessionStartTime")
-        }
+        defaults.set(endTime.timeIntervalSince1970, forKey: "breakEndTime")
+        defaults.set(timerManager.phase.rawValue, forKey: "breakPhase")
+        defaults.set(true, forKey: "isBreakRunning")
     }
 
-    private func restoreBackgroundState() {
+    private func restoreBreakState() {
         let defaults = UserDefaults.standard
-        guard defaults.bool(forKey: "isTimerRunning") else { return }
+        guard defaults.bool(forKey: "isBreakRunning") else { return }
 
-        let endTimeInterval = defaults.double(forKey: "timerEndTime")
+        let endTimeInterval = defaults.double(forKey: "breakEndTime")
         guard endTimeInterval > 0 else { return }
 
         let endTime = Date(timeIntervalSince1970: endTimeInterval)
         let remaining = Int(endTime.timeIntervalSinceNow)
-        let phaseStr = defaults.string(forKey: "timerPhase") ?? ""
-        let savedPhase = TimerPhase(rawValue: phaseStr) ?? .focus
-        let savedTotalTime = defaults.integer(forKey: "timerTotalTime")
-        let savedPomoCount = defaults.integer(forKey: "currentPomoCount")
 
-        let sessionStartInterval = defaults.double(forKey: "sessionStartTime")
-        if sessionStartInterval > 0 {
-            sessionStartTime = Date(timeIntervalSince1970: sessionStartInterval)
-        }
-        if savedPomoCount > 0 {
-            currentPomoCount = savedPomoCount
-        }
-
-        clearBackgroundState()
+        defaults.set(false, forKey: "isBreakRunning")
+        defaults.removeObject(forKey: "breakEndTime")
+        defaults.removeObject(forKey: "breakPhase")
 
         if remaining <= 0 {
-            // Timer completed while in background
-            if savedPhase == .focus {
-                handleFocusComplete()
-            } else {
-                // Break completed in background
-                timerManager.phase = .idle
-                timerManager.timeRemaining = currentSettings.pomoDuration
-                timerManager.totalTime = currentSettings.pomoDuration
-            }
+            // Break completed in background
+            timerManager.phase = .idle
+            timerManager.timeRemaining = currentSettings.pomoDuration
+            timerManager.totalTime = currentSettings.pomoDuration
         } else {
-            // Timer still running, resume
-            timerManager.totalTime = savedTotalTime
+            // Break still running, resume
+            let phaseStr = defaults.string(forKey: "breakPhase") ?? ""
+            timerManager.phase = TimerPhase(rawValue: phaseStr) ?? .shortBreak
             timerManager.timeRemaining = remaining
-            timerManager.phase = savedPhase
             timerManager.resume()
         }
-    }
-
-    private func clearBackgroundState() {
-        let defaults = UserDefaults.standard
-        defaults.set(false, forKey: "isTimerRunning")
-        defaults.removeObject(forKey: "timerEndTime")
-        defaults.removeObject(forKey: "timerPhase")
-        defaults.removeObject(forKey: "timerTotalTime")
-        defaults.removeObject(forKey: "sessionStartTime")
-        defaults.removeObject(forKey: "currentPomoCount")
     }
 }
 
