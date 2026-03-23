@@ -63,14 +63,10 @@ struct TimerView: View {
     @Query private var tags: [FocusTag]
     @Query private var flowers: [FlowerDrop]
     @Query private var gardenItems: [GardenItem]
-    @Query(filter: #Predicate<FocusSession> { session in
-        session.completed == true
-    }) private var allCompletedSessions: [FocusSession]
 
     @State private var timerManager = TimerManager()
     @State private var selectedTag: FocusTag?
     @State private var showTagPicker = false
-    @State private var showSummary = false
     @State private var sessionStartTime: Date?
     @State private var showFlowerEarned = false
     @State private var showFlowerDied = false
@@ -84,12 +80,6 @@ struct TimerView: View {
         modelContext.insert(newSettings)
         try? modelContext.save()
         return newSettings
-    }
-
-    private var todayCompletedCount: Int {
-        let calendar = Calendar.current
-        let startOfDay = calendar.startOfDay(for: Date())
-        return allCompletedSessions.filter { $0.startedAt >= startOfDay }.count
     }
 
     var body: some View {
@@ -155,19 +145,6 @@ struct TimerView: View {
                     .clipShape(Capsule())
                 }
 
-                // Summary pull-down hint
-                Button {
-                    showSummary = true
-                } label: {
-                    VStack(spacing: 2) {
-                        Image(systemName: "chevron.down")
-                            .font(.caption)
-                        Text("today")
-                            .font(.system(size: 10, weight: .regular, design: .rounded))
-                    }
-                    .foregroundColor(.cream.opacity(0.6))
-                }
-
                 Spacer()
 
                 // Phase indicator
@@ -197,16 +174,6 @@ struct TimerView: View {
                 }
 
                 Spacer()
-
-                // Today's count
-                HStack(spacing: 4) {
-                    Image(systemName: "flame.fill")
-                        .foregroundColor(.warmYellow)
-                    Text("\(todayCompletedCount) today")
-                        .font(.system(size: 16, weight: .bold, design: .rounded))
-                        .foregroundColor(.cream)
-                }
-                .padding(.bottom, 40)
             }
 
             // Flower earned overlay
@@ -246,10 +213,6 @@ struct TimerView: View {
         .sheet(isPresented: $showTagPicker) {
             TagPickerSheet(selectedTag: $selectedTag, tags: tags)
                 .presentationDetents([.medium])
-        }
-        .sheet(isPresented: $showSummary) {
-            SummaryView()
-                .presentationDetents([.large])
         }
         .sheet(item: $tappedTree) { tag in
             TreeDetailSheet(tag: tag)
