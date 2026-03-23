@@ -11,7 +11,7 @@ final class UserSettings {
 
     init() {
         self.id = UUID()
-        self.pomoDuration = 1500
+        self.pomoDuration = 1200
         self.weekStartMonday = true
         self.notificationsEnabled = true
         self.coins = 0

@@ -77,7 +77,7 @@ struct TimerView: View {
     @State private var tappedTree: FocusTag?
     @State private var showDurationPicker = false
     @State private var showSummary = false
-    @State private var pickerMinutes: Int = 25
+    @State private var pickerMinutes: Int = 20
 
     private var currentSettings: UserSettings {
         if let first = settings.first {

@@ -54,10 +54,6 @@ struct ShopItem: Identifiable {
         ShopItem(itemType: "rose", category: "flower", name: "Rose", price: 5, icon: "heart.fill"),
         ShopItem(itemType: "lavender", category: "flower", name: "Lavender", price: 4, icon: "star.fill"),
 
-        // Decorations
-        ShopItem(itemType: "fence", category: "decoration", name: "Fence", price: 2, icon: "rectangle.split.3x1"),
-        ShopItem(itemType: "rock", category: "decoration", name: "Rock", price: 2, icon: "mountain.2.fill"),
-        ShopItem(itemType: "pond", category: "decoration", name: "Pond", price: 8, icon: "drop.fill"),
     ]
 
     static func forCategory(_ cat: String) -> [ShopItem] {

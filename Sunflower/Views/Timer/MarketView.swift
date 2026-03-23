@@ -17,7 +17,7 @@ struct MarketView: View {
         return s
     }
 
-    let categories = ["tree", "flower", "decoration"]
+    let categories = ["tree", "flower"]
 
     var body: some View {
         NavigationStack {
