@@ -73,7 +73,7 @@ struct SummaryView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "1A2E1A").ignoresSafeArea()
+            Color.grassGreen.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -82,9 +82,9 @@ struct SummaryView: View {
                     HStack {
                         Image(systemName: "chevron.up")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white.opacity(0.5))
+                            .foregroundColor(.textSecondary)
                             .padding(10)
-                            .background(Color.white.opacity(0.1))
+                            .background(Color.white.opacity(0.3))
                             .clipShape(Circle())
 
                         Spacer()
@@ -92,140 +92,123 @@ struct SummaryView: View {
                         HStack(spacing: 12) {
                             Image(systemName: "chevron.left")
                                 .font(.system(size: 12))
-                                .foregroundColor(.white.opacity(0.5))
+                                .foregroundColor(.textSecondary)
                             Text("Today")
                                 .font(.system(size: 15, weight: .medium, design: .rounded))
-                                .foregroundColor(.white.opacity(0.8))
+                                .foregroundColor(.textPrimary)
                             Image(systemName: "chevron.right")
                                 .font(.system(size: 12))
-                                .foregroundColor(.white.opacity(0.5))
+                                .foregroundColor(.textSecondary)
                         }
                         .padding(.horizontal, 14)
                         .padding(.vertical, 8)
-                        .background(Color.white.opacity(0.1))
+                        .background(Color.white.opacity(0.3))
                         .clipShape(Capsule())
 
                         Image(systemName: "plus")
                             .font(.system(size: 14, weight: .semibold))
-                            .foregroundColor(.white.opacity(0.5))
+                            .foregroundColor(.textSecondary)
                             .padding(10)
-                            .background(Color.white.opacity(0.1))
+                            .background(Color.white.opacity(0.3))
                             .clipShape(Circle())
                     }
                     .padding(.top, 16)
 
                     // Summary title
-                    HStack(spacing: 8) {
-                        Text("Summary")
-                            .font(.system(size: 28, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
-
-                        Text("BETA")
-                            .font(.system(size: 10, weight: .bold))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 8)
-                            .padding(.vertical, 3)
-                            .background(Color(hex: "4A7C59"))
-                            .clipShape(Capsule())
-                    }
+                    Text("Summary")
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundColor(.textPrimary)
 
                     Text(Date().formatted(.dateTime.month().day()) + " ,Today")
                         .font(.system(size: 14, weight: .regular, design: .rounded))
-                        .foregroundColor(.white.opacity(0.5))
+                        .foregroundColor(.textSecondary)
 
                     // Total Flowers | Total Focus card
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Total Flowers")
                                 .font(.system(size: 13, weight: .regular, design: .rounded))
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.textSecondary)
                             HStack(spacing: 6) {
                                 Text("🌻")
                                     .font(.system(size: 20))
                                 Text("\(allTimeFlowers)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.textPrimary)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                         Rectangle()
-                            .fill(Color.white.opacity(0.1))
+                            .fill(Color.darkGreen.opacity(0.2))
                             .frame(width: 1)
                             .padding(.vertical, 8)
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Total Focus")
                                 .font(.system(size: 13, weight: .regular, design: .rounded))
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.textSecondary)
                             HStack(spacing: 2) {
                                 Text("\(allTimeFocusHours)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.textPrimary)
                                 Text("h")
                                     .font(.system(size: 14, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.5))
+                                    .foregroundColor(.textSecondary)
                                 Text("\(allTimeFocusMinutes)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.textPrimary)
                                 Text("m")
                                     .font(.system(size: 14, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.5))
+                                    .foregroundColor(.textSecondary)
                             }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 16)
                     }
                     .padding(16)
-                    .background(Color.white.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .background(Color.white.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
 
                     // Focus Trend
                     Text("Focus Trend")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(.textPrimary)
 
                     VStack(spacing: 20) {
-                        // Today's Focus | This Week
                         HStack(spacing: 0) {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Today's Focus")
                                     .font(.system(size: 13, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.6))
+                                    .foregroundColor(.textSecondary)
                                 HStack(spacing: 2) {
                                     Text("\(todayFocusHours)")
                                         .font(.system(size: 28, weight: .bold, design: .rounded))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.textPrimary)
                                     Text("h")
                                         .font(.system(size: 14, weight: .regular, design: .rounded))
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.textSecondary)
                                 }
-                                Text("——")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.white.opacity(0.2))
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
 
                             Rectangle()
-                                .fill(Color.white.opacity(0.1))
+                                .fill(Color.darkGreen.opacity(0.2))
                                 .frame(width: 1)
                                 .padding(.vertical, 8)
 
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("This Week")
                                     .font(.system(size: 13, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.6))
+                                    .foregroundColor(.textSecondary)
                                 HStack(spacing: 2) {
                                     Text("\(thisWeekFocusHours)")
                                         .font(.system(size: 28, weight: .bold, design: .rounded))
-                                        .foregroundColor(.white)
+                                        .foregroundColor(.textPrimary)
                                     Text("h")
                                         .font(.system(size: 14, weight: .regular, design: .rounded))
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.textSecondary)
                                 }
-                                Text("——")
-                                    .font(.system(size: 10))
-                                    .foregroundColor(.white.opacity(0.2))
                             }
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.leading, 16)
@@ -236,80 +219,74 @@ struct SummaryView: View {
                             ForEach(Array(weekDays.enumerated()), id: \.offset) { _, day in
                                 VStack(spacing: 6) {
                                     Circle()
-                                        .fill(day.hasData ? Color.green : Color.white.opacity(0.15))
+                                        .fill(day.hasData ? Color.darkGreen : Color.white.opacity(0.3))
                                         .frame(width: 20, height: 20)
                                     Text(day.letter)
                                         .font(.system(size: 11, weight: .medium, design: .rounded))
-                                        .foregroundColor(.white.opacity(0.5))
+                                        .foregroundColor(.textSecondary)
                                 }
                             }
                         }
                         .frame(maxWidth: .infinity)
                     }
                     .padding(16)
-                    .background(Color.white.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .background(Color.white.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
 
                     // Show All button
                     Button {} label: {
                         Text("Show All")
                             .font(.system(size: 16, weight: .medium, design: .rounded))
-                            .foregroundColor(.white.opacity(0.6))
+                            .foregroundColor(.textSecondary)
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 14)
-                            .background(Color.white.opacity(0.08))
-                            .clipShape(RoundedRectangle(cornerRadius: 14))
+                            .background(Color.white.opacity(0.3))
+                            .clipShape(RoundedRectangle(cornerRadius: 18))
                     }
 
                     // Flower Details
                     Text("Flower Details")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(.textPrimary)
 
                     HStack(spacing: 0) {
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Today's Flowers")
                                 .font(.system(size: 13, weight: .regular, design: .rounded))
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.textSecondary)
                             HStack(spacing: 6) {
                                 Text("🌻")
                                     .font(.system(size: 20))
                                 Text("\(todayCompletedCount)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.textPrimary)
                             }
-                            Text("——")
-                                .font(.system(size: 10))
-                                .foregroundColor(.white.opacity(0.2))
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
 
                         Rectangle()
-                            .fill(Color.white.opacity(0.1))
+                            .fill(Color.darkGreen.opacity(0.2))
                             .frame(width: 1)
                             .padding(.vertical, 8)
 
                         VStack(alignment: .leading, spacing: 6) {
                             Text("Abandoned")
                                 .font(.system(size: 13, weight: .regular, design: .rounded))
-                                .foregroundColor(.white.opacity(0.6))
+                                .foregroundColor(.textSecondary)
                             HStack(spacing: 6) {
                                 Text("🥀")
                                     .font(.system(size: 20))
                                 Text("\(todayAbandonedCount)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.textPrimary)
                             }
-                            Text("——")
-                                .font(.system(size: 10))
-                                .foregroundColor(.white.opacity(0.2))
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(.leading, 16)
                     }
                     .padding(16)
-                    .background(Color.white.opacity(0.08))
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .background(Color.white.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
 
                     Spacer(minLength: 40)
                 }

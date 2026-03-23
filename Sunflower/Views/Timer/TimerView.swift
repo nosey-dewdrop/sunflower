@@ -103,27 +103,13 @@ struct TimerView: View {
 
                         // === TIMER SECTION ===
                         ZStack {
-                            // Tiled grass background
+                            // Grass background
                             GeometryReader { geo in
-                                let tileSize: CGFloat = 200
-                                let cols = Int(ceil(geo.size.width / tileSize))
-                                let rows = Int(ceil(geo.size.height / tileSize))
-                                Canvas { context, size in
-                                    for row in 0..<rows {
-                                        for col in 0..<cols {
-                                            let rect = CGRect(
-                                                x: CGFloat(col) * tileSize,
-                                                y: CGFloat(row) * tileSize,
-                                                width: tileSize,
-                                                height: tileSize
-                                            )
-                                            context.draw(
-                                                Image("GrassTile"),
-                                                in: rect
-                                            )
-                                        }
-                                    }
-                                }
+                                Image("GrassTile")
+                                    .resizable()
+                                    .scaledToFill()
+                                    .frame(width: geo.size.width, height: geo.size.height)
+                                    .clipped()
                             }
                             .ignoresSafeArea()
 
@@ -188,8 +174,6 @@ struct TimerView: View {
                                 }
                                 .padding(.top, 4)
 
-                                Spacer()
-
                                 // Start Focus button
                                 Button {
                                     handleMainButton()
@@ -197,12 +181,10 @@ struct TimerView: View {
                                     Text(timerManager.isRunning ? "Stop" : "Start Focus")
                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
                                         .foregroundColor(.white.opacity(0.9))
-                                        .padding(.horizontal, 36)
-                                        .padding(.vertical, 16)
-                                        .background(Color.white.opacity(0.15))
-                                        .clipShape(Capsule())
                                 }
-                                .padding(.bottom, screen.size.height * 0.1)
+                                .padding(.top, 12)
+
+                                Spacer()
                             }
                         }
                         .frame(height: screen.size.height)
@@ -231,7 +213,7 @@ struct TimerView: View {
                             .foregroundColor(.warmYellow)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.darkGreen.opacity(0.9))
+                            .background(Color.white.opacity(0.85))
                             .clipShape(Capsule())
                         Spacer().frame(height: 100)
                     }
@@ -246,7 +228,7 @@ struct TimerView: View {
                             .foregroundColor(.red)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.darkGreen.opacity(0.9))
+                            .background(Color.white.opacity(0.85))
                             .clipShape(Capsule())
                         Spacer().frame(height: 100)
                     }
@@ -453,16 +435,16 @@ struct TagPickerSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.darkGreen.ignoresSafeArea()
+                Color.grassGreen.ignoresSafeArea()
 
                 if tags.isEmpty {
                     VStack(spacing: 12) {
                         Text("no tags yet")
                             .font(.system(size: 18, weight: .regular, design: .rounded))
-                            .foregroundColor(.cream)
+                            .foregroundColor(.textPrimary)
                         Text("add tags in settings")
                             .font(.system(size: 14, weight: .regular, design: .rounded))
-                            .foregroundColor(.cream.opacity(0.6))
+                            .foregroundColor(.textSecondary)
                     }
                 } else {
                     ScrollView {
@@ -474,16 +456,16 @@ struct TagPickerSheet: View {
                                 HStack {
                                     Text("no tag")
                                         .font(.system(size: 16, weight: .regular, design: .rounded))
-                                        .foregroundColor(.cream)
+                                        .foregroundColor(.textPrimary)
                                     Spacer()
                                     if selectedTag == nil {
                                         Image(systemName: "checkmark")
-                                            .foregroundColor(.warmYellow)
+                                            .foregroundColor(.darkGreen)
                                     }
                                 }
                                 .padding()
-                                .background(Color.grassGreen.opacity(0.5))
-                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .background(Color.white.opacity(0.3))
+                                .clipShape(RoundedRectangle(cornerRadius: 14))
                             }
 
                             ForEach(tags) { tag in
@@ -497,16 +479,16 @@ struct TagPickerSheet: View {
                                             .frame(width: 14, height: 14)
                                         Text(tag.name)
                                             .font(.system(size: 16, weight: .regular, design: .rounded))
-                                            .foregroundColor(.cream)
+                                            .foregroundColor(.textPrimary)
                                         Spacer()
                                         if selectedTag?.id == tag.id {
                                             Image(systemName: "checkmark")
-                                                .foregroundColor(.warmYellow)
+                                                .foregroundColor(.darkGreen)
                                         }
                                     }
                                     .padding()
-                                    .background(Color.grassGreen.opacity(0.5))
-                                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    .background(Color.white.opacity(0.3))
+                                    .clipShape(RoundedRectangle(cornerRadius: 14))
                                 }
                             }
                         }
@@ -516,7 +498,6 @@ struct TagPickerSheet: View {
             }
             .navigationTitle("Select Tag")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
 }
@@ -551,10 +532,10 @@ struct TreeSprite: View {
             // Label
             Text(tag.name)
                 .font(.system(size: 8, weight: .bold, design: .rounded))
-                .foregroundColor(.cream)
+                .foregroundColor(.textPrimary)
                 .padding(.horizontal, 4)
                 .padding(.vertical, 1)
-                .background(Color.darkGreen.opacity(0.6))
+                .background(Color.white.opacity(0.6))
                 .clipShape(Capsule())
         }
     }
@@ -569,7 +550,7 @@ struct TreeDetailSheet: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.darkGreen.ignoresSafeArea()
+                Color.grassGreen.ignoresSafeArea()
 
                 VStack(spacing: 24) {
                     // Big tree
@@ -598,7 +579,7 @@ struct TreeDetailSheet: View {
                             .frame(width: 12, height: 12)
                         Text(tag.name)
                             .font(.system(size: 24, weight: .bold, design: .rounded))
-                            .foregroundColor(.cream)
+                            .foregroundColor(.textPrimary)
                     }
 
                     // Stats
@@ -611,14 +592,13 @@ struct TreeDetailSheet: View {
                     // Planted date
                     Text("planted \(tag.createdAt.formatted(.dateTime.month().day().year()))")
                         .font(.system(size: 14, weight: .regular, design: .rounded))
-                        .foregroundColor(.cream.opacity(0.5))
+                        .foregroundColor(.textSecondary)
 
                     Spacer()
                 }
             }
             .navigationTitle("Tree Details")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.dark, for: .navigationBar)
         }
     }
 }
@@ -632,13 +612,13 @@ struct TreeStat: View {
         VStack(spacing: 4) {
             Image(systemName: icon)
                 .font(.title3)
-                .foregroundColor(.warmYellow)
+                .foregroundColor(.darkGreen)
             Text(value)
                 .font(.system(size: 20, weight: .bold, design: .rounded))
-                .foregroundColor(.cream)
+                .foregroundColor(.textPrimary)
             Text(label)
                 .font(.system(size: 11, weight: .regular, design: .rounded))
-                .foregroundColor(.cream.opacity(0.6))
+                .foregroundColor(.textSecondary)
         }
     }
 }
@@ -652,7 +632,7 @@ struct DurationPickerView: View {
 
     var body: some View {
         ZStack {
-            Color.darkGreen.ignoresSafeArea()
+            Color.grassGreen.ignoresSafeArea()
 
             VStack {
                 Spacer()
@@ -660,13 +640,13 @@ struct DurationPickerView: View {
                 // Big minutes display
                 Text("\(pickerMinutes)")
                     .font(.system(size: 64, weight: .bold, design: .rounded))
-                    .foregroundColor(.cream)
+                    .foregroundColor(.white)
                     .contentTransition(.numericText())
                     .animation(.default, value: pickerMinutes)
 
                 Text("minutes")
                     .font(.system(size: 16, weight: .regular, design: .rounded))
-                    .foregroundColor(.cream.opacity(0.5))
+                    .foregroundColor(.white.opacity(0.6))
 
                 Spacer().frame(height: 40)
 
@@ -683,10 +663,10 @@ struct DurationPickerView: View {
                 } label: {
                     Text("Done")
                         .font(.system(size: 18, weight: .semibold, design: .rounded))
-                        .foregroundColor(.darkGreen)
+                        .foregroundColor(.textPrimary)
                         .padding(.horizontal, 50)
                         .padding(.vertical, 14)
-                        .background(Color.cream)
+                        .background(Color.white.opacity(0.5))
                         .clipShape(Capsule())
                 }
 
@@ -716,10 +696,10 @@ struct HorizontalRulerPicker: View {
                         VStack(spacing: 6) {
                             Text("\(value)")
                                 .font(.system(size: value == selectedMinutes ? 28 : 16, weight: value == selectedMinutes ? .bold : .regular, design: .rounded))
-                                .foregroundColor(value == selectedMinutes ? .cream : .cream.opacity(0.3))
+                                .foregroundColor(value == selectedMinutes ? .white : .white.opacity(0.3))
 
                             Rectangle()
-                                .fill(value == selectedMinutes ? Color.cream : Color.cream.opacity(value % 10 == 0 ? 0.4 : 0.2))
+                                .fill(value == selectedMinutes ? Color.white : Color.white.opacity(value % 10 == 0 ? 0.4 : 0.2))
                                 .frame(width: 2, height: value % 10 == 0 ? 18 : 10)
                         }
                         .frame(width: 50)

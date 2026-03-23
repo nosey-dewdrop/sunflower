@@ -43,14 +43,14 @@ struct StatsView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "1A2E1A").ignoresSafeArea()
+            Color.grassGreen.ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 0) {
                 // Header
                 HStack {
                     Text(selectedDay.formatted(.dateTime.month().day()) + ", Today")
                         .font(.system(size: 24, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(.textPrimary)
 
                     Spacer()
 
@@ -61,18 +61,11 @@ struct StatsView: View {
                         Image(systemName: "chevron.down")
                             .font(.system(size: 10))
                     }
-                    .foregroundColor(.white.opacity(0.6))
+                    .foregroundColor(.textSecondary)
                     .padding(.horizontal, 12)
                     .padding(.vertical, 8)
-                    .background(Color.white.opacity(0.1))
+                    .background(Color.white.opacity(0.3))
                     .clipShape(Capsule())
-
-                    Image(systemName: "plus")
-                        .font(.system(size: 14, weight: .semibold))
-                        .foregroundColor(.white.opacity(0.5))
-                        .padding(10)
-                        .background(Color.white.opacity(0.1))
-                        .clipShape(Circle())
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 60)
@@ -86,15 +79,15 @@ struct StatsView: View {
                             VStack(spacing: 2) {
                                 Text(day.dayLetter)
                                     .font(.system(size: 11, weight: .medium, design: .rounded))
-                                    .foregroundColor(day.isToday ? .white : .white.opacity(0.4))
+                                    .foregroundColor(day.isToday ? .white : .textSecondary)
                                 Text(day.dayNumber)
                                     .font(.system(size: 16, weight: .bold, design: .rounded))
-                                    .foregroundColor(day.isToday ? .white : .white.opacity(0.6))
+                                    .foregroundColor(day.isToday ? .white : .textPrimary)
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
-                            .background(day.isToday ? Color(hex: "4A7C59") : Color.white.opacity(0.08))
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .background(day.isToday ? Color.darkGreen : Color.white.opacity(0.25))
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
                         }
                     }
                 }
@@ -111,11 +104,11 @@ struct StatsView: View {
                                     HStack(spacing: 8) {
                                         Text(String(format: "%02d:00", hour))
                                             .font(.system(size: 12, weight: .regular, design: .rounded))
-                                            .foregroundColor(.white.opacity(0.3))
+                                            .foregroundColor(.textSecondary.opacity(0.6))
                                             .frame(width: 40, alignment: .leading)
 
                                         Rectangle()
-                                            .fill(Color.white.opacity(0.08))
+                                            .fill(Color.darkGreen.opacity(0.15))
                                             .frame(height: 1)
                                     }
 
@@ -125,13 +118,13 @@ struct StatsView: View {
                                         ForEach(sessions) { session in
                                             let minutes = session.duration / 60
                                             let height = max(CGFloat(minutes), 20)
-                                            RoundedRectangle(cornerRadius: 6)
-                                                .fill(Color(hex: session.tag?.colorHex ?? "4A7C59").opacity(0.6))
+                                            RoundedRectangle(cornerRadius: 8)
+                                                .fill(Color(hex: session.tag?.colorHex ?? "7AAD2E").opacity(0.5))
                                                 .frame(height: height)
                                                 .overlay(
                                                     Text(session.tag?.name ?? "Focus")
                                                         .font(.system(size: 10, weight: .medium, design: .rounded))
-                                                        .foregroundColor(.white)
+                                                        .foregroundColor(.textPrimary)
                                                         .padding(.leading, 8),
                                                     alignment: .leading
                                                 )
@@ -148,11 +141,11 @@ struct StatsView: View {
                                                 .foregroundColor(.white)
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 4)
-                                                .background(Color(hex: "6B9B7A"))
+                                                .background(Color.darkGreen)
                                                 .clipShape(Capsule())
 
                                             Rectangle()
-                                                .fill(Color(hex: "6B9B7A"))
+                                                .fill(Color.darkGreen)
                                                 .frame(height: 1.5)
                                         }
                                         .offset(y: CGFloat(currentMinute) / 60.0 * 80)

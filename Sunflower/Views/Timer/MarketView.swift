@@ -22,7 +22,7 @@ struct MarketView: View {
     var body: some View {
         NavigationStack {
             ZStack {
-                Color.darkGreen.ignoresSafeArea()
+                Color.grassGreen.ignoresSafeArea()
 
                 VStack(spacing: 16) {
                     // Coin balance
@@ -31,7 +31,7 @@ struct MarketView: View {
                             .foregroundColor(.warmYellow)
                         Text("\(settings.coins) coins")
                             .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundColor(.warmYellow)
+                            .foregroundColor(.textPrimary)
                     }
                     .padding(.top, 60)
 
@@ -43,15 +43,15 @@ struct MarketView: View {
                             } label: {
                                 Text(cat)
                                     .font(.system(size: 14, weight: selectedCategory == cat ? .bold : .regular, design: .rounded))
-                                    .foregroundColor(selectedCategory == cat ? .darkGreen : .cream)
+                                    .foregroundColor(selectedCategory == cat ? .white : .textPrimary)
                                     .frame(maxWidth: .infinity)
                                     .padding(.vertical, 8)
-                                    .background(selectedCategory == cat ? Color.warmYellow : Color.clear)
+                                    .background(selectedCategory == cat ? Color.darkGreen : Color.clear)
                             }
                         }
                     }
-                    .background(Color.grassGreen.opacity(0.5))
-                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .background(Color.white.opacity(0.3))
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
                     .padding(.horizontal)
 
                     // Items grid
@@ -70,18 +70,17 @@ struct MarketView: View {
                     if let name = boughtItem {
                         Text("\(name) bought!")
                             .font(.system(size: 16, weight: .bold, design: .rounded))
-                            .foregroundColor(.warmYellow)
+                            .foregroundColor(.darkGreen)
                             .transition(.opacity)
                     }
                 }
             }
             .navigationTitle("Market")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbarColorScheme(.dark, for: .navigationBar)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") { dismiss() }
-                        .foregroundColor(.warmYellow)
+                        .foregroundColor(.darkGreen)
                 }
             }
         }
@@ -125,7 +124,7 @@ struct MarketItemCard: View {
 
                 Text(item.name)
                     .font(.system(size: 12, weight: .semibold, design: .rounded))
-                    .foregroundColor(.cream)
+                    .foregroundColor(.textPrimary)
 
                 HStack(spacing: 2) {
                     Image(systemName: "bitcoinsign.circle.fill")
@@ -133,12 +132,12 @@ struct MarketItemCard: View {
                     Text("\(item.price)")
                         .font(.system(size: 12, weight: .bold, design: .rounded))
                 }
-                .foregroundColor(canAfford ? .warmYellow : .cream.opacity(0.3))
+                .foregroundColor(canAfford ? .warmYellow : .textSecondary.opacity(0.4))
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 12)
-            .background(Color.grassGreen.opacity(canAfford ? 0.5 : 0.2))
-            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .background(Color.white.opacity(canAfford ? 0.35 : 0.15))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
         }
         .disabled(!canAfford)
     }

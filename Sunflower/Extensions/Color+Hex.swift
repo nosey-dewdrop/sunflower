@@ -25,11 +25,14 @@ extension Color {
         )
     }
 
-    // App color palette
-    static let grassGreen = Color(hex: "4A7C59")
-    static let darkGreen = Color(hex: "2D5A3D")
-    static let lightGreen = Color(hex: "6B9B7A")
+    // App color palette — matched to grass tile
+    static let grassGreen = Color(hex: "A8D44A")
+    static let darkGreen = Color(hex: "7AAD2E")
+    static let lightGreen = Color(hex: "C6E87A")
     static let warmYellow = Color(hex: "F4D35E")
-    static let cream = Color(hex: "FAF0CA")
+    static let cream = Color(hex: "FFFDF5")
     static let brown = Color(hex: "8B6914")
+    static let cardBg = Color.white.opacity(0.25)
+    static let textPrimary = Color(hex: "2E4A1E")
+    static let textSecondary = Color(hex: "5A7A3A")
 }

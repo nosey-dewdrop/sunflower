@@ -19,35 +19,33 @@ struct SettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "1A2E1A").ignoresSafeArea()
+            Color.grassGreen.ignoresSafeArea()
 
             ScrollView {
-                VStack(alignment: .leading, spacing: 24) {
+                VStack(alignment: .leading, spacing: 20) {
                     // Welcome header
                     Text("Welcome ^ ^")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+                        .foregroundColor(.textPrimary)
                         .padding(.top, 60)
 
                     Text("What I do today is important because I am exchanging a day of my life for it.")
                         .font(.system(size: 15, weight: .regular, design: .rounded))
-                        .foregroundColor(.white.opacity(0.5))
+                        .foregroundColor(.textSecondary)
 
                     // Premium banner
                     VStack(alignment: .leading, spacing: 4) {
                         Text("Sunflower Plus")
                             .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundColor(.white)
+                            .foregroundColor(.textPrimary)
                         Text("Grow your garden, unlock more")
                             .font(.system(size: 14, weight: .regular, design: .rounded))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(.textSecondary)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(18)
-                    .background(
-                        LinearGradient(colors: [Color(hex: "4A7C59"), Color(hex: "6B9B7A")], startPoint: .leading, endPoint: .trailing)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 14))
+                    .background(Color.white.opacity(0.35))
+                    .clipShape(RoundedRectangle(cornerRadius: 18))
 
                     // Timer section
                     SettingsSectionHeader(title: "Timer")
@@ -67,7 +65,7 @@ struct SettingsView: View {
                                     .frame(width: 12, height: 12)
                                 Text(tag.name)
                                     .font(.system(size: 16, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.textPrimary)
                                 Spacer()
                                 Button {
                                     modelContext.delete(tag)
@@ -75,13 +73,13 @@ struct SettingsView: View {
                                 } label: {
                                     Image(systemName: "xmark")
                                         .font(.system(size: 12))
-                                        .foregroundColor(.white.opacity(0.3))
+                                        .foregroundColor(.textSecondary.opacity(0.5))
                                 }
                             }
                             .padding(.vertical, 4)
 
                             if tag.id != tags.last?.id {
-                                Divider().background(Color.white.opacity(0.08))
+                                Divider().background(Color.textSecondary.opacity(0.15))
                             }
                         }
 
@@ -94,7 +92,7 @@ struct SettingsView: View {
                                 Text("Add Tag")
                                     .font(.system(size: 16, weight: .regular, design: .rounded))
                             }
-                            .foregroundColor(Color(hex: "6B9B7A"))
+                            .foregroundColor(.darkGreen)
                             .padding(.top, 4)
                         }
                     }
@@ -107,17 +105,17 @@ struct SettingsView: View {
                             VStack(alignment: .leading, spacing: 4) {
                                 Text("Focus Reminder")
                                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .foregroundColor(.white)
+                                    .foregroundColor(.textPrimary)
                                 Text("You will receive notification after you finish focus.")
                                     .font(.system(size: 13, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.4))
+                                    .foregroundColor(.textSecondary)
                             }
                             Spacer()
                             Toggle("", isOn: Binding(
                                 get: { settings.notificationsEnabled },
                                 set: { settings.notificationsEnabled = $0 }
                             ))
-                            .tint(Color(hex: "6B9B7A"))
+                            .tint(.darkGreen)
                         }
                     }
 
@@ -151,7 +149,7 @@ struct SettingsSectionHeader: View {
     var body: some View {
         Text(title)
             .font(.system(size: 14, weight: .semibold, design: .rounded))
-            .foregroundColor(.white.opacity(0.4))
+            .foregroundColor(.textSecondary)
             .textCase(.uppercase)
     }
 }
@@ -164,8 +162,8 @@ struct SettingsCard<Content: View>: View {
         }
         .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        .background(Color.white.opacity(0.3))
+        .clipShape(RoundedRectangle(cornerRadius: 18))
     }
 }
 
@@ -179,14 +177,14 @@ struct SettingsRow: View {
             HStack {
                 Text(title)
                     .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.white)
+                    .foregroundColor(.textPrimary)
                 Spacer()
                 Text(trailing)
                     .font(.system(size: 15, weight: .regular, design: .rounded))
-                    .foregroundColor(.white.opacity(0.4))
+                    .foregroundColor(.textSecondary)
                 Image(systemName: "chevron.right")
                     .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.3))
+                    .foregroundColor(.textSecondary.opacity(0.5))
             }
         }
     }
