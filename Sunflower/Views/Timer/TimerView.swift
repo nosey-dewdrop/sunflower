@@ -103,7 +103,29 @@ struct TimerView: View {
 
                         // === TIMER SECTION ===
                         ZStack {
-                            Color.grassGreen
+                            // Tiled grass background
+                            GeometryReader { geo in
+                                let tileSize: CGFloat = 200
+                                let cols = Int(ceil(geo.size.width / tileSize))
+                                let rows = Int(ceil(geo.size.height / tileSize))
+                                Canvas { context, size in
+                                    for row in 0..<rows {
+                                        for col in 0..<cols {
+                                            let rect = CGRect(
+                                                x: CGFloat(col) * tileSize,
+                                                y: CGFloat(row) * tileSize,
+                                                width: tileSize,
+                                                height: tileSize
+                                            )
+                                            context.draw(
+                                                Image("GrassTile"),
+                                                in: rect
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                            .ignoresSafeArea()
 
                             // Garden items
                             ForEach(gardenItems) { item in
