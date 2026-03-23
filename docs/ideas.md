@@ -22,4 +22,9 @@
 - localization: japanese, korean, chinese for studytok markets
 - live activities for timer on lock screen and dynamic island
 - standby mode support for iphone dock timer display
-- pixel grid garden: 24h = 1440 min max, each focus session fills pixels on a grid instead of random flower drops. no overlap, planned positions. daily garden resets, past gardens archived
+- pixel grid garden: 24h = 1440 min max, each focus session places a flower on a 13x16 grid (30pt cells, 208 total). no overlap, planned positions. daily garden resets, past gardens archived
+  - small flower: 20+ min session, 1x1 grid (1 cell), procreate canvas 16x16 px, displays 30x30 pt
+  - medium flower: 60+ min session, 2x2 grid (4 cells), procreate canvas 24x24 px, displays 60x60 pt
+  - large flower: 100+ min session, 3x3 grid (9 cells), procreate canvas 32x32 px, displays 90x90 pt
+  - worst case 24h all 20min sessions = 57 flowers = 57 cells, fits easily in 208
+  - draw each size as pixel art in procreate at the canvas sizes above, export as PNG with transparency
