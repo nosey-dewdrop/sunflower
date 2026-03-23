@@ -8,7 +8,8 @@ struct SunflowerApp: App {
             FocusTag.self,
             FocusSession.self,
             FlowerDrop.self,
-            UserSettings.self
+            UserSettings.self,
+            GardenItem.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 

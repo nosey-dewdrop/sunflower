@@ -62,6 +62,7 @@ struct TimerView: View {
     @Query private var settings: [UserSettings]
     @Query private var tags: [FocusTag]
     @Query private var flowers: [FlowerDrop]
+    @Query private var gardenItems: [GardenItem]
     @Query(filter: #Predicate<FocusSession> { session in
         session.completed == true
     }) private var allCompletedSessions: [FocusSession]
@@ -70,6 +71,7 @@ struct TimerView: View {
     @State private var selectedTag: FocusTag?
     @State private var showTagPicker = false
     @State private var showSummary = false
+    @State private var showMarket = false
     @State private var sessionStartTime: Date?
     @State private var showFlowerEarned = false
     @State private var showFlowerDied = false
@@ -96,8 +98,13 @@ struct TimerView: View {
             Color.grassGreen
                 .ignoresSafeArea()
 
-            // Trees and flowers on background
+            // Garden: draggable items, trees, flowers
             GeometryReader { geo in
+                // Garden items (from market)
+                ForEach(gardenItems) { item in
+                    DraggableGardenItem(item: item, geoSize: geo.size)
+                }
+
                 // Trees from tags
                 ForEach(tags) { tag in
                     if tag.appleCount > 0 {
@@ -112,7 +119,7 @@ struct TimerView: View {
                     }
                 }
 
-                // Flower drops
+                // Flower drops (earned from sessions)
                 ForEach(flowers) { flower in
                     FlowerSprite(flowerType: flower.flowerType, size: flower.displaySize)
                         .position(
@@ -125,6 +132,33 @@ struct TimerView: View {
             VStack(spacing: 24) {
                 Spacer()
                     .frame(height: 60)
+
+                // Top bar: coins + market
+                HStack {
+                    // Coin balance
+                    HStack(spacing: 4) {
+                        Image(systemName: "bitcoinsign.circle.fill")
+                            .foregroundColor(.warmYellow)
+                        Text("\(currentSettings.coins)")
+                            .font(.system(size: 14, weight: .bold, design: .rounded))
+                            .foregroundColor(.warmYellow)
+                    }
+
+                    Spacer()
+
+                    // Market button
+                    Button {
+                        showMarket = true
+                    } label: {
+                        Image(systemName: "storefront.fill")
+                            .font(.system(size: 18))
+                            .foregroundColor(.cream)
+                            .padding(8)
+                            .background(Color.darkGreen.opacity(0.7))
+                            .clipShape(Circle())
+                    }
+                }
+                .padding(.horizontal, 20)
 
                 // Tag selector pill
                 Button {
@@ -249,6 +283,9 @@ struct TimerView: View {
             TreeDetailSheet(tag: tag)
                 .presentationDetents([.medium])
         }
+        .sheet(isPresented: $showMarket) {
+            MarketView()
+        }
         .onAppear {
             setupTimer()
         }
@@ -319,6 +356,11 @@ struct TimerView: View {
         try? modelContext.save()
 
         NotificationManager.shared.cancelAll()
+
+        // Earn coins: 1 per minute
+        let earnedCoins = currentSettings.pomoDuration / 60
+        currentSettings.coins += earnedCoins
+        try? modelContext.save()
 
         withAnimation {
             showFlowerEarned = true
@@ -613,7 +655,74 @@ struct TreeStat: View {
     }
 }
 
+// MARK: - Draggable Garden Item
+
+struct DraggableGardenItem: View {
+    let item: GardenItem
+    let geoSize: CGSize
+    @State private var dragOffset: CGSize = .zero
+
+    private var itemIcon: String {
+        switch item.itemType {
+        case "oak": return "tree.fill"
+        case "pine": return "tree.fill"
+        case "cherry": return "tree.fill"
+        case "birch": return "tree.fill"
+        case "sunflower": return "sun.max.fill"
+        case "daisy": return "sparkle"
+        case "tulip": return "leaf.fill"
+        case "rose": return "heart.fill"
+        case "lavender": return "star.fill"
+        case "fence": return "rectangle.split.3x1"
+        case "rock": return "mountain.2.fill"
+        case "pond": return "drop.fill"
+        default: return "circle.fill"
+        }
+    }
+
+    private var itemColor: Color {
+        switch item.itemType {
+        case "oak": return .green
+        case "pine": return Color(hex: "2D5A3D")
+        case "cherry": return .pink
+        case "birch": return Color(hex: "96CEB4")
+        case "sunflower": return .warmYellow
+        case "daisy": return .white
+        case "tulip": return .red
+        case "rose": return .pink
+        case "lavender": return .purple
+        case "fence": return .brown
+        case "rock": return .gray
+        case "pond": return .blue
+        default: return .warmYellow
+        }
+    }
+
+    var body: some View {
+        Image(systemName: itemIcon)
+            .font(.system(size: item.displaySize))
+            .foregroundColor(itemColor)
+            .position(
+                x: item.positionX * geoSize.width + dragOffset.width,
+                y: item.positionY * geoSize.height + dragOffset.height
+            )
+            .gesture(
+                DragGesture()
+                    .onChanged { value in
+                        dragOffset = value.translation
+                    }
+                    .onEnded { value in
+                        let newX = (item.positionX * geoSize.width + value.translation.width) / geoSize.width
+                        let newY = (item.positionY * geoSize.height + value.translation.height) / geoSize.height
+                        item.positionX = max(0.05, min(0.95, newX))
+                        item.positionY = max(0.3, min(0.9, newY))
+                        dragOffset = .zero
+                    }
+            )
+    }
+}
+
 #Preview {
     TimerView()
-        .modelContainer(for: [FocusTag.self, FocusSession.self, FlowerDrop.self, UserSettings.self], inMemory: true)
+        .modelContainer(for: [FocusTag.self, FocusSession.self, FlowerDrop.self, GardenItem.self, UserSettings.self], inMemory: true)
 }

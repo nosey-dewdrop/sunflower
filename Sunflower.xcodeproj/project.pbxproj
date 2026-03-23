@@ -23,6 +23,8 @@
 		F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8097FA49454B6330F7799975 /* FocusTag.swift */; };
 		F16DA1FE207B85236C50DA23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC160622868CADE0EB86F3C /* SettingsView.swift */; };
 		AA11BB22CC33DD44EE55FF66 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */; };
+		CC11DD22EE33FF44AA55BB66 /* GardenItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD22EE33FF44AA55BB66CC11 /* GardenItem.swift */; };
+		EE11FF22AA33BB44CC55DD66 /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF22AA33BB44CC55DD66EE11 /* MarketView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -43,12 +45,15 @@
 		9820D40291546EB3256A10EF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		9EF1BE2AF9CC7592F8B80DBD /* PixelFont.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelFont.swift; sourceTree = "<group>"; };
 		BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		DD22EE33FF44AA55BB66CC11 /* GardenItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenItem.swift; sourceTree = "<group>"; };
+		FF22AA33BB44CC55DD66EE11 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		016CB542DA4E46D763962C49 /* Timer */ = {
 			isa = PBXGroup;
 			children = (
+				FF22AA33BB44CC55DD66EE11 /* MarketView.swift */,
 				519C893BDA425DE369F755B3 /* SummaryView.swift */,
 				514646F1B10516E79D7D0143 /* TimerView.swift */,
 			);
@@ -89,6 +94,7 @@
 				16438E21E0B2C4E54ECB72BA /* FlowerDrop.swift */,
 				4AF7624920C6AE9BB03830C4 /* FocusSession.swift */,
 				8097FA49454B6330F7799975 /* FocusTag.swift */,
+				DD22EE33FF44AA55BB66CC11 /* GardenItem.swift */,
 				0E713783AA43D9B63E1F012E /* UserSettings.swift */,
 			);
 			path = Models;
@@ -215,6 +221,8 @@
 				4018FA7D849296C16674B84E /* SunflowerApp.swift in Sources */,
 				A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */,
 				AA11BB22CC33DD44EE55FF66 /* NotificationManager.swift in Sources */,
+				CC11DD22EE33FF44AA55BB66 /* GardenItem.swift in Sources */,
+				EE11FF22AA33BB44CC55DD66 /* MarketView.swift in Sources */,
 				7B1FC471E08C553EAAF24F3A /* UserSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
