@@ -8,3 +8,5 @@
 - watch companion app for quick timer control
 - flower collection / album to track all earned types
 - focus mode integration with ios focus
+- goal/tag tree system: add a goal → a tree is planted on the garden. each focus session grows the tree and adds an apple. tap tree to see details (total time, session count, apple count). drag and drop to place trees
+- widget and lock screen timer display like focuspomo
