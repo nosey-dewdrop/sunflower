@@ -98,7 +98,7 @@ struct TimerView: View {
             // Flower drops scattered on background
             GeometryReader { geo in
                 ForEach(flowers) { flower in
-                    FlowerSprite(flowerType: flower.flowerType)
+                    FlowerSprite(flowerType: flower.flowerType, size: flower.displaySize)
                         .position(
                             x: flower.positionX * geo.size.width,
                             y: flower.positionY * geo.size.height
@@ -291,6 +291,7 @@ struct TimerView: View {
 
         let flower = FlowerDrop(
             flowerType: FlowerDrop.randomType(),
+            size: FlowerDrop.sizeForDuration(currentSettings.pomoDuration),
             positionX: Double.random(in: 0.1...0.9),
             positionY: Double.random(in: 0.5...0.85)
         )
@@ -361,6 +362,7 @@ struct TimerView: View {
 
 struct FlowerSprite: View {
     let flowerType: String
+    var size: CGFloat = 20
 
     private var symbol: String {
         switch flowerType {
@@ -386,7 +388,7 @@ struct FlowerSprite: View {
 
     var body: some View {
         Image(systemName: symbol)
-            .font(.system(size: 20))
+            .font(.system(size: size))
             .foregroundColor(color)
     }
 }
