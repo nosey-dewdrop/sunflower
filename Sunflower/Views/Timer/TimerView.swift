@@ -73,6 +73,7 @@ struct TimerView: View {
     @State private var tappedTree: FocusTag?
     @State private var showDurationPicker = false
     @State private var showMarket = false
+    @State private var showSummary = false
     @State private var pickerMinutes: Int = 25
 
     private var currentSettings: UserSettings {
@@ -276,11 +277,16 @@ struct TimerView: View {
                 .onEnded { value in
                     if value.translation.height < -50 {
                         showMarket = true
+                    } else if value.translation.height > 50 {
+                        showSummary = true
                     }
                 }
         )
         .sheet(isPresented: $showMarket) {
             MarketView()
+        }
+        .sheet(isPresented: $showSummary) {
+            SummaryView()
         }
         .onAppear {
             setupTimer()
