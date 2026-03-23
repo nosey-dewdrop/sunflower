@@ -204,7 +204,7 @@ struct TimerView: View {
                 .animation(.spring(duration: 0.5), value: showFlowerEarned)
             }
 
-            // Duration picker overlay (transparent, inline)
+            // Duration picker - just appears over everything, no overlay
             if showDurationPicker {
                 VStack {
                     Spacer()
