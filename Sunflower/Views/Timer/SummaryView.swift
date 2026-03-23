@@ -73,7 +73,7 @@ struct SummaryView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "1A1A2E").ignoresSafeArea()
+            Color(hex: "1A2E1A").ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
@@ -125,7 +125,7 @@ struct SummaryView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 3)
-                            .background(Color(hex: "C75050"))
+                            .background(Color(hex: "4A7C59"))
                             .clipShape(Capsule())
                     }
 

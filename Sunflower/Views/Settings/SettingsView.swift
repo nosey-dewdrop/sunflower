@@ -19,7 +19,7 @@ struct SettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "1A1A2E").ignoresSafeArea()
+            Color(hex: "1A2E1A").ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
@@ -45,7 +45,7 @@ struct SettingsView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(18)
                     .background(
-                        LinearGradient(colors: [Color(hex: "C75050"), Color(hex: "D4845A")], startPoint: .leading, endPoint: .trailing)
+                        LinearGradient(colors: [Color(hex: "4A7C59"), Color(hex: "6B9B7A")], startPoint: .leading, endPoint: .trailing)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 14))
 
@@ -94,7 +94,7 @@ struct SettingsView: View {
                                 Text("Add Tag")
                                     .font(.system(size: 16, weight: .regular, design: .rounded))
                             }
-                            .foregroundColor(Color(hex: "D4845A"))
+                            .foregroundColor(Color(hex: "6B9B7A"))
                             .padding(.top, 4)
                         }
                     }
@@ -117,7 +117,7 @@ struct SettingsView: View {
                                 get: { settings.notificationsEnabled },
                                 set: { settings.notificationsEnabled = $0 }
                             ))
-                            .tint(Color(hex: "D4845A"))
+                            .tint(Color(hex: "6B9B7A"))
                         }
                     }
 

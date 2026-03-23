@@ -33,7 +33,7 @@ struct MarketView: View {
                             .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.warmYellow)
                     }
-                    .padding(.top, 8)
+                    .padding(.top, 60)
 
                     // Category tabs
                     HStack(spacing: 0) {

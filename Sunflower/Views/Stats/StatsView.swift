@@ -43,7 +43,7 @@ struct StatsView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "1A1A2E").ignoresSafeArea()
+            Color(hex: "1A2E1A").ignoresSafeArea()
 
             VStack(alignment: .leading, spacing: 0) {
                 // Header
@@ -93,7 +93,7 @@ struct StatsView: View {
                             }
                             .frame(maxWidth: .infinity)
                             .padding(.vertical, 8)
-                            .background(day.isToday ? Color(hex: "C75050") : Color.white.opacity(0.08))
+                            .background(day.isToday ? Color(hex: "4A7C59") : Color.white.opacity(0.08))
                             .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
                     }
@@ -148,11 +148,11 @@ struct StatsView: View {
                                                 .foregroundColor(.white)
                                                 .padding(.horizontal, 8)
                                                 .padding(.vertical, 4)
-                                                .background(Color(hex: "D4845A"))
+                                                .background(Color(hex: "6B9B7A"))
                                                 .clipShape(Capsule())
 
                                             Rectangle()
-                                                .fill(Color(hex: "D4845A"))
+                                                .fill(Color(hex: "6B9B7A"))
                                                 .frame(height: 1.5)
                                         }
                                         .offset(y: CGFloat(currentMinute) / 60.0 * 80)
