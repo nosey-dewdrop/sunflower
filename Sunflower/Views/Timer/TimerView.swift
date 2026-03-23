@@ -3,8 +3,6 @@ import SwiftData
 
 enum TimerPhase: String {
     case focus = "Focus"
-    case shortBreak = "Short Break"
-    case longBreak = "Long Break"
     case idle = "Ready"
 }
 
@@ -15,28 +13,12 @@ class TimerManager {
     var isRunning: Bool = false
     var phase: TimerPhase = .idle
     var timer: Timer?
-    var onFocusComplete: (() -> Void)?
-    var onBreakComplete: (() -> Void)?
+    var onComplete: (() -> Void)?
 
     func start(duration: Int) {
         totalTime = duration
         timeRemaining = duration
         phase = .focus
-        startTimer()
-    }
-
-    func startBreak(duration: Int, isLong: Bool) {
-        totalTime = duration
-        timeRemaining = duration
-        phase = isLong ? .longBreak : .shortBreak
-        startTimer()
-    }
-
-    func resume() {
-        startTimer()
-    }
-
-    private func startTimer() {
         isRunning = true
         timer?.invalidate()
         timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
@@ -45,12 +27,7 @@ class TimerManager {
                 self.timeRemaining -= 1
             } else {
                 self.stop()
-                if self.phase == .focus {
-                    self.onFocusComplete?()
-                } else {
-                    self.phase = .idle
-                    self.onBreakComplete?()
-                }
+                self.onComplete?()
             }
         }
     }
@@ -61,10 +38,11 @@ class TimerManager {
         isRunning = false
     }
 
-    func reset() {
+    func reset(duration: Int) {
         stop()
         phase = .idle
-        timeRemaining = totalTime
+        totalTime = duration
+        timeRemaining = duration
     }
 
     var timeString: String {
@@ -93,8 +71,6 @@ struct TimerView: View {
     @State private var showTagPicker = false
     @State private var showSummary = false
     @State private var sessionStartTime: Date?
-    @State private var currentPomoCount: Int = 1
-    @State private var pomosBeforeLong: Int = 4
     @State private var showFlowerEarned = false
     @State private var showFlowerDied = false
 
@@ -116,7 +92,6 @@ struct TimerView: View {
 
     var body: some View {
         ZStack {
-            // Background
             Color.grassGreen
                 .ignoresSafeArea()
 
@@ -190,20 +165,14 @@ struct TimerView: View {
                 Button {
                     handleMainButton()
                 } label: {
-                    Text(buttonLabel)
+                    Text(timerManager.isRunning ? "STOP" : "START")
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundColor(timerManager.isRunning ? .cream : .darkGreen)
                         .padding(.horizontal, 40)
                         .padding(.vertical, 14)
                         .background(timerManager.isRunning ? Color.brown.opacity(0.8) : Color.warmYellow)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
-                        .scaleEffect(timerManager.isRunning ? 0.98 : 1.0)
                 }
-
-                // Cycle indicator
-                Text("pomodoro \(currentPomoCount)/\(pomosBeforeLong)")
-                    .font(.system(size: 14, weight: .regular, design: .rounded))
-                    .foregroundColor(.cream.opacity(0.7))
 
                 Spacer()
 
@@ -262,21 +231,10 @@ struct TimerView: View {
         }
         .onAppear {
             setupTimer()
-            restoreBreakState()
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(to: newPhase)
         }
-    }
-
-    private var buttonLabel: String {
-        if timerManager.isRunning {
-            return "STOP"
-        }
-        if timerManager.phase == .idle {
-            return "START"
-        }
-        return "SKIP"
     }
 
     // MARK: - Setup
@@ -285,15 +243,9 @@ struct TimerView: View {
         let s = currentSettings
         timerManager.totalTime = s.pomoDuration
         timerManager.timeRemaining = s.pomoDuration
-        pomosBeforeLong = s.pomosBeforeLongBreak
 
-        timerManager.onFocusComplete = {
+        timerManager.onComplete = {
             handleFocusComplete()
-        }
-
-        timerManager.onBreakComplete = {
-            timerManager.timeRemaining = currentSettings.pomoDuration
-            timerManager.totalTime = currentSettings.pomoDuration
         }
 
         NotificationManager.shared.requestPermission()
@@ -304,11 +256,10 @@ struct TimerView: View {
     private func handleMainButton() {
         if timerManager.isRunning {
             let elapsed = timerManager.elapsedSeconds
-            let wasInFocus = timerManager.phase == .focus
             timerManager.stop()
             NotificationManager.shared.cancelAll()
 
-            if wasInFocus && elapsed >= 60 {
+            if elapsed >= 60 {
                 let session = FocusSession(
                     tag: selectedTag,
                     startedAt: sessionStartTime ?? Date(),
@@ -320,9 +271,7 @@ struct TimerView: View {
                 try? modelContext.save()
             }
 
-            timerManager.phase = .idle
-            timerManager.timeRemaining = currentSettings.pomoDuration
-            timerManager.totalTime = currentSettings.pomoDuration
+            timerManager.reset(duration: currentSettings.pomoDuration)
         } else {
             sessionStartTime = Date()
             timerManager.start(duration: currentSettings.pomoDuration)
@@ -350,7 +299,6 @@ struct TimerView: View {
 
         NotificationManager.shared.cancelAll()
 
-        // Show flower earned feedback
         withAnimation {
             showFlowerEarned = true
         }
@@ -360,59 +308,37 @@ struct TimerView: View {
             }
         }
 
-        // Advance cycle
-        if currentPomoCount >= pomosBeforeLong {
-            currentPomoCount = 1
-            timerManager.startBreak(duration: currentSettings.longBreakDuration, isLong: true)
-            NotificationManager.shared.scheduleTimerComplete(in: currentSettings.longBreakDuration, isFocus: false)
-        } else {
-            currentPomoCount += 1
-            timerManager.startBreak(duration: currentSettings.shortBreakDuration, isLong: false)
-            NotificationManager.shared.scheduleTimerComplete(in: currentSettings.shortBreakDuration, isFocus: false)
-        }
+        timerManager.reset(duration: currentSettings.pomoDuration)
     }
 
-    // MARK: - Background State (Forest Mode)
-    // If you leave the app during focus → your flower dies, session abandoned.
-    // During breaks → timer continues in background normally.
+    // MARK: - Forest Mode
 
     private func handleScenePhaseChange(to phase: ScenePhase) {
         switch phase {
         case .background:
             guard timerManager.isRunning else { return }
 
-            if timerManager.phase == .focus {
-                // FOREST MODE: leaving during focus = flower dies
-                let elapsed = timerManager.elapsedSeconds
-                timerManager.stop()
-                NotificationManager.shared.cancelAll()
+            // Leaving during focus = flower dies
+            let elapsed = timerManager.elapsedSeconds
+            timerManager.stop()
+            NotificationManager.shared.cancelAll()
 
-                if elapsed >= 60 {
-                    let session = FocusSession(
-                        tag: selectedTag,
-                        startedAt: sessionStartTime ?? Date(),
-                        duration: elapsed,
-                        completed: false,
-                        abandoned: true
-                    )
-                    modelContext.insert(session)
-                    try? modelContext.save()
-                }
-
-                timerManager.phase = .idle
-                timerManager.timeRemaining = currentSettings.pomoDuration
-                timerManager.totalTime = currentSettings.pomoDuration
-
-                // Flag to show death message when returning
-                UserDefaults.standard.set(true, forKey: "flowerDied")
-            } else {
-                // During break → save state, continue in background
-                saveBreakState()
-                timerManager.stop()
+            if elapsed >= 60 {
+                let session = FocusSession(
+                    tag: selectedTag,
+                    startedAt: sessionStartTime ?? Date(),
+                    duration: elapsed,
+                    completed: false,
+                    abandoned: true
+                )
+                modelContext.insert(session)
+                try? modelContext.save()
             }
 
+            timerManager.reset(duration: currentSettings.pomoDuration)
+            UserDefaults.standard.set(true, forKey: "flowerDied")
+
         case .active:
-            // Check if flower died
             if UserDefaults.standard.bool(forKey: "flowerDied") {
                 UserDefaults.standard.set(false, forKey: "flowerDied")
                 withAnimation {
@@ -425,47 +351,8 @@ struct TimerView: View {
                 }
             }
 
-            // Restore break state if needed
-            restoreBreakState()
-
         default:
             break
-        }
-    }
-
-    private func saveBreakState() {
-        let endTime = Date().addingTimeInterval(TimeInterval(timerManager.timeRemaining))
-        let defaults = UserDefaults.standard
-        defaults.set(endTime.timeIntervalSince1970, forKey: "breakEndTime")
-        defaults.set(timerManager.phase.rawValue, forKey: "breakPhase")
-        defaults.set(true, forKey: "isBreakRunning")
-    }
-
-    private func restoreBreakState() {
-        let defaults = UserDefaults.standard
-        guard defaults.bool(forKey: "isBreakRunning") else { return }
-
-        let endTimeInterval = defaults.double(forKey: "breakEndTime")
-        guard endTimeInterval > 0 else { return }
-
-        let endTime = Date(timeIntervalSince1970: endTimeInterval)
-        let remaining = Int(endTime.timeIntervalSinceNow)
-
-        defaults.set(false, forKey: "isBreakRunning")
-        defaults.removeObject(forKey: "breakEndTime")
-        defaults.removeObject(forKey: "breakPhase")
-
-        if remaining <= 0 {
-            // Break completed in background
-            timerManager.phase = .idle
-            timerManager.timeRemaining = currentSettings.pomoDuration
-            timerManager.totalTime = currentSettings.pomoDuration
-        } else {
-            // Break still running, resume
-            let phaseStr = defaults.string(forKey: "breakPhase") ?? ""
-            timerManager.phase = TimerPhase(rawValue: phaseStr) ?? .shortBreak
-            timerManager.timeRemaining = remaining
-            timerManager.resume()
         }
     }
 }

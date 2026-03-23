@@ -8,7 +8,6 @@ struct SettingsView: View {
 
     @State private var showAddTag = false
     @State private var newTagName = ""
-    @State private var newTagColor = Color.warmYellow
 
     private var settings: UserSettings {
         if let first = settingsList.first {
@@ -27,7 +26,7 @@ struct SettingsView: View {
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
                     Text("Settings")
-                        .pixelFont(size: 28, bold: true)
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.cream)
                         .padding(.top, 60)
 
@@ -42,36 +41,6 @@ struct SettingsView: View {
                         ),
                         range: Array(stride(from: 5, through: 60, by: 5)),
                         suffix: "min"
-                    )
-
-                    SettingsPicker(
-                        title: "short break",
-                        value: Binding(
-                            get: { settings.shortBreakDuration / 60 },
-                            set: { settings.shortBreakDuration = $0 * 60 }
-                        ),
-                        range: Array(1...15),
-                        suffix: "min"
-                    )
-
-                    SettingsPicker(
-                        title: "long break",
-                        value: Binding(
-                            get: { settings.longBreakDuration / 60 },
-                            set: { settings.longBreakDuration = $0 * 60 }
-                        ),
-                        range: Array(stride(from: 5, through: 30, by: 5)),
-                        suffix: "min"
-                    )
-
-                    SettingsPicker(
-                        title: "pomos before long break",
-                        value: Binding(
-                            get: { settings.pomosBeforeLongBreak },
-                            set: { settings.pomosBeforeLongBreak = $0 }
-                        ),
-                        range: Array(2...6),
-                        suffix: ""
                     )
 
                     // Preferences
@@ -102,7 +71,7 @@ struct SettingsView: View {
                                 .fill(Color(hex: tag.colorHex))
                                 .frame(width: 14, height: 14)
                             Text(tag.name)
-                                .pixelFont(size: 16)
+                                .font(.system(size: 16, weight: .regular, design: .rounded))
                                 .foregroundColor(.cream)
                             Spacer()
                             Button {
@@ -124,7 +93,7 @@ struct SettingsView: View {
                         HStack {
                             Image(systemName: "plus.circle.fill")
                             Text("add tag")
-                                .pixelFont(size: 16)
+                                .font(.system(size: 16, weight: .regular, design: .rounded))
                         }
                         .foregroundColor(.warmYellow)
                         .padding()
@@ -163,7 +132,7 @@ struct SectionHeader: View {
 
     var body: some View {
         Text(title)
-            .pixelFont(size: 14, bold: true)
+            .font(.system(size: 14, weight: .bold, design: .rounded))
             .foregroundColor(.warmYellow)
             .textCase(.uppercase)
     }
@@ -178,7 +147,7 @@ struct SettingsPicker: View {
     var body: some View {
         HStack {
             Text(title)
-                .pixelFont(size: 15)
+                .font(.system(size: 15, weight: .regular, design: .rounded))
                 .foregroundColor(.cream)
             Spacer()
             HStack(spacing: 12) {
@@ -192,7 +161,7 @@ struct SettingsPicker: View {
                 }
 
                 Text("\(value)\(suffix.isEmpty ? "" : " \(suffix)")")
-                    .pixelFont(size: 16, bold: true)
+                    .font(.system(size: 16, weight: .bold, design: .rounded))
                     .foregroundColor(.warmYellow)
                     .frame(minWidth: 60)
 
@@ -219,7 +188,7 @@ struct SettingsToggle: View {
     var body: some View {
         HStack {
             Text(title)
-                .pixelFont(size: 15)
+                .font(.system(size: 15, weight: .regular, design: .rounded))
                 .foregroundColor(.cream)
             Spacer()
             Toggle("", isOn: $isOn)
