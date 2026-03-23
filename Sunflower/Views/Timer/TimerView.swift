@@ -209,9 +209,16 @@ struct TimerView: View {
                 VStack {
                     Spacer()
 
+                    // Selected minutes display
+                    Text("\(pickerMinutes)")
+                        .font(.system(size: 48, weight: .bold, design: .rounded))
+                        .foregroundColor(.cream)
+                        .contentTransition(.numericText())
+                        .animation(.default, value: pickerMinutes)
+
                     // Horizontal ruler picker
                     HorizontalRulerPicker(selectedMinutes: $pickerMinutes)
-                        .frame(height: 80)
+                        .frame(height: 60)
                         .padding(.horizontal, 20)
 
                     // Done button
@@ -655,9 +662,11 @@ struct HorizontalRulerPicker: View {
                         let isMajor = value % 10 == 0
 
                         VStack(spacing: 4) {
-                            Text("\(value)")
-                                .font(.system(size: value == selectedMinutes ? 32 : 16, weight: value == selectedMinutes ? .bold : .regular, design: .rounded))
-                                .foregroundColor(value == selectedMinutes ? .cream : .cream.opacity(0.3))
+                            if isMajor {
+                                Text("\(value)")
+                                    .font(.system(size: 12, weight: .regular, design: .rounded))
+                                    .foregroundColor(.cream.opacity(0.4))
+                            }
 
                             Rectangle()
                                 .fill(value == selectedMinutes ? Color.cream : Color.cream.opacity(isMajor ? 0.4 : 0.2))
