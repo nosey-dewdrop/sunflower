@@ -72,7 +72,6 @@ struct TimerView: View {
     @State private var showFlowerDied = false
     @State private var tappedTree: FocusTag?
     @State private var showDurationPicker = false
-    @State private var showMarket = false
     @State private var showSummary = false
     @State private var pickerMinutes: Int = 25
 
@@ -89,9 +88,15 @@ struct TimerView: View {
     var body: some View {
         GeometryReader { screen in
             ZStack {
-                // Scrollable content: timer + summary below
+                // Scrollable: Market (top) → Timer (center) → Summary (bottom)
+                ScrollViewReader { scrollProxy in
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 0) {
+                        // === MARKET SECTION (scroll up to see) ===
+                        MarketView()
+                            .frame(height: screen.size.height)
+                            .id("market")
+
                         // === TIMER SECTION ===
                         ZStack {
                             Color.grassGreen
@@ -124,38 +129,9 @@ struct TimerView: View {
                                     )
                             }
 
-                            // Timer UI
-                            VStack(spacing: 24) {
-                                Spacer().frame(height: 60)
-
-                                // Tag selector pill
-                                Button {
-                                    showTagPicker = true
-                                } label: {
-                                    HStack(spacing: 6) {
-                                        if let tag = selectedTag {
-                                            Circle()
-                                                .fill(Color(hex: tag.colorHex))
-                                                .frame(width: 10, height: 10)
-                                            Text(tag.name)
-                                                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                                        } else {
-                                            Text("select tag")
-                                                .font(.system(size: 14, weight: .regular, design: .rounded))
-                                        }
-                                    }
-                                    .padding(.horizontal, 16)
-                                    .padding(.vertical, 8)
-                                    .background(Color.darkGreen.opacity(0.7))
-                                    .foregroundColor(.cream)
-                                    .clipShape(Capsule())
-                                }
-
+                            // Timer UI - FocusPomo layout
+                            VStack(spacing: 0) {
                                 Spacer()
-
-                                Text(timerManager.phase.rawValue)
-                                    .font(.system(size: 18, weight: .bold, design: .rounded))
-                                    .foregroundColor(.warmYellow)
 
                                 // Countdown - tap to pick duration
                                 Button {
@@ -167,33 +143,53 @@ struct TimerView: View {
                                     Text(timerManager.timeString)
                                         .font(.system(size: 72, weight: .bold, design: .rounded))
                                         .foregroundColor(.cream)
-                                        .shadow(color: .darkGreen, radius: 0, x: 2, y: 2)
                                         .contentTransition(.numericText())
                                         .animation(.default, value: timerManager.timeRemaining)
                                 }
 
-                                // Start/Stop
+                                // Tag below countdown
+                                Button {
+                                    showTagPicker = true
+                                } label: {
+                                    HStack(spacing: 4) {
+                                        Text(selectedTag?.name ?? "select tag")
+                                            .font(.system(size: 16, weight: .regular, design: .rounded))
+                                        Image(systemName: "chevron.right")
+                                            .font(.system(size: 12))
+                                    }
+                                    .foregroundColor(.cream.opacity(0.7))
+                                }
+                                .padding(.top, 8)
+
+                                Spacer()
+
+                                // Start Focus / Stop button at bottom
                                 Button {
                                     handleMainButton()
                                 } label: {
-                                    Text(timerManager.isRunning ? "STOP" : "START")
-                                        .font(.system(size: 24, weight: .bold, design: .rounded))
-                                        .foregroundColor(timerManager.isRunning ? .cream : .darkGreen)
+                                    Text(timerManager.isRunning ? "Stop" : "Start Focus")
+                                        .font(.system(size: 18, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.cream)
                                         .padding(.horizontal, 40)
                                         .padding(.vertical, 14)
-                                        .background(timerManager.isRunning ? Color.brown.opacity(0.8) : Color.warmYellow)
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                        .background(Color.darkGreen.opacity(0.6))
+                                        .clipShape(Capsule())
                                 }
-
-                                Spacer()
+                                .padding(.bottom, 80)
                             }
                         }
                         .frame(height: screen.size.height)
+                        .id("timer")
 
                         // === SUMMARY SECTION (scroll down) ===
                         SummaryView()
                             .frame(minHeight: screen.size.height)
+                            .id("summary")
                     }
+                }
+                .onAppear {
+                    scrollProxy.scrollTo("timer", anchor: .top)
+                }
                 }
 
                 // Overlays on top of everything
@@ -670,7 +666,7 @@ struct DurationPickerView: View {
     }
 }
 
-// MARK: - Horizontal Ruler Picker
+// MARK: - Horizontal Ruler Picker (tap based, simple)
 
 struct HorizontalRulerPicker: View {
     @Binding var selectedMinutes: Int
@@ -678,61 +674,46 @@ struct HorizontalRulerPicker: View {
     let maxValue = 120
     let step = 5
 
+    private var values: [Int] {
+        stride(from: minValue, through: maxValue, by: step).map { $0 }
+    }
+
     var body: some View {
-        GeometryReader { geo in
-            let centerX = geo.size.width / 2
-            let tickSpacing: CGFloat = 30
-            let totalTicks = (maxValue - minValue) / step + 1
-            let offset = centerX - CGFloat((selectedMinutes - minValue) / step) * tickSpacing
-
-            ZStack {
-                // Ruler ticks and numbers
+        ScrollViewReader { proxy in
+            ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 0) {
-                    ForEach(0..<totalTicks, id: \.self) { i in
-                        let value = minValue + i * step
-                        let isMajor = value % 10 == 0
-
-                        VStack(spacing: 4) {
-                            if isMajor {
-                                Text("\(value)")
-                                    .font(.system(size: 12, weight: .regular, design: .rounded))
-                                    .foregroundColor(.cream.opacity(0.4))
-                            }
+                    ForEach(values, id: \.self) { value in
+                        VStack(spacing: 6) {
+                            Text("\(value)")
+                                .font(.system(size: value == selectedMinutes ? 28 : 16, weight: value == selectedMinutes ? .bold : .regular, design: .rounded))
+                                .foregroundColor(value == selectedMinutes ? .cream : .cream.opacity(0.3))
 
                             Rectangle()
-                                .fill(value == selectedMinutes ? Color.cream : Color.cream.opacity(isMajor ? 0.4 : 0.2))
-                                .frame(width: 2, height: isMajor ? 20 : 12)
+                                .fill(value == selectedMinutes ? Color.cream : Color.cream.opacity(value % 10 == 0 ? 0.4 : 0.2))
+                                .frame(width: 2, height: value % 10 == 0 ? 18 : 10)
                         }
-                        .frame(width: tickSpacing)
-                    }
-                }
-                .offset(x: offset - tickSpacing / 2)
-                .gesture(
-                    DragGesture()
-                        .onChanged { value in
-                            let dragTicks = -Int(round(value.translation.width / tickSpacing))
-                            let base = (selectedMinutes - minValue) / step
-                            let newIndex = max(0, min(totalTicks - 1, base + dragTicks))
-                            let newValue = minValue + newIndex * step
-                            if newValue != selectedMinutes {
-                                selectedMinutes = newValue
+                        .frame(width: 50)
+                        .onTapGesture {
+                            withAnimation {
+                                selectedMinutes = value
                             }
                         }
-                )
-
-                // Center indicator
-                VStack(spacing: 0) {
-                    Spacer()
-                    Rectangle()
-                        .fill(Color.warmYellow)
-                        .frame(width: 3, height: 24)
-                    Image(systemName: "triangle.fill")
-                        .font(.system(size: 8))
-                        .foregroundColor(.warmYellow)
+                        .id(value)
+                    }
+                }
+                .padding(.horizontal, 150)
+            }
+            .scrollTargetLayout()
+            .onAppear {
+                proxy.scrollTo(selectedMinutes, anchor: .center)
+            }
+            .onChange(of: selectedMinutes) { _, newVal in
+                withAnimation {
+                    proxy.scrollTo(newVal, anchor: .center)
                 }
             }
         }
-        .clipped()
+        .frame(height: 60)
     }
 }
 
