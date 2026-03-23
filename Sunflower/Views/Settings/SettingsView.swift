@@ -19,18 +19,17 @@ struct SettingsView: View {
 
     var body: some View {
         ZStack {
-            Color(hex: "1A2E1A").ignoresSafeArea()
+            Color.bgDark.ignoresSafeArea()
 
             ScrollView {
                 VStack(alignment: .leading, spacing: 24) {
-                    // Welcome header
                     Text("Welcome ^ ^")
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                         .padding(.top, 60)
 
                     Text("What I do today is important because I am exchanging a day of my life for it.")
-                        .font(.system(size: 15, weight: .regular, design: .rounded))
+                        .font(.system(size: 15, design: .rounded))
                         .foregroundColor(.white.opacity(0.5))
 
                     // Premium banner
@@ -39,47 +38,38 @@ struct SettingsView: View {
                             .font(.system(size: 18, weight: .bold, design: .rounded))
                             .foregroundColor(.white)
                         Text("Grow your garden, unlock more")
-                            .font(.system(size: 14, weight: .regular, design: .rounded))
+                            .font(.system(size: 14, design: .rounded))
                             .foregroundColor(.white.opacity(0.7))
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(18)
                     .background(
-                        LinearGradient(colors: [Color(hex: "4A7C59"), Color(hex: "6B9B7A")], startPoint: .leading, endPoint: .trailing)
+                        LinearGradient(colors: [Color.grassGreen, Color.amber], startPoint: .leading, endPoint: .trailing)
                     )
                     .clipShape(RoundedRectangle(cornerRadius: 14))
 
-                    // Timer section
+                    // Timer
                     SettingsSectionHeader(title: "Timer")
-
                     SettingsCard {
                         SettingsRow(title: "Focus Duration", trailing: "\(settings.pomoDuration / 60) min") {}
                     }
 
-                    // Tags section
+                    // Tags
                     SettingsSectionHeader(title: "Tags")
-
                     SettingsCard {
                         ForEach(tags) { tag in
                             HStack {
-                                Circle()
-                                    .fill(Color(hex: tag.colorHex))
-                                    .frame(width: 12, height: 12)
-                                Text(tag.name)
-                                    .font(.system(size: 16, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white)
+                                Circle().fill(Color(hex: tag.colorHex)).frame(width: 12, height: 12)
+                                Text(tag.name).font(.system(size: 16, design: .rounded)).foregroundColor(.white)
                                 Spacer()
                                 Button {
                                     modelContext.delete(tag)
                                     try? modelContext.save()
                                 } label: {
-                                    Image(systemName: "xmark")
-                                        .font(.system(size: 12))
-                                        .foregroundColor(.white.opacity(0.3))
+                                    Image(systemName: "xmark").font(.system(size: 12)).foregroundColor(.white.opacity(0.3))
                                 }
                             }
                             .padding(.vertical, 4)
-
                             if tag.id != tags.last?.id {
                                 Divider().background(Color.white.opacity(0.08))
                             }
@@ -89,35 +79,29 @@ struct SettingsView: View {
                             showAddTag = true
                         } label: {
                             HStack {
-                                Image(systemName: "plus")
-                                    .font(.system(size: 14))
-                                Text("Add Tag")
-                                    .font(.system(size: 16, weight: .regular, design: .rounded))
+                                Image(systemName: "plus").font(.system(size: 14))
+                                Text("Add Tag").font(.system(size: 16, design: .rounded))
                             }
-                            .foregroundColor(Color(hex: "6B9B7A"))
+                            .foregroundColor(.warmYellow)
                             .padding(.top, 4)
                         }
                     }
 
-                    // Notifications section
+                    // Notifications
                     SettingsSectionHeader(title: "Notifications")
-
                     SettingsCard {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text("Focus Reminder")
-                                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                                    .foregroundColor(.white)
+                                Text("Focus Reminder").font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(.white)
                                 Text("You will receive notification after you finish focus.")
-                                    .font(.system(size: 13, weight: .regular, design: .rounded))
-                                    .foregroundColor(.white.opacity(0.4))
+                                    .font(.system(size: 13, design: .rounded)).foregroundColor(.white.opacity(0.4))
                             }
                             Spacer()
                             Toggle("", isOn: Binding(
                                 get: { settings.notificationsEnabled },
                                 set: { settings.notificationsEnabled = $0 }
                             ))
-                            .tint(Color(hex: "6B9B7A"))
+                            .tint(.warmYellow)
                         }
                     }
 
@@ -144,8 +128,6 @@ struct SettingsView: View {
     }
 }
 
-// MARK: - Settings Components
-
 struct SettingsSectionHeader: View {
     let title: String
     var body: some View {
@@ -159,13 +141,11 @@ struct SettingsSectionHeader: View {
 struct SettingsCard<Content: View>: View {
     @ViewBuilder let content: Content
     var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            content
-        }
-        .padding(16)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Color.white.opacity(0.08))
-        .clipShape(RoundedRectangle(cornerRadius: 14))
+        VStack(alignment: .leading, spacing: 8) { content }
+            .padding(16)
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .background(Color.cardBg)
+            .clipShape(RoundedRectangle(cornerRadius: 14))
     }
 }
 
@@ -173,20 +153,13 @@ struct SettingsRow: View {
     let title: String
     let trailing: String
     let action: () -> Void
-
     var body: some View {
         Button(action: action) {
             HStack {
-                Text(title)
-                    .font(.system(size: 16, weight: .medium, design: .rounded))
-                    .foregroundColor(.white)
+                Text(title).font(.system(size: 16, weight: .medium, design: .rounded)).foregroundColor(.white)
                 Spacer()
-                Text(trailing)
-                    .font(.system(size: 15, weight: .regular, design: .rounded))
-                    .foregroundColor(.white.opacity(0.4))
-                Image(systemName: "chevron.right")
-                    .font(.system(size: 12))
-                    .foregroundColor(.white.opacity(0.3))
+                Text(trailing).font(.system(size: 15, design: .rounded)).foregroundColor(.white.opacity(0.4))
+                Image(systemName: "chevron.right").font(.system(size: 12)).foregroundColor(.white.opacity(0.3))
             }
         }
     }
