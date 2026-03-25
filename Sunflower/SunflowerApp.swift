@@ -18,7 +18,11 @@ struct SunflowerApp: App {
         } catch {
             // fallback to in-memory if persistent storage fails
             let fallback = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
-            return try! ModelContainer(for: schema, configurations: [fallback])
+            do {
+                return try ModelContainer(for: schema, configurations: [fallback])
+            } catch {
+                fatalError("Failed to create ModelContainer even with in-memory fallback: \(error.localizedDescription)")
+            }
         }
     }()
 

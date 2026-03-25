@@ -38,6 +38,11 @@ class TimerManager {
         isRunning = false
     }
 
+    deinit {
+        timer?.invalidate()
+        timer = nil
+    }
+
     func reset(duration: Int) {
         stop()
         phase = .idle

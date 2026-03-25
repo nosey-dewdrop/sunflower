@@ -5,68 +5,73 @@ struct SummaryView: View {
     @Query private var allSessions: [FocusSession]
     @Query private var flowers: [FlowerDrop]
 
-    private var todaySessions: [FocusSession] {
+    // Cached computed values to avoid recalculating on every render
+    @State private var cachedTodaySessions: [FocusSession] = []
+    @State private var cachedTotalFlowers: Int = 0
+    @State private var cachedTotalFocusHours: Int = 0
+    @State private var cachedTotalFocusMinutes: Int = 0
+    @State private var cachedAllTimeFlowers: Int = 0
+    @State private var cachedAllTimeFocusHours: Int = 0
+    @State private var cachedAllTimeFocusMinutes: Int = 0
+    @State private var cachedTodayCompletedCount: Int = 0
+    @State private var cachedTodayAbandonedCount: Int = 0
+    @State private var cachedTodayFocusHours: Int = 0
+    @State private var cachedThisWeekFocusHours: Int = 0
+    @State private var cachedWeekDays: [(letter: String, hasData: Bool)] = []
+
+    private func recomputeAll() {
         let calendar = Calendar.current
         let startOfDay = calendar.startOfDay(for: Date())
-        return allSessions.filter { $0.startedAt >= startOfDay }
-    }
 
-    private var totalFlowers: Int {
-        todaySessions.filter { $0.completed }.count
-    }
+        let todaySessions = allSessions.filter { $0.startedAt >= startOfDay }
+        cachedTodaySessions = todaySessions
 
-    private var totalFocusHours: Int {
-        todaySessions.reduce(0) { $0 + $1.duration } / 3600
-    }
+        let todayCompleted = todaySessions.filter { $0.completed }
+        cachedTotalFlowers = todayCompleted.count
+        cachedTodayCompletedCount = todayCompleted.count
 
-    private var totalFocusMinutes: Int {
-        (todaySessions.reduce(0) { $0 + $1.duration } % 3600) / 60
-    }
+        let todayTotalDuration = todaySessions.reduce(0) { $0 + $1.duration }
+        cachedTotalFocusHours = todayTotalDuration / 3600
+        cachedTotalFocusMinutes = (todayTotalDuration % 3600) / 60
 
-    private var allTimeFlowers: Int {
-        allSessions.filter { $0.completed }.count
-    }
+        let allCompleted = allSessions.filter { $0.completed }
+        cachedAllTimeFlowers = allCompleted.count
 
-    private var allTimeFocusHours: Int {
-        allSessions.reduce(0) { $0 + $1.duration } / 3600
-    }
+        let allTimeTotalDuration = allSessions.reduce(0) { $0 + $1.duration }
+        cachedAllTimeFocusHours = allTimeTotalDuration / 3600
+        cachedAllTimeFocusMinutes = (allTimeTotalDuration % 3600) / 60
 
-    private var allTimeFocusMinutes: Int {
-        (allSessions.reduce(0) { $0 + $1.duration } % 3600) / 60
-    }
+        cachedTodayAbandonedCount = todaySessions.filter { $0.abandoned }.count
 
-    private var todayCompletedCount: Int {
-        todaySessions.filter { $0.completed }.count
-    }
+        let todayCompletedDuration = todayCompleted.reduce(0) { $0 + $1.duration }
+        cachedTodayFocusHours = todayCompletedDuration / 3600
 
-    private var todayAbandonedCount: Int {
-        todaySessions.filter { $0.abandoned }.count
-    }
-
-    private var todayFocusHours: Int {
-        todaySessions.filter { $0.completed }.reduce(0) { $0 + $1.duration } / 3600
-    }
-
-    private var thisWeekFocusHours: Int {
-        let calendar = Calendar.current
         let startOfWeek = calendar.dateInterval(of: .weekOfYear, for: Date())?.start ?? Date()
-        let weekSessions = allSessions.filter { $0.startedAt >= startOfWeek && $0.completed }
-        return weekSessions.reduce(0) { $0 + $1.duration } / 3600
-    }
+        let weekCompletedDuration = allSessions
+            .filter { $0.startedAt >= startOfWeek && $0.completed }
+            .reduce(0) { $0 + $1.duration }
+        cachedThisWeekFocusHours = weekCompletedDuration / 3600
 
-    // Weekly dots data
-    private var weekDays: [(letter: String, hasData: Bool)] {
-        let calendar = Calendar.current
-        let today = calendar.startOfDay(for: Date())
+        // Weekly dots
+        let today = startOfDay
         let weekday = calendar.component(.weekday, from: today)
         let mondayOffset = (weekday + 5) % 7
-        let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today)!
+        guard let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today) else {
+            cachedWeekDays = []
+            return
+        }
 
         let letters = ["M", "T", "W", "T", "F", "S", "S"]
-        return (0..<7).map { i in
-            let day = calendar.date(byAdding: .day, value: i, to: monday)!
-            let nextDay = calendar.date(byAdding: .day, value: 1, to: day)!
-            let hasSession = allSessions.contains { $0.startedAt >= day && $0.startedAt < nextDay && $0.completed }
+        // Build a set of day-start dates that have completed sessions for O(n) instead of O(7*n)
+        let completedDayStarts = Set(
+            allSessions
+                .filter { $0.completed }
+                .map { calendar.startOfDay(for: $0.startedAt) }
+        )
+
+        cachedWeekDays = (0..<7).compactMap { i in
+            guard let day = calendar.date(byAdding: .day, value: i, to: monday) else { return nil }
+            let hasSession = completedDayStarts.contains(day)
             return (letter: letters[i], hasData: hasSession)
         }
     }
@@ -132,7 +137,7 @@ struct SummaryView: View {
                             HStack(spacing: 6) {
                                 Text("🌻")
                                     .font(.system(size: 20))
-                                Text("\(allTimeFlowers)")
+                                Text("\(cachedAllTimeFlowers)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
                             }
@@ -149,13 +154,13 @@ struct SummaryView: View {
                                 .font(.system(size: 13, weight: .regular, design: .rounded))
                                 .foregroundColor(.textSecondary)
                             HStack(spacing: 2) {
-                                Text("\(allTimeFocusHours)")
+                                Text("\(cachedAllTimeFocusHours)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
                                 Text("h")
                                     .font(.system(size: 14, weight: .regular, design: .rounded))
                                     .foregroundColor(.textSecondary)
-                                Text("\(allTimeFocusMinutes)")
+                                Text("\(cachedAllTimeFocusMinutes)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
                                 Text("m")
@@ -182,7 +187,7 @@ struct SummaryView: View {
                                     .font(.system(size: 13, weight: .regular, design: .rounded))
                                     .foregroundColor(.textSecondary)
                                 HStack(spacing: 2) {
-                                    Text("\(todayFocusHours)")
+                                    Text("\(cachedTodayFocusHours)")
                                         .font(.system(size: 28, weight: .bold, design: .rounded))
                                         .foregroundColor(.textPrimary)
                                     Text("h")
@@ -202,7 +207,7 @@ struct SummaryView: View {
                                     .font(.system(size: 13, weight: .regular, design: .rounded))
                                     .foregroundColor(.textSecondary)
                                 HStack(spacing: 2) {
-                                    Text("\(thisWeekFocusHours)")
+                                    Text("\(cachedThisWeekFocusHours)")
                                         .font(.system(size: 28, weight: .bold, design: .rounded))
                                         .foregroundColor(.textPrimary)
                                     Text("h")
@@ -216,7 +221,7 @@ struct SummaryView: View {
 
                         // Weekly dots
                         HStack(spacing: 16) {
-                            ForEach(Array(weekDays.enumerated()), id: \.offset) { _, day in
+                            ForEach(Array(cachedWeekDays.enumerated()), id: \.offset) { _, day in
                                 VStack(spacing: 6) {
                                     Circle()
                                         .fill(day.hasData ? Color.darkGreen : Color.white.opacity(0.3))
@@ -257,7 +262,7 @@ struct SummaryView: View {
                             HStack(spacing: 6) {
                                 Text("🌻")
                                     .font(.system(size: 20))
-                                Text("\(todayCompletedCount)")
+                                Text("\(cachedTodayCompletedCount)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
                             }
@@ -276,7 +281,7 @@ struct SummaryView: View {
                             HStack(spacing: 6) {
                                 Text("🥀")
                                     .font(.system(size: 20))
-                                Text("\(todayAbandonedCount)")
+                                Text("\(cachedTodayAbandonedCount)")
                                     .font(.system(size: 28, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
                             }
@@ -292,6 +297,12 @@ struct SummaryView: View {
                 }
                 .padding(.horizontal, 20)
             }
+        }
+        .onAppear {
+            recomputeAll()
+        }
+        .onChange(of: allSessions.count) {
+            recomputeAll()
         }
     }
 }

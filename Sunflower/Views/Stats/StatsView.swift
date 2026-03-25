@@ -2,20 +2,31 @@ import SwiftUI
 import SwiftData
 
 struct StatsView: View {
+    // NOTE: For scale (1000+ sessions), this query should use a date predicate
+    // to limit to the current week/month. SwiftData does not support dynamic
+    // predicates easily, so for now we filter in code. If performance degrades
+    // with large data sets, migrate to a filtered fetch with #Predicate.
     @Query private var allSessions: [FocusSession]
     @State private var selectedDay: Date = Date()
 
-    private var calendar: Calendar { Calendar.current }
+    private static let calendar = Calendar.current
+
+    // Precomputed hour labels to avoid String(format:) in render loop
+    private static let hourLabels: [String] = (0..<24).map { String(format: "%02d:00", $0) }
+    private static let hourMinuteLabels: [[String]] = (0..<24).map { hour in
+        (0..<60).map { minute in String(format: "%02d:%02d", hour, minute) }
+    }
 
     private var weekDays: [(date: Date, dayLetter: String, dayNumber: String, isToday: Bool)] {
+        let calendar = Self.calendar
         let today = calendar.startOfDay(for: Date())
         let weekday = calendar.component(.weekday, from: today)
         let mondayOffset = (weekday + 5) % 7
-        let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today)!
+        guard let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today) else { return [] }
 
         let letters = ["M", "T", "W", "T", "F", "S", "S"]
-        return (0..<7).map { i in
-            let day = calendar.date(byAdding: .day, value: i, to: monday)!
+        return (0..<7).compactMap { i in
+            guard let day = calendar.date(byAdding: .day, value: i, to: monday) else { return nil }
             let num = calendar.component(.day, from: day)
             let isToday = calendar.isDateInToday(day)
             return (date: day, dayLetter: letters[i], dayNumber: "\(num)", isToday: isToday)
@@ -27,17 +38,18 @@ struct StatsView: View {
     }
 
     private var currentHour: Int {
-        calendar.component(.hour, from: Date())
+        Self.calendar.component(.hour, from: Date())
     }
 
     private var currentMinute: Int {
-        calendar.component(.minute, from: Date())
+        Self.calendar.component(.minute, from: Date())
     }
 
     private func sessionsForHour(_ hour: Int) -> [FocusSession] {
+        let calendar = Self.calendar
         let dayStart = calendar.startOfDay(for: selectedDay)
-        let hourStart = calendar.date(byAdding: .hour, value: hour, to: dayStart)!
-        let hourEnd = calendar.date(byAdding: .hour, value: 1, to: hourStart)!
+        guard let hourStart = calendar.date(byAdding: .hour, value: hour, to: dayStart),
+              let hourEnd = calendar.date(byAdding: .hour, value: 1, to: hourStart) else { return [] }
         return allSessions.filter { $0.startedAt >= hourStart && $0.startedAt < hourEnd }
     }
 
@@ -102,7 +114,7 @@ struct StatsView: View {
                                 ZStack(alignment: .topLeading) {
                                     // Hour label + dashed line
                                     HStack(spacing: 8) {
-                                        Text(String(format: "%02d:00", hour))
+                                        Text(Self.hourLabels[hour])
                                             .font(.system(size: 12, weight: .regular, design: .rounded))
                                             .foregroundColor(.textSecondary.opacity(0.6))
                                             .frame(width: 40, alignment: .leading)
@@ -134,9 +146,10 @@ struct StatsView: View {
                                     }
 
                                     // Current time indicator
-                                    if hour == currentHour && calendar.isDateInToday(selectedDay) {
+                                    if hour == currentHour && Self.calendar.isDateInToday(selectedDay) {
+                                        let timeLabel = Self.hourMinuteLabels[currentHour][currentMinute]
                                         HStack(spacing: 0) {
-                                            Text(String(format: "%02d:%02d", currentHour, currentMinute))
+                                            Text(timeLabel)
                                                 .font(.system(size: 11, weight: .semibold, design: .rounded))
                                                 .foregroundColor(.white)
                                                 .padding(.horizontal, 8)
