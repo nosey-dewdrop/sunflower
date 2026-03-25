@@ -10,6 +10,7 @@ struct StatsView: View {
     @State private var selectedDay: Date = Date()
 
     private static let calendar = Calendar.current
+    private static let hours = Array(0..<24)
 
     // Precomputed hour labels to avoid String(format:) in render loop
     private static let hourLabels: [String] = (0..<24).map { String(format: "%02d:00", $0) }
@@ -17,15 +18,31 @@ struct StatsView: View {
         (0..<60).map { minute in String(format: "%02d:%02d", hour, minute) }
     }
 
-    private var weekDays: [(date: Date, dayLetter: String, dayNumber: String, isToday: Bool)] {
+    // Cached values to avoid recomputation every render
+    @State private var cachedWeekDays: [(date: Date, dayLetter: String, dayNumber: String, isToday: Bool)] = []
+    @State private var cachedCurrentHour: Int = 0
+    @State private var cachedCurrentMinute: Int = 0
+    @State private var cachedSessionsByHour: [Int: [FocusSession]] = [:]
+    @State private var cachedHeaderDate: String = ""
+
+    private static let headerDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMM d"
+        return f
+    }()
+
+    private func recomputeWeekDays() {
         let calendar = Self.calendar
         let today = calendar.startOfDay(for: Date())
         let weekday = calendar.component(.weekday, from: today)
         let mondayOffset = (weekday + 5) % 7
-        guard let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today) else { return [] }
+        guard let monday = calendar.date(byAdding: .day, value: -mondayOffset, to: today) else {
+            cachedWeekDays = []
+            return
+        }
 
         let letters = ["M", "T", "W", "T", "F", "S", "S"]
-        return (0..<7).compactMap { i in
+        cachedWeekDays = (0..<7).compactMap { i in
             guard let day = calendar.date(byAdding: .day, value: i, to: monday) else { return nil }
             let num = calendar.component(.day, from: day)
             let isToday = calendar.isDateInToday(day)
@@ -33,24 +50,20 @@ struct StatsView: View {
         }
     }
 
-    private var hours: [Int] {
-        Array(0..<24)
-    }
-
-    private var currentHour: Int {
-        Self.calendar.component(.hour, from: Date())
-    }
-
-    private var currentMinute: Int {
-        Self.calendar.component(.minute, from: Date())
-    }
-
-    private func sessionsForHour(_ hour: Int) -> [FocusSession] {
+    private func recomputeSessionsByHour() {
         let calendar = Self.calendar
         let dayStart = calendar.startOfDay(for: selectedDay)
-        guard let hourStart = calendar.date(byAdding: .hour, value: hour, to: dayStart),
-              let hourEnd = calendar.date(byAdding: .hour, value: 1, to: hourStart) else { return [] }
-        return allSessions.filter { $0.startedAt >= hourStart && $0.startedAt < hourEnd }
+        var grouped: [Int: [FocusSession]] = [:]
+        for session in allSessions {
+            let hour = calendar.component(.hour, from: session.startedAt)
+            if calendar.isDate(session.startedAt, inSameDayAs: selectedDay) {
+                grouped[hour, default: []].append(session)
+            }
+        }
+        cachedSessionsByHour = grouped
+        cachedCurrentHour = calendar.component(.hour, from: Date())
+        cachedCurrentMinute = calendar.component(.minute, from: Date())
+        cachedHeaderDate = Self.headerDateFormatter.string(from: selectedDay)
     }
 
     var body: some View {
@@ -60,7 +73,7 @@ struct StatsView: View {
             VStack(alignment: .leading, spacing: 0) {
                 // Header
                 HStack {
-                    Text(selectedDay.formatted(.dateTime.month().day()) + ", Today")
+                    Text(cachedHeaderDate + ", Today")
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                         .foregroundColor(.textPrimary)
 
@@ -84,7 +97,7 @@ struct StatsView: View {
 
                 // Week days row
                 HStack(spacing: 8) {
-                    ForEach(Array(weekDays.enumerated()), id: \.offset) { _, day in
+                    ForEach(Array(cachedWeekDays.enumerated()), id: \.offset) { _, day in
                         Button {
                             selectedDay = day.date
                         } label: {
@@ -110,7 +123,7 @@ struct StatsView: View {
                 ScrollViewReader { proxy in
                     ScrollView(.vertical, showsIndicators: false) {
                         VStack(spacing: 0) {
-                            ForEach(hours, id: \.self) { hour in
+                            ForEach(Self.hours, id: \.self) { hour in
                                 ZStack(alignment: .topLeading) {
                                     // Hour label + dashed line
                                     HStack(spacing: 8) {
@@ -125,7 +138,7 @@ struct StatsView: View {
                                     }
 
                                     // Sessions in this hour
-                                    let sessions = sessionsForHour(hour)
+                                    let sessions = cachedSessionsByHour[hour] ?? []
                                     if !sessions.isEmpty {
                                         ForEach(sessions) { session in
                                             let minutes = session.duration / 60
@@ -146,8 +159,8 @@ struct StatsView: View {
                                     }
 
                                     // Current time indicator
-                                    if hour == currentHour && Self.calendar.isDateInToday(selectedDay) {
-                                        let timeLabel = Self.hourMinuteLabels[currentHour][currentMinute]
+                                    if hour == cachedCurrentHour && Self.calendar.isDateInToday(selectedDay) {
+                                        let timeLabel = Self.hourMinuteLabels[cachedCurrentHour][cachedCurrentMinute]
                                         HStack(spacing: 0) {
                                             Text(timeLabel)
                                                 .font(.system(size: 11, weight: .semibold, design: .rounded))
@@ -161,7 +174,7 @@ struct StatsView: View {
                                                 .fill(Color.darkGreen)
                                                 .frame(height: 1.5)
                                         }
-                                        .offset(y: CGFloat(currentMinute) / 60.0 * 80)
+                                        .offset(y: CGFloat(cachedCurrentMinute) / 60.0 * 80)
                                     }
                                 }
                                 .frame(height: 80)
@@ -172,11 +185,21 @@ struct StatsView: View {
                         .padding(.top, 16)
                     }
                     .onAppear {
-                        let scrollHour = max(0, currentHour - 2)
+                        let scrollHour = max(0, cachedCurrentHour - 2)
                         proxy.scrollTo(scrollHour, anchor: .top)
                     }
                 }
             }
+        }
+        .onAppear {
+            recomputeWeekDays()
+            recomputeSessionsByHour()
+        }
+        .onChange(of: selectedDay) {
+            recomputeSessionsByHour()
+        }
+        .onChange(of: allSessions.count) {
+            recomputeSessionsByHour()
         }
     }
 }

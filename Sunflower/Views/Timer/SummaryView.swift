@@ -18,6 +18,13 @@ struct SummaryView: View {
     @State private var cachedTodayFocusHours: Int = 0
     @State private var cachedThisWeekFocusHours: Int = 0
     @State private var cachedWeekDays: [(letter: String, hasData: Bool)] = []
+    @State private var cachedDateLabel: String = ""
+
+    private static let summaryDateFormatter: DateFormatter = {
+        let f = DateFormatter()
+        f.dateFormat = "MMM d"
+        return f
+    }()
 
     private func recomputeAll() {
         let calendar = Calendar.current
@@ -74,6 +81,8 @@ struct SummaryView: View {
             let hasSession = completedDayStarts.contains(day)
             return (letter: letters[i], hasData: hasSession)
         }
+
+        cachedDateLabel = Self.summaryDateFormatter.string(from: Date())
     }
 
     var body: some View {
@@ -124,7 +133,7 @@ struct SummaryView: View {
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.textPrimary)
 
-                    Text(Date().formatted(.dateTime.month().day()) + " ,Today")
+                    Text(cachedDateLabel + " ,Today")
                         .font(.system(size: 14, weight: .regular, design: .rounded))
                         .foregroundColor(.textSecondary)
 
