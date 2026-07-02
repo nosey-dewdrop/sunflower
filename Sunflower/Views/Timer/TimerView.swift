@@ -431,7 +431,7 @@ struct TimerView: View {
             if let end = timerManager.endDate, end.timeIntervalSince(now) > graceSeconds {
                 // the flower can no longer finish within grace: bloom is not guaranteed anymore
                 NotificationManager.shared.cancelTimerComplete()
-                if currentSettings.notificationsEnabled {
+                if currentSettings.notificationsEnabled && currentSettings.wiltRemindersEnabled {
                     NotificationManager.shared.scheduleWiltWarning()
                 }
             }

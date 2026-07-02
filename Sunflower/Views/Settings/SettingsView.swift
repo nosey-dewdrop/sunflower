@@ -117,6 +117,25 @@ struct SettingsView: View {
                             ))
                             .tint(.darkGreen)
                         }
+
+                        Divider().background(Color.textSecondary.opacity(0.15))
+
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Wilt Reminder")
+                                    .font(.system(size: 16, weight: .medium, design: .rounded))
+                                    .foregroundColor(.textPrimary)
+                                Text("If you leave mid focus, your flower calls you back.")
+                                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                                    .foregroundColor(.textSecondary)
+                            }
+                            Spacer()
+                            Toggle("", isOn: Binding(
+                                get: { settings.wiltRemindersEnabled },
+                                set: { settings.wiltRemindersEnabled = $0 }
+                            ))
+                            .tint(.darkGreen)
+                        }
                     }
 
                     Spacer(minLength: 40)

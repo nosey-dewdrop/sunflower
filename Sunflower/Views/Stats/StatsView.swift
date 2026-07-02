@@ -52,7 +52,6 @@ struct StatsView: View {
 
     private func recomputeSessionsByHour() {
         let calendar = Self.calendar
-        let dayStart = calendar.startOfDay(for: selectedDay)
         var grouped: [Int: [FocusSession]] = [:]
         for session in allSessions {
             let hour = calendar.component(.hour, from: session.startedAt)
