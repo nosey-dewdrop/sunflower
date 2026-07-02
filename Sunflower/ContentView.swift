@@ -2,21 +2,26 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
+    @AppStorage("hasOnboarded") private var hasOnboarded = false
     @State private var selectedTab: Int = 1
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            SettingsView()
-                .tag(0)
+        if hasOnboarded {
+            TabView(selection: $selectedTab) {
+                SettingsView()
+                    .tag(0)
 
-            TimerView()
-                .tag(1)
+                TimerView()
+                    .tag(1)
 
-            StatsView()
-                .tag(2)
+                StatsView()
+                    .tag(2)
+            }
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .ignoresSafeArea()
+        } else {
+            OnboardingView(hasOnboarded: $hasOnboarded)
         }
-        .tabViewStyle(.page(indexDisplayMode: .never))
-        .ignoresSafeArea()
     }
 }
 

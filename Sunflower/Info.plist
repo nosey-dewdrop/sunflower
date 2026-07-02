@@ -18,11 +18,12 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
-
 	<key>UILaunchScreen</key>
 	<dict>
 		<key>UIColorName</key>
-		<string></string>
+		<string>LaunchBackground</string>
+		<key>UIImageName</key>
+		<string>sprout</string>
 	</dict>
 	<key>UIRequiresFullScreen</key>
 	<true/>

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0C826536C089240B9119F20E /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91E652CEF53649D7384B206 /* OnboardingView.swift */; };
 		147A2238396D015941BDA244 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E58D563423D3DA843658875 /* ContentView.swift */; };
 		15F9E55885A90B8C6E650E2D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97896476C6062C62E4007761 /* Assets.xcassets */; };
 		24A68E30DB6D2279ADB34038 /* SunflowerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6224BDCF80215B410190F7A /* SunflowerWidget.swift */; };
@@ -79,6 +80,7 @@
 		BA6FCF6EF842C32C93916340 /* GardenItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenItem.swift; sourceTree = "<group>"; };
 		E8CBC33ABD3DADBF7F72E7A3 /* SunflowerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SunflowerWidget.entitlements; sourceTree = "<group>"; };
 		F6224BDCF80215B410190F7A /* SunflowerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunflowerWidget.swift; sourceTree = "<group>"; };
+		F91E652CEF53649D7384B206 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -112,6 +114,7 @@
 		09A0577EE7DA9E3C1CC87FA0 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				93E5EBB3434B549FEFDF1EAF /* Onboarding */,
 				BC08F582255926F5596FE2A3 /* Settings */,
 				0865D3F9BB5583902EFCD2EA /* Stats */,
 				016CB542DA4E46D763962C49 /* Timer */,
@@ -156,6 +159,14 @@
 				A8F06E39F50EBE5ED6139BD5 /* GardenSnapshot.swift */,
 			);
 			path = Shared;
+			sourceTree = "<group>";
+		};
+		93E5EBB3434B549FEFDF1EAF /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				F91E652CEF53649D7384B206 /* OnboardingView.swift */,
+			);
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 		A1A1783721352304A2EB0A9B = {
@@ -304,6 +315,7 @@
 				4A88A7C5039F3ADA457F8A5A /* GardenSnapshot.swift in Sources */,
 				BBE7FE0D68953227357E1053 /* GardenSnapshotWriter.swift in Sources */,
 				95326EC7499331715499CCFB /* NotificationManager.swift in Sources */,
+				0C826536C089240B9119F20E /* OnboardingView.swift in Sources */,
 				F16DA1FE207B85236C50DA23 /* SettingsView.swift in Sources */,
 				5A51DFFF6555D77E5E36B496 /* StatsView.swift in Sources */,
 				62FE260CDED5C873388D846D /* SummaryView.swift in Sources */,

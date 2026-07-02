@@ -35,7 +35,8 @@ targets:
       path: Sunflower/Info.plist
       properties:
         UILaunchScreen:
-          UIColorName: ""
+          UIColorName: LaunchBackground
+          UIImageName: sprout
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UIRequiresFullScreen: true
