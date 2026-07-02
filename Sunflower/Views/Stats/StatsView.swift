@@ -184,8 +184,11 @@ struct StatsView: View {
                         .padding(.top, 16)
                     }
                     .onAppear {
-                        let scrollHour = max(0, cachedCurrentHour - 2)
-                        proxy.scrollTo(scrollHour, anchor: .top)
+                        // defer one runloop so the timeline is laid out before we jump to now
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                            let scrollHour = max(0, cachedCurrentHour - 2)
+                            proxy.scrollTo(scrollHour, anchor: .top)
+                        }
                     }
                 }
             }
