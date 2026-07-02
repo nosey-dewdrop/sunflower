@@ -71,7 +71,6 @@ struct TimerView: View {
     @Query private var settings: [UserSettings]
     @Query private var tags: [FocusTag]
     @Query private var flowers: [FlowerDrop]
-    @Query private var gardenItems: [GardenItem]
 
     @State private var timerManager = TimerManager()
     @State private var selectedTag: FocusTag?
@@ -97,15 +96,9 @@ struct TimerView: View {
     var body: some View {
         GeometryReader { screen in
             ZStack {
-                // Scrollable: Market (top) → Timer (center) → Summary (bottom)
-                ScrollViewReader { scrollProxy in
+                // Scrollable: Timer (top) → Summary (bottom)
                 ScrollView(.vertical, showsIndicators: false) {
                     VStack(spacing: 0) {
-                        // === MARKET SECTION (scroll up to see) ===
-                        MarketView()
-                            .frame(height: screen.size.height)
-                            .id("market")
-
                         // === TIMER SECTION ===
                         ZStack {
                             // Grass background
@@ -117,11 +110,6 @@ struct TimerView: View {
                                     .clipped()
                             }
                             .ignoresSafeArea()
-
-                            // Garden items
-                            ForEach(gardenItems) { item in
-                                DraggableGardenItem(item: item, geoSize: screen.size)
-                            }
 
                             // Trees from tags
                             ForEach(tags) { tag in
@@ -206,12 +194,6 @@ struct TimerView: View {
                     }
                 }
                 .scrollTargetBehavior(.paging)
-                .onAppear {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-                        scrollProxy.scrollTo("timer", anchor: .top)
-                    }
-                }
-                }
 
                 // Overlays on top of everything
                 if showFlowerEarned {
@@ -335,11 +317,6 @@ struct TimerView: View {
         try? modelContext.save()
 
         NotificationManager.shared.cancelAll()
-
-        // Earn coins: 1 per minute
-        let earnedCoins = currentSettings.pomoDuration / 60
-        currentSettings.coins += earnedCoins
-        try? modelContext.save()
 
         withAnimation {
             showFlowerEarned = true
@@ -724,73 +701,6 @@ struct HorizontalRulerPicker: View {
             }
         }
         .frame(height: 60)
-    }
-}
-
-// MARK: - Draggable Garden Item
-
-struct DraggableGardenItem: View {
-    let item: GardenItem
-    let geoSize: CGSize
-    @State private var dragOffset: CGSize = .zero
-
-    private var itemIcon: String {
-        switch item.itemType {
-        case "oak": return "tree.fill"
-        case "pine": return "tree.fill"
-        case "cherry": return "tree.fill"
-        case "birch": return "tree.fill"
-        case "sunflower": return "sun.max.fill"
-        case "daisy": return "sparkle"
-        case "tulip": return "leaf.fill"
-        case "rose": return "heart.fill"
-        case "lavender": return "star.fill"
-        case "fence": return "rectangle.split.3x1"
-        case "rock": return "mountain.2.fill"
-        case "pond": return "drop.fill"
-        default: return "circle.fill"
-        }
-    }
-
-    private var itemColor: Color {
-        switch item.itemType {
-        case "oak": return .green
-        case "pine": return Color(hex: "2D5A3D")
-        case "cherry": return .pink
-        case "birch": return Color(hex: "96CEB4")
-        case "sunflower": return .warmYellow
-        case "daisy": return .white
-        case "tulip": return .red
-        case "rose": return .pink
-        case "lavender": return .purple
-        case "fence": return .brown
-        case "rock": return .gray
-        case "pond": return .blue
-        default: return .warmYellow
-        }
-    }
-
-    var body: some View {
-        Image(systemName: itemIcon)
-            .font(.system(size: item.displaySize))
-            .foregroundColor(itemColor)
-            .position(
-                x: item.positionX * geoSize.width + dragOffset.width,
-                y: item.positionY * geoSize.height + dragOffset.height
-            )
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        dragOffset = value.translation
-                    }
-                    .onEnded { value in
-                        let newX = (item.positionX * geoSize.width + value.translation.width) / geoSize.width
-                        let newY = (item.positionY * geoSize.height + value.translation.height) / geoSize.height
-                        item.positionX = max(0.05, min(0.95, newX))
-                        item.positionY = max(0.3, min(0.9, newY))
-                        dragOffset = .zero
-                    }
-            )
     }
 }
 
