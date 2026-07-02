@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>sunflower — focus, and flowers grow</title>
+<meta name="description" content="a gentle pomodoro timer. every focus session blooms a doodle flower in your garden.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #FFFDF5;
+    --paper: #FBF6E7;
+    --leaf: #4E7A33;
+    --leaf-deep: #3C6126;
+    --meadow: #82A355;
+    --meadow-light: #A9CC7C;
+    --crayon-yellow: #F4D35E;
+    --crayon-pink: #E48BB1;
+    --crayon-blue: #8FBFDC;
+    --ink: #4A3F28;
+    --ink-soft: #7A6E52;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'Quicksand', sans-serif;
+    overflow-x: hidden;
+    /* faint paper grain */
+    background-image: radial-gradient(rgba(130,163,85,0.05) 1px, transparent 1.5px);
+    background-size: 22px 22px;
+  }
+
+  h1, h2, h3, .crayon { font-family: 'Gaegu', cursive; }
+
+  /* ---------- wobbly hand-drawn shapes ---------- */
+  .wobble-card {
+    border: 3px solid var(--leaf);
+    border-radius: 235px 25px 225px 25px / 25px 225px 25px 235px;
+    background: var(--cream);
+  }
+
+  .wobble-btn {
+    display: inline-block;
+    font-family: 'Gaegu', cursive;
+    font-weight: 700;
+    font-size: 1.35rem;
+    color: var(--cream);
+    background: var(--leaf);
+    border: 3px solid var(--leaf-deep);
+    border-radius: 185px 20px 195px 18px / 18px 195px 20px 185px;
+    padding: 10px 34px 6px;
+    text-decoration: none;
+    transform: rotate(-1.2deg);
+    transition: transform .18s ease;
+  }
+  .wobble-btn:hover { transform: rotate(1.4deg) scale(1.05); }
+
+  /* ---------- floating doodles ---------- */
+  .doodle { position: absolute; pointer-events: none; user-select: none; }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(var(--tilt, 0deg)); }
+    50% { transform: translateY(-14px) rotate(calc(var(--tilt, 0deg) + 3deg)); }
+  }
+  @keyframes flutter {
+    0%, 100% { transform: translate(0,0) rotate(var(--tilt, 0deg)); }
+    25% { transform: translate(9px,-11px) rotate(calc(var(--tilt) + 6deg)); }
+    60% { transform: translate(-7px,-4px) rotate(calc(var(--tilt) - 5deg)); }
+  }
+  @keyframes twinkle {
+    0%, 100% { transform: scale(1) rotate(var(--tilt, 0deg)); }
+    50% { transform: scale(0.82) rotate(calc(var(--tilt) + 8deg)); }
+  }
+  .bob { animation: bob 5.5s ease-in-out infinite; }
+  .flutter { animation: flutter 7s ease-in-out infinite; }
+  .twinkle { animation: twinkle 3.4s ease-in-out infinite; }
+
+  /* ---------- reveal on load ---------- */
+  @keyframes sprout-up {
+    from { opacity: 0; transform: translateY(26px) scale(.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .reveal { opacity: 0; animation: sprout-up .7s cubic-bezier(.2,.8,.3,1.1) forwards; }
+  .d1 { animation-delay: .05s } .d2 { animation-delay: .18s } .d3 { animation-delay: .32s }
+  .d4 { animation-delay: .46s } .d5 { animation-delay: .62s }
+
+  /* ---------- hero ---------- */
+  .hero {
+    position: relative;
+    max-width: 1120px;
+    margin: 0 auto;
+    padding: 90px 24px 70px;
+    display: grid;
+    grid-template-columns: 1.15fr .85fr;
+    gap: 40px;
+    align-items: center;
+  }
+  .hero-title {
+    font-size: clamp(4rem, 9vw, 6.8rem);
+    line-height: .9;
+    color: var(--leaf);
+    transform: rotate(-1.5deg);
+  }
+  .hero-title .petal { color: var(--crayon-pink); }
+  .hero-sub {
+    font-family: 'Gaegu', cursive;
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    color: var(--ink-soft);
+    margin: 18px 0 8px;
+    transform: rotate(-.6deg);
+  }
+  .hero-body { max-width: 46ch; font-size: 1.06rem; line-height: 1.65; margin-bottom: 30px; }
+  .hero-note { font-size: .85rem; color: var(--ink-soft); margin-top: 14px; font-weight: 600; }
+
+  /* phone frame: hand-drawn */
+  .phone {
+    position: relative;
+    width: min(300px, 78vw);
+    margin: 0 auto;
+    padding: 14px;
+    background: var(--paper);
+    border: 3.5px solid var(--ink);
+    border-radius: 48px 44px 50px 42px / 44px 50px 42px 48px;
+    box-shadow: 8px 10px 0 rgba(78,122,51,.22);
+    transform: rotate(2deg);
+  }
+  .phone img { width: 100%; display: block; border-radius: 34px 30px 36px 30px / 30px 36px 30px 34px; }
+  .phone.small { width: min(250px, 66vw); }
+
+  /* ---------- grass divider ---------- */
+  .grass-divider {
+    height: 90px;
+    background-image: url('assets/ground_texture.png');
+    background-size: 420px;
+    border-top: 4px solid var(--leaf);
+    border-bottom: 4px solid var(--leaf);
+    border-radius: 60% 40% 0 0 / 22px 18px 0 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .grass-divider img { position: absolute; height: 56px; bottom: 12px; }
+
+  /* ---------- sections ---------- */
+  section { position: relative; }
+  .section-inner { max-width: 1120px; margin: 0 auto; padding: 84px 24px; }
+  .section-title {
+    font-size: clamp(2.4rem, 5vw, 3.6rem);
+    color: var(--leaf);
+    text-align: center;
+    transform: rotate(-1deg);
+    margin-bottom: 8px;
+  }
+  .section-kicker {
+    text-align: center;
+    color: var(--ink-soft);
+    font-weight: 600;
+    margin-bottom: 54px;
+  }
+
+  /* features */
+  .features {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 26px;
+  }
+  .feature {
+    padding: 30px 26px 26px;
+    text-align: center;
+    transition: transform .2s ease;
+  }
+  .feature:nth-child(odd) { transform: rotate(-1.1deg); }
+  .feature:nth-child(even) { transform: rotate(1.2deg); }
+  .feature:hover { transform: rotate(0deg) translateY(-6px); }
+  .feature img { height: 64px; margin-bottom: 14px; }
+  .feature h3 { font-size: 1.7rem; color: var(--leaf); margin-bottom: 8px; }
+  .feature p { font-size: .96rem; line-height: 1.6; color: var(--ink-soft); }
+  .feature .wilted { transform: rotate(-50deg); transform-origin: bottom center; }
+
+  /* screens */
+  .screens {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 48px;
+  }
+  .screens figure { text-align: center; }
+  .screens .phone { transform: rotate(-2deg); }
+  .screens figure:nth-child(2) .phone { transform: rotate(1.6deg); }
+  .screens figcaption {
+    font-family: 'Gaegu', cursive;
+    font-size: 1.35rem;
+    color: var(--ink-soft);
+    margin-top: 18px;
+    transform: rotate(-1deg);
+  }
+
+  /* pricing */
+  .pricing-bg { background: var(--paper); border-top: 4px dashed var(--meadow-light); border-bottom: 4px dashed var(--meadow-light); }
+  .plans {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 28px;
+    align-items: stretch;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+  .plan {
+    padding: 34px 26px 30px;
+    text-align: center;
+    position: relative;
+    background: var(--cream);
+  }
+  .plan:nth-child(1) { transform: rotate(-1.4deg); }
+  .plan:nth-child(3) { transform: rotate(1.3deg); }
+  .plan.best {
+    background: var(--leaf);
+    color: var(--cream);
+    border-color: var(--leaf-deep);
+    transform: rotate(.4deg) scale(1.04);
+    z-index: 1;
+  }
+  .plan.best h3, .plan.best .price { color: var(--cream); }
+  .plan h3 { font-size: 1.8rem; color: var(--leaf); }
+  .plan .price { font-family: 'Gaegu', cursive; font-size: 3rem; font-weight: 700; color: var(--leaf-deep); line-height: 1.1; }
+  .plan .per { font-size: .9rem; font-weight: 600; opacity: .75; margin-bottom: 16px; }
+  .plan ul { list-style: none; text-align: left; margin: 14px auto 0; max-width: 210px; font-size: .93rem; line-height: 1.5; }
+  .plan li { padding: 5px 0 5px 30px; background: url('assets/sprout.png') no-repeat left center / 20px; }
+  .plan.best li { filter: brightness(1.15); }
+  .badge {
+    position: absolute; top: -20px; right: 14px;
+    background: var(--crayon-yellow);
+    border: 2.5px solid var(--ink);
+    border-radius: 120px 14px 130px 12px / 12px 130px 14px 120px;
+    font-family: 'Gaegu', cursive;
+    font-weight: 700;
+    padding: 5px 14px 2px;
+    color: var(--ink);
+    transform: rotate(4deg);
+  }
+
+  /* footer */
+  footer {
+    text-align: center;
+    padding: 64px 24px 80px;
+    position: relative;
+  }
+  footer .crayon { font-size: 1.6rem; color: var(--leaf); }
+  footer p { color: var(--ink-soft); font-size: .9rem; margin-top: 6px; }
+
+  @media (max-width: 820px) {
+    .hero { grid-template-columns: 1fr; text-align: center; padding-top: 64px; }
+    .hero-body { margin-left: auto; margin-right: auto; }
+    .doodle { opacity: .55; }
+  }
+</style>
+</head>
+<body>
+
+  <!-- ================= HERO ================= -->
+  <header class="hero">
+    <img src="assets/decor_cloud_1.png" class="doodle bob" style="--tilt:-2deg; width:110px; top:40px; left:-30px;" alt="">
+    <img src="assets/decor_cloud_2.png" class="doodle bob" style="--tilt:1deg; width:90px; top:90px; right:4%; animation-delay:1.2s;" alt="">
+    <img src="assets/decor_butterfly_pink.png" class="doodle flutter" style="--tilt:-8deg; width:74px; top:180px; left:44%;" alt="">
+    <img src="assets/decor_sparkles.png" class="doodle twinkle" style="--tilt:0deg; width:60px; bottom:110px; left:2%;" alt="">
+    <img src="assets/decor_star.png" class="doodle twinkle" style="--tilt:6deg; width:88px; bottom:60px; right:0; animation-delay:.8s;" alt="">
+
+    <div>
+      <h1 class="hero-title reveal d1">sun<span class="petal">flower</span></h1>
+      <p class="hero-sub reveal d2">focus, and flowers grow</p>
+      <p class="hero-body reveal d3">
+        a gentle pomodoro timer. start a session and a sprout appears in your garden;
+        stay focused and it blooms into a hand-drawn flower. leave too long and it wilts —
+        softly, no graves, no guilt. your garden starts fresh every morning. your streak doesn't have to.
+      </p>
+      <div class="reveal d4">
+        <a class="wobble-btn" href="#pro">grow your garden</a>
+        <p class="hero-note">blooming soon on the app store · by damlahelloworld</p>
+      </div>
+    </div>
+
+    <div class="reveal d5">
+      <div class="phone"><img src="shots/timer.png" alt="sunflower timer over a doodle garden"></div>
+    </div>
+  </header>
+
+  <div class="grass-divider">
+    <img src="assets/flower_red.png" style="left:8%; bottom:10px;" alt="">
+    <img src="assets/flower_blue.png" style="left:28%; bottom:16px; height:44px;" alt="">
+    <img src="assets/flower_yellow.png" style="left:52%; bottom:8px;" alt="">
+    <img src="assets/flower_purple.png" style="left:73%; bottom:14px; height:50px;" alt="">
+    <img src="assets/flower_red.png" style="left:90%; bottom:12px; height:40px;" alt="">
+  </div>
+
+  <!-- ================= FEATURES ================= -->
+  <section>
+    <div class="section-inner">
+      <h2 class="section-title">a timer with a heart</h2>
+      <p class="section-kicker">everything a pomodoro needs, nothing it doesn't</p>
+
+      <div class="features">
+        <div class="feature wobble-card">
+          <img src="assets/flower_yellow.png" alt="">
+          <h3>bloom by focusing</h3>
+          <p>every finished session plants a flower where your sprout stood. longer focus, bigger bloom.</p>
+        </div>
+        <div class="feature wobble-card">
+          <img src="assets/sprout.png" class="wilted" alt="">
+          <h3>gentle wilting</h3>
+          <p>leave mid-focus and your flower calls you back. return in time and it straightens up. no dead trees, ever.</p>
+        </div>
+        <div class="feature wobble-card">
+          <img src="assets/decor_cloud_1.png" alt="">
+          <h3>garden on your lock screen</h3>
+          <p>a home screen widget for today's garden, and a live countdown on the lock screen and dynamic island.</p>
+        </div>
+        <div class="feature wobble-card">
+          <img src="assets/decor_star.png" alt="">
+          <h3>streaks that shine</h3>
+          <p>the garden resets each morning, the shooting star keeps count of your days. come back tomorrow.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= SCREENS ================= -->
+  <section>
+    <div class="section-inner" style="padding-top: 20px;">
+      <h2 class="section-title">soft on the eyes, honest with your time</h2>
+      <p class="section-kicker">your day, drawn in crayon</p>
+      <div class="screens">
+        <figure>
+          <div class="phone small"><img src="shots/summary.png" alt="summary screen with flower counts and focus trend"></div>
+          <figcaption>every flower counted</figcaption>
+        </figure>
+        <figure>
+          <div class="phone small"><img src="shots/settings.png" alt="settings screen with doodle flower tags"></div>
+          <figcaption>tags are flowers too</figcaption>
+        </figure>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PRICING ================= -->
+  <section class="pricing-bg" id="pro">
+    <div class="section-inner">
+      <img src="assets/decor_butterfly_pastel.png" class="doodle flutter" style="--tilt:5deg; width:80px; top:30px; right:6%;" alt="">
+      <img src="assets/decor_strawberry.png" class="doodle bob" style="--tilt:-4deg; width:64px; bottom:40px; left:4%;" alt="">
+
+      <h2 class="section-title">sunflower pro</h2>
+      <p class="section-kicker">the timer is free. the wild garden is pro.</p>
+
+      <div class="plans">
+        <div class="plan wobble-card">
+          <h3>monthly</h3>
+          <div class="price">$0.99</div>
+          <div class="per">per month</div>
+          <ul>
+            <li>every flower type</li>
+            <li>seasonal blooms</li>
+          </ul>
+        </div>
+        <div class="plan wobble-card best">
+          <span class="badge">best value</span>
+          <h3>yearly</h3>
+          <div class="price">$9.99</div>
+          <div class="per">per year</div>
+          <ul>
+            <li>every flower type</li>
+            <li>seasonal blooms</li>
+            <li>all future pro features</li>
+          </ul>
+        </div>
+        <div class="plan wobble-card">
+          <h3>lifetime</h3>
+          <div class="price">$19.99</div>
+          <div class="per">once, forever</div>
+          <ul>
+            <li>everything in yearly</li>
+            <li>yours for good</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= FOOTER ================= -->
+  <footer>
+    <img src="assets/decor_sparkles.png" class="doodle twinkle" style="--tilt:0deg; width:46px; top:20px; left:18%;" alt="">
+    <img src="assets/flower_blue.png" class="doodle bob" style="--tilt:3deg; width:52px; top:30px; right:16%;" alt="">
+    <div class="crayon">grown with love by damlahelloworld</div>
+    <p>sunflower · a damlahelloworld inc. product · 2026</p>
+  </footer>
+
+</body>
+</html>
