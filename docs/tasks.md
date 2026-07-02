@@ -1,13 +1,36 @@
 # Tasks
 
-- [x] create xcode project structure (dev)
-- [x] implement swiftdata models (dev)
-- [x] build timer view with pomodoro logic (dev)
-- [x] build summary view (dev)
-- [x] build stats view (dev)
-- [x] build settings view (dev)
-- [ ] add pixel art flower assets (design)
-- [ ] add pixel art background (design)
-- [ ] design app icon (design)
-- [ ] implement local notifications (dev)
-- [ ] add animations and haptics (dev)
+## Open
+- [ ] damla: final doodle assets (all app-side work is done, only these remain)
+- [ ] app store connect setup (products, bank, tax) once developer account is ready
+- [ ] decide fate of tag-tree system on the garden (keep or cut for simplicity)
+- [ ] screenshots + metadata + privacy policy hosting
+
+## Damla asset list (replace 1:1, keep these names)
+All hand-drawn doodle, transparent PNG, big canvas (will be scaled down):
+
+| asset | current placeholder | used in |
+|---|---|---|
+| flower_yellow | crayon yellow flower | garden, icon, onboarding |
+| flower_red | crayon red flower | garden |
+| flower_blue | crayon blue flower | garden |
+| flower_purple | crayon purple flower | garden, paywall |
+| sprout | green sprout | session marker, wilt animation, widget empty state, launch screen, live activity |
+| ground_texture | green swirl fabric | garden bg, widget bg, icon bg |
+| decor_strawberry | crayon strawberry | onboarding, paywall |
+| decor_star | shooting star | onboarding |
+| decor_sparkles | gold sparkles | onboarding, paywall, icon |
+| decor_cloud_1 / decor_cloud_2 | blue clouds | onboarding |
+| decor_butterfly_pink / decor_butterfly_pastel | butterflies | onboarding, paywall |
+| AppIcon | composed from above | app icon 1024 |
+
+Wilt animation upgrade (optional, later): 3 drawn frames per flower (upright, drooping, wilted) to replace the transform-based droop.
+
+## Done (jul 2 sprint)
+- doodle placeholders wired, pixel art fully retired
+- market + coins removed
+- gentle wilt mechanic (wall-clock, grace, lock/call safe, kill safe)
+- widget (today garden + streak) + live activity countdown
+- onboarding + launch screen + placeholder icon
+- sunflower pro paywall (storekit 2, monthly/yearly/lifetime, restore, error handling)
+- garden resets daily, widget matches
