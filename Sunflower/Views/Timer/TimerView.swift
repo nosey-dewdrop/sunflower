@@ -6,36 +6,64 @@ enum TimerPhase: String {
     case idle = "Ready"
 }
 
+// the sprout marks where the session's flower will bloom; it never fades, only moves like a drawing
+enum SproutPhase {
+    case none
+    case growing    // session running, sprout upright
+    case drooping   // brief droop shown right before recovery
+    case wilted     // session lost, goodbye moment
+    case sinking    // wilted sprout returns to the soil
+}
+
 @Observable
 class TimerManager {
     var timeRemaining: Int = 1500
     var totalTime: Int = 1500
     var isRunning: Bool = false
     var phase: TimerPhase = .idle
+    var endDate: Date?
     var timer: Timer?
     var onComplete: (() -> Void)?
 
+    // wall-clock based: short trips to background never desync the countdown
     func start(duration: Int) {
         totalTime = duration
         timeRemaining = duration
+        endDate = Date().addingTimeInterval(TimeInterval(duration))
         phase = .focus
         isRunning = true
+        startTicking()
+    }
+
+    private func startTicking() {
         timer?.invalidate()
-        timer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
-            guard let self else { return }
-            if self.timeRemaining > 0 {
-                self.timeRemaining -= 1
-            } else {
-                self.stop()
-                self.onComplete?()
-            }
+        timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: true) { [weak self] _ in
+            self?.tick()
         }
+    }
+
+    private func tick() {
+        guard isRunning, let endDate else { return }
+        let remaining = Int(ceil(endDate.timeIntervalSinceNow))
+        if remaining > 0 {
+            timeRemaining = remaining
+        } else {
+            timeRemaining = 0
+            stop()
+            onComplete?()
+        }
+    }
+
+    // call when returning to foreground so the countdown catches up instantly
+    func resync() {
+        tick()
     }
 
     func stop() {
         timer?.invalidate()
         timer = nil
         isRunning = false
+        endDate = nil
     }
 
     deinit {
@@ -77,11 +105,34 @@ struct TimerView: View {
     @State private var showTagPicker = false
     @State private var sessionStartTime: Date?
     @State private var showFlowerEarned = false
-    @State private var showFlowerDied = false
+    @State private var showFlowerMissed = false
     @State private var tappedTree: FocusTag?
     @State private var showDurationPicker = false
     @State private var showSummary = false
     @State private var pickerMinutes: Int = 20
+
+    // wilt mechanic state
+    @State private var sproutPhase: SproutPhase = .none
+    @State private var pendingFlowerX: Double = 0.5
+    @State private var pendingFlowerY: Double = 0.7
+    @State private var pendingFlowerType: String = "sunflower"
+    @State private var backgroundedAt: Date?
+    @State private var lastLockSignal: Date?
+
+    private let graceSeconds: TimeInterval = 30
+
+    // persisted so a killed app can still settle the session honestly on next launch
+    private enum PendingSessionKey {
+        static let endDate = "pending.endDate"
+        static let startedAt = "pending.startedAt"
+        static let total = "pending.total"
+        static let flowerType = "pending.flowerType"
+        static let posX = "pending.posX"
+        static let posY = "pending.posY"
+        static let tagId = "pending.tagId"
+        static let backgroundedAt = "pending.backgroundedAt"
+        static let all = [endDate, startedAt, total, flowerType, posX, posY, tagId, backgroundedAt]
+    }
 
     private var currentSettings: UserSettings {
         if let first = settings.first {
@@ -132,6 +183,16 @@ struct TimerView: View {
                                         x: flower.positionX * screen.size.width,
                                         y: flower.positionY * screen.size.height
                                     )
+                            }
+
+                            // Sprout: where the running session's flower will bloom
+                            if sproutPhase != .none {
+                                SproutSprite(phase: sproutPhase)
+                                    .position(
+                                        x: pendingFlowerX * screen.size.width,
+                                        y: pendingFlowerY * screen.size.height
+                                    )
+                                    .transition(.scale(scale: 0.1, anchor: .bottom))
                             }
 
                             // Timer UI - exact FocusPomo layout
@@ -211,19 +272,19 @@ struct TimerView: View {
                     .animation(.spring(duration: 0.5), value: showFlowerEarned)
                 }
 
-                if showFlowerDied {
+                if showFlowerMissed {
                     VStack {
                         Spacer()
-                        Text("your flower died...")
+                        Text("this flower couldn't bloom")
                             .font(.system(size: 20, weight: .bold, design: .rounded))
-                            .foregroundColor(.red)
+                            .foregroundColor(.brown)
                             .padding(.horizontal, 24)
                             .padding(.vertical, 12)
-                            .background(Color.white.opacity(0.85))
+                            .background(Color.cream.opacity(0.9))
                             .clipShape(Capsule())
                         Spacer().frame(height: 100)
                     }
-                    .animation(.spring(duration: 0.5), value: showFlowerDied)
+                    .animation(.spring(duration: 0.5), value: showFlowerMissed)
                 }
             }
         }
@@ -249,9 +310,14 @@ struct TimerView: View {
         }
         .onAppear {
             setupTimer()
+            reconcilePersistedSession()
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(to: newPhase)
+        }
+        .onReceive(NotificationCenter.default.publisher(for: UIApplication.protectedDataWillBecomeUnavailableNotification)) { _ in
+            // device lock signal: locking the phone to focus is never punished
+            lastLockSignal = Date()
         }
     }
 
@@ -276,6 +342,7 @@ struct TimerView: View {
             let elapsed = timerManager.elapsedSeconds
             timerManager.stop()
             NotificationManager.shared.cancelAll()
+            clearPendingSession()
 
             if elapsed >= 60 {
                 let session = FocusSession(
@@ -290,10 +357,22 @@ struct TimerView: View {
             }
 
             timerManager.reset(duration: currentSettings.pomoDuration)
+            withAnimation(.easeIn(duration: 0.3)) {
+                sproutPhase = .none
+            }
         } else {
             sessionStartTime = Date()
+            pendingFlowerType = FlowerDrop.randomType()
+            pendingFlowerX = Double.random(in: 0.1...0.9)
+            pendingFlowerY = Double.random(in: 0.5...0.85)
             timerManager.start(duration: currentSettings.pomoDuration)
-            NotificationManager.shared.scheduleTimerComplete(in: currentSettings.pomoDuration, isFocus: true)
+            if currentSettings.notificationsEnabled {
+                NotificationManager.shared.scheduleTimerComplete(in: currentSettings.pomoDuration, isFocus: true)
+            }
+            persistPendingSession()
+            withAnimation(.spring(duration: 0.5)) {
+                sproutPhase = .growing
+            }
         }
     }
 
@@ -307,16 +386,19 @@ struct TimerView: View {
         )
         modelContext.insert(session)
 
+        // the flower blooms exactly where the sprout stood
         let flower = FlowerDrop(
-            flowerType: FlowerDrop.randomType(),
+            flowerType: pendingFlowerType,
             size: FlowerDrop.sizeForDuration(currentSettings.pomoDuration),
-            positionX: Double.random(in: 0.1...0.9),
-            positionY: Double.random(in: 0.5...0.85)
+            positionX: pendingFlowerX,
+            positionY: pendingFlowerY
         )
         modelContext.insert(flower)
         try? modelContext.save()
 
-        NotificationManager.shared.cancelAll()
+        NotificationManager.shared.cancelWiltWarning()
+        clearPendingSession()
+        sproutPhase = .none
 
         withAnimation {
             showFlowerEarned = true
@@ -330,49 +412,204 @@ struct TimerView: View {
         timerManager.reset(duration: currentSettings.pomoDuration)
     }
 
-    // MARK: - Forest Mode
+    // MARK: - Gentle Wilt (leave the app mid-focus)
 
     private func handleScenePhaseChange(to phase: ScenePhase) {
         switch phase {
         case .background:
             guard timerManager.isRunning else { return }
 
-            // Leaving during focus = flower dies
-            let elapsed = timerManager.elapsedSeconds
-            timerManager.stop()
-            NotificationManager.shared.cancelAll()
-
-            if elapsed >= 60 {
-                let session = FocusSession(
-                    tag: selectedTag,
-                    startedAt: sessionStartTime ?? Date(),
-                    duration: elapsed,
-                    completed: false,
-                    abandoned: true
-                )
-                modelContext.insert(session)
-                try? modelContext.save()
+            // locking the phone to focus is not leaving; calls interrupt, they don't punish
+            if let lock = lastLockSignal, Date().timeIntervalSince(lock) < 2 {
+                return
             }
 
-            timerManager.reset(duration: currentSettings.pomoDuration)
-            UserDefaults.standard.set(true, forKey: "flowerDied")
+            let now = Date()
+            backgroundedAt = now
+            UserDefaults.standard.set(now.timeIntervalSince1970, forKey: PendingSessionKey.backgroundedAt)
+
+            if let end = timerManager.endDate, end.timeIntervalSince(now) > graceSeconds {
+                // the flower can no longer finish within grace: bloom is not guaranteed anymore
+                NotificationManager.shared.cancelTimerComplete()
+                if currentSettings.notificationsEnabled {
+                    NotificationManager.shared.scheduleWiltWarning()
+                }
+            }
 
         case .active:
-            if UserDefaults.standard.bool(forKey: "flowerDied") {
-                UserDefaults.standard.set(false, forKey: "flowerDied")
-                withAnimation {
-                    showFlowerDied = true
-                }
-                DispatchQueue.main.asyncAfter(deadline: .now() + 2.5) {
-                    withAnimation {
-                        showFlowerDied = false
-                    }
-                }
-            }
+            NotificationManager.shared.cancelWiltWarning()
+            reconcileAfterReturn()
 
         default:
             break
         }
+    }
+
+    private func reconcileAfterReturn() {
+        defer {
+            backgroundedAt = nil
+            UserDefaults.standard.removeObject(forKey: PendingSessionKey.backgroundedAt)
+        }
+        guard timerManager.isRunning else { return }
+
+        guard let left = backgroundedAt else {
+            // lock or brief interruption: countdown catches up silently
+            timerManager.resync()
+            return
+        }
+
+        let away = Date().timeIntervalSince(left)
+        let end = timerManager.endDate ?? Date()
+
+        if end.timeIntervalSince(left) <= graceSeconds {
+            // the timer finished (or finishes) within the grace window: the bloom stands
+            timerManager.resync()
+            if timerManager.isRunning && currentSettings.notificationsEnabled {
+                NotificationManager.shared.scheduleTimerComplete(in: timerManager.timeRemaining, isFocus: true)
+            }
+            return
+        }
+
+        if away <= graceSeconds {
+            // came back in time: the sprout recovers before your eyes
+            timerManager.resync()
+            if currentSettings.notificationsEnabled {
+                NotificationManager.shared.scheduleTimerComplete(in: timerManager.timeRemaining, isFocus: true)
+            }
+            playRecovery()
+        } else {
+            abandonSession(leftAt: left)
+        }
+    }
+
+    private func playRecovery() {
+        sproutPhase = .drooping
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.15) {
+            withAnimation(.spring(response: 0.6, dampingFraction: 0.5)) {
+                sproutPhase = .growing
+            }
+        }
+    }
+
+    private func abandonSession(leftAt left: Date) {
+        let elapsed = Int(left.timeIntervalSince(sessionStartTime ?? left))
+        timerManager.stop()
+        NotificationManager.shared.cancelTimerComplete()
+
+        if elapsed >= 60 {
+            let session = FocusSession(
+                tag: selectedTag,
+                startedAt: sessionStartTime ?? Date(),
+                duration: elapsed,
+                completed: false,
+                abandoned: true
+            )
+            modelContext.insert(session)
+            try? modelContext.save()
+        }
+
+        clearPendingSession()
+        timerManager.reset(duration: currentSettings.pomoDuration)
+        playWiltGoodbye()
+    }
+
+    // wilted sprout is seen for a beat, then returns to the soil; drawn motion, no fade
+    private func playWiltGoodbye() {
+        sproutPhase = .wilted
+        withAnimation {
+            showFlowerMissed = true
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.6) {
+            withAnimation(.easeIn(duration: 0.5)) {
+                sproutPhase = .sinking
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.55) {
+                sproutPhase = .none
+            }
+        }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.6) {
+            withAnimation {
+                showFlowerMissed = false
+            }
+        }
+    }
+
+    // MARK: - Pending Session Persistence (survives app kill)
+
+    private func persistPendingSession() {
+        let d = UserDefaults.standard
+        d.set(timerManager.endDate?.timeIntervalSince1970 ?? 0, forKey: PendingSessionKey.endDate)
+        d.set((sessionStartTime ?? Date()).timeIntervalSince1970, forKey: PendingSessionKey.startedAt)
+        d.set(currentSettings.pomoDuration, forKey: PendingSessionKey.total)
+        d.set(pendingFlowerType, forKey: PendingSessionKey.flowerType)
+        d.set(pendingFlowerX, forKey: PendingSessionKey.posX)
+        d.set(pendingFlowerY, forKey: PendingSessionKey.posY)
+        d.set(selectedTag?.id.uuidString, forKey: PendingSessionKey.tagId)
+    }
+
+    private func clearPendingSession() {
+        let d = UserDefaults.standard
+        PendingSessionKey.all.forEach { d.removeObject(forKey: $0) }
+    }
+
+    // app was killed mid-session: settle it honestly on next launch
+    private func reconcilePersistedSession() {
+        let d = UserDefaults.standard
+        guard d.double(forKey: PendingSessionKey.endDate) > 0, !timerManager.isRunning else { return }
+
+        let end = Date(timeIntervalSince1970: d.double(forKey: PendingSessionKey.endDate))
+        let started = Date(timeIntervalSince1970: d.double(forKey: PendingSessionKey.startedAt))
+        let bgEpoch = d.double(forKey: PendingSessionKey.backgroundedAt)
+        let leftAt = bgEpoch > 0 ? Date(timeIntervalSince1970: bgEpoch) : nil
+        let type = d.string(forKey: PendingSessionKey.flowerType) ?? FlowerDrop.randomType()
+        let px = d.double(forKey: PendingSessionKey.posX)
+        let py = d.double(forKey: PendingSessionKey.posY)
+        let total = d.integer(forKey: PendingSessionKey.total)
+        let tagId = d.string(forKey: PendingSessionKey.tagId).flatMap(UUID.init)
+        let tag = tags.first { $0.id == tagId }
+        clearPendingSession()
+
+        if end <= Date(), leftAt == nil || end.timeIntervalSince(leftAt!) <= graceSeconds {
+            // finished within grace (or without leaving): the flower still blooms
+            let session = FocusSession(tag: tag, startedAt: started, duration: total, completed: true, abandoned: false)
+            modelContext.insert(session)
+            let flower = FlowerDrop(flowerType: type, size: FlowerDrop.sizeForDuration(total), positionX: px, positionY: py)
+            modelContext.insert(flower)
+            try? modelContext.save()
+            return
+        }
+
+        // otherwise it was left behind: record honestly, no flower
+        let cutoff = min(leftAt ?? Date(), end)
+        let elapsed = Int(cutoff.timeIntervalSince(started))
+        if elapsed >= 60 {
+            let session = FocusSession(tag: tag, startedAt: started, duration: elapsed, completed: false, abandoned: true)
+            modelContext.insert(session)
+            try? modelContext.save()
+        }
+    }
+}
+
+// MARK: - Sprout Sprite
+
+struct SproutSprite: View {
+    let phase: SproutPhase
+
+    private var angle: Double {
+        switch phase {
+        case .drooping: return -28
+        case .wilted, .sinking: return -55
+        default: return 0
+        }
+    }
+
+    var body: some View {
+        Image("sprout")
+            .resizable()
+            .scaledToFit()
+            .frame(width: 36, height: 36)
+            .rotationEffect(.degrees(angle), anchor: .bottom)
+            .scaleEffect(phase == .sinking ? 0.01 : 1, anchor: .bottom)
     }
 }
 
