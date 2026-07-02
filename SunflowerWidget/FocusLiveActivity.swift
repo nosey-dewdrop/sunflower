@@ -25,7 +25,7 @@ struct FocusLiveActivity: Widget {
                 Spacer()
             }
             .padding(16)
-            .activityBackgroundTint(Color(red: 0.29, green: 0.42, blue: 0.16))
+            .activityBackgroundTint(Color(red: 0.31, green: 0.48, blue: 0.20))
         } dynamicIsland: { context in
             DynamicIsland {
                 DynamicIslandExpandedRegion(.leading) {

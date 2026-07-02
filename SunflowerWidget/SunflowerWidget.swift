@@ -72,18 +72,22 @@ struct SunflowerWidgetEntryView: View {
                     }
                 }
 
-                // streak badge
-                HStack(spacing: 4) {
+                // streak badge: damla's shooting star carries the number
+                HStack(spacing: 5) {
+                    Image("decor_star")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 22, height: 22)
                     Text("\(entry.snapshot.streak)")
                         .font(.system(size: 16, weight: .bold, design: .rounded))
                         .foregroundColor(.white)
                     Text(entry.snapshot.streak == 1 ? "day" : "days")
                         .font(.system(size: 11, weight: .medium, design: .rounded))
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(.white.opacity(0.85))
                 }
-                .padding(.horizontal, 8)
-                .padding(.vertical, 4)
-                .background(Color.black.opacity(0.25))
+                .padding(.horizontal, 9)
+                .padding(.vertical, 5)
+                .background(Color.black.opacity(0.22))
                 .clipShape(Capsule())
                 .padding(8)
             }

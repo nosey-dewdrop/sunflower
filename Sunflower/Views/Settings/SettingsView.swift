@@ -41,7 +41,7 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 4) {
-                                Text(store.isPro ? "Sunflower Pro 🌻" : "Sunflower Pro")
+                                Text("Sunflower Pro")
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
                                 Text(store.isPro ? "Your garden grows wilder. Thank you!" : "Every flower type, seasonal blooms, more")
@@ -49,12 +49,10 @@ struct SettingsView: View {
                                     .foregroundColor(.textSecondary)
                             }
                             Spacer()
-                            if !store.isPro {
-                                Image("flower_purple")
-                                    .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 40, height: 40)
-                            }
+                            Image(store.isPro ? "decor_star" : "flower_purple")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 40, height: 40)
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
                         .padding(18)

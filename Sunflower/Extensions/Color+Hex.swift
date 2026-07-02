@@ -25,10 +25,10 @@ extension Color {
         )
     }
 
-    // App color palette — matched to grass tile (dark tone)
-    static let grassGreen = Color(hex: "6B8F3C")
-    static let darkGreen = Color(hex: "4A6B28")
-    static let lightGreen = Color(hex: "8BAF5A")
+    // App color palette — sampled from the doodle ground texture (fresh spring green, not mud)
+    static let grassGreen = Color(hex: "82A355")
+    static let darkGreen = Color(hex: "4E7A33")
+    static let lightGreen = Color(hex: "A9CC7C")
     static let warmYellow = Color(hex: "F4D35E")
     static let cream = Color(hex: "FFFDF5")
     static let brown = Color(hex: "8B6914")

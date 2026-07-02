@@ -315,6 +315,7 @@ struct TimerView: View {
         .onAppear {
             setupTimer()
             reconcilePersistedSession()
+            seedDemoGardenIfNeeded()
             recomputeTodayFlowers()
             GardenSnapshotWriter.refresh(context: modelContext)
         }
@@ -334,6 +335,47 @@ struct TimerView: View {
     }
 
     // MARK: - Setup
+
+    // -screenshots launch arg: seed a lived-in garden for app store and landing shots
+    private func seedDemoGardenIfNeeded() {
+        guard ProcessInfo.processInfo.arguments.contains("-screenshots"), flowers.isEmpty else { return }
+
+        let demoTag: FocusTag
+        if let first = tags.first {
+            demoTag = first
+        } else {
+            demoTag = FocusTag(name: "study", colorHex: "F4D35E")
+            modelContext.insert(demoTag)
+            modelContext.insert(FocusTag(name: "reading", colorHex: "DDA0DD"))
+        }
+
+        let spots: [(String, String, Double, Double)] = [
+            ("sunflower", "large", 0.18, 0.62),
+            ("tulip", "medium", 0.78, 0.55),
+            ("daisy", "small", 0.42, 0.80),
+            ("rose", "medium", 0.62, 0.72),
+            ("lavender", "large", 0.30, 0.50),
+            ("daisy", "medium", 0.85, 0.82),
+            ("tulip", "small", 0.12, 0.84),
+            ("sunflower", "medium", 0.55, 0.58)
+        ]
+        for (type, size, x, y) in spots {
+            let flower = FlowerDrop(flowerType: type, size: size, positionX: x, positionY: y)
+            modelContext.insert(flower)
+        }
+
+        let calendar = Calendar.current
+        let now = Date()
+        for dayOffset in 0..<4 {
+            guard let day = calendar.date(byAdding: .day, value: -dayOffset, to: now) else { continue }
+            for (hour, minutes) in [(9, 25), (11, 45), (15, 20), (17, 30)] {
+                guard let start = calendar.date(bySettingHour: hour, minute: 12, second: 0, of: day), start <= now else { continue }
+                let session = FocusSession(tag: demoTag, startedAt: start, duration: minutes * 60, completed: true, abandoned: false)
+                modelContext.insert(session)
+            }
+        }
+        try? modelContext.save()
+    }
 
     private func recomputeTodayFlowers() {
         let todayStart = Calendar.current.startOfDay(for: Date())
