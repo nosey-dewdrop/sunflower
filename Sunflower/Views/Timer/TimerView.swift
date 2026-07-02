@@ -112,6 +112,9 @@ struct TimerView: View {
     @State private var showSummary = false
     @State private var pickerMinutes: Int = 20
 
+    // today's garden, cached so the 0.5s timer tick doesn't refilter every render
+    @State private var todayFlowers: [FlowerDrop] = []
+
     // wilt mechanic state
     @State private var sproutPhase: SproutPhase = .none
     @State private var pendingFlowerX: Double = 0.5
@@ -177,8 +180,8 @@ struct TimerView: View {
                                 }
                             }
 
-                            // Flower drops
-                            ForEach(flowers) { flower in
+                            // Flower drops: the garden holds today's blooms, fresh each morning
+                            ForEach(todayFlowers) { flower in
                                 FlowerSprite(flowerType: flower.flowerType, size: flower.displaySize)
                                     .position(
                                         x: flower.positionX * screen.size.width,
@@ -312,10 +315,17 @@ struct TimerView: View {
         .onAppear {
             setupTimer()
             reconcilePersistedSession()
+            recomputeTodayFlowers()
             GardenSnapshotWriter.refresh(context: modelContext)
+        }
+        .onChange(of: flowers.count) {
+            recomputeTodayFlowers()
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(to: newPhase)
+            if newPhase == .active {
+                recomputeTodayFlowers()
+            }
         }
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.protectedDataWillBecomeUnavailableNotification)) { _ in
             // device lock signal: locking the phone to focus is never punished
@@ -324,6 +334,11 @@ struct TimerView: View {
     }
 
     // MARK: - Setup
+
+    private func recomputeTodayFlowers() {
+        let todayStart = Calendar.current.startOfDay(for: Date())
+        todayFlowers = flowers.filter { $0.earnedAt >= todayStart }
+    }
 
     private func setupTimer() {
         let s = currentSettings
