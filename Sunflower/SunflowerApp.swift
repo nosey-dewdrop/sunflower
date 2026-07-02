@@ -3,6 +3,8 @@ import SwiftData
 
 @main
 struct SunflowerApp: App {
+    @State private var storeManager = StoreManager()
+
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
             FocusTag.self,
@@ -29,6 +31,7 @@ struct SunflowerApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(storeManager)
         }
         .modelContainer(sharedModelContainer)
     }

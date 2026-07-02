@@ -36,8 +36,9 @@ final class FlowerDrop {
     }
 
     static let flowerTypes = ["sunflower", "daisy", "tulip", "rose", "lavender"]
+    static let freeFlowerTypes = ["sunflower", "daisy"]
 
-    static func randomType() -> String {
-        flowerTypes.randomElement() ?? "sunflower"
+    static func randomType(isPro: Bool = true) -> String {
+        (isPro ? flowerTypes : freeFlowerTypes).randomElement() ?? "sunflower"
     }
 }

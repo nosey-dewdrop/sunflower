@@ -8,6 +8,8 @@ struct SettingsView: View {
 
     @State private var showAddTag = false
     @State private var newTagName = ""
+    @State private var showPaywall = false
+    @Environment(StoreManager.self) private var store
 
     private var settings: UserSettings {
         if let first = settingsList.first { return first }
@@ -34,18 +36,31 @@ struct SettingsView: View {
                         .foregroundColor(.textSecondary)
 
                     // Premium banner
-                    VStack(alignment: .leading, spacing: 4) {
-                        Text("Sunflower Plus")
-                            .font(.system(size: 18, weight: .bold, design: .rounded))
-                            .foregroundColor(.textPrimary)
-                        Text("Grow your garden, unlock more")
-                            .font(.system(size: 14, weight: .regular, design: .rounded))
-                            .foregroundColor(.textSecondary)
+                    Button {
+                        if !store.isPro { showPaywall = true }
+                    } label: {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text(store.isPro ? "Sunflower Pro 🌻" : "Sunflower Pro")
+                                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                                    .foregroundColor(.textPrimary)
+                                Text(store.isPro ? "Your garden grows wilder. Thank you!" : "Every flower type, seasonal blooms, more")
+                                    .font(.system(size: 14, weight: .regular, design: .rounded))
+                                    .foregroundColor(.textSecondary)
+                            }
+                            Spacer()
+                            if !store.isPro {
+                                Image("flower_purple")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 40, height: 40)
+                            }
+                        }
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(18)
+                        .background(Color.white.opacity(0.35))
+                        .clipShape(RoundedRectangle(cornerRadius: 18))
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(18)
-                    .background(Color.white.opacity(0.35))
-                    .clipShape(RoundedRectangle(cornerRadius: 18))
 
                     // Timer section
                     SettingsSectionHeader(title: "Timer")
@@ -142,6 +157,9 @@ struct SettingsView: View {
                 }
                 .padding(.horizontal, 20)
             }
+        }
+        .sheet(isPresented: $showPaywall) {
+            PaywallView()
         }
         .alert("New Tag", isPresented: $showAddTag) {
             TextField("tag name", text: $newTagName)

@@ -96,6 +96,7 @@ class TimerManager {
 struct TimerView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
+    @Environment(StoreManager.self) private var store
     @Query private var settings: [UserSettings]
     @Query private var tags: [FocusTag]
     @Query private var flowers: [FlowerDrop]
@@ -363,7 +364,7 @@ struct TimerView: View {
             }
         } else {
             sessionStartTime = Date()
-            pendingFlowerType = FlowerDrop.randomType()
+            pendingFlowerType = FlowerDrop.randomType(isPro: store.isPro)
             pendingFlowerX = Double.random(in: 0.1...0.9)
             pendingFlowerY = Double.random(in: 0.5...0.85)
             timerManager.start(duration: currentSettings.pomoDuration)
