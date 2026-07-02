@@ -10,21 +10,19 @@
 		147A2238396D015941BDA244 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E58D563423D3DA843658875 /* ContentView.swift */; };
 		15F9E55885A90B8C6E650E2D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97896476C6062C62E4007761 /* Assets.xcassets */; };
 		2DA68F7E0090203EC44403F1 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9820D40291546EB3256A10EF /* Color+Hex.swift */; };
+		39E5C73024DCFF90E2423377 /* GardenItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6FCF6EF842C32C93916340 /* GardenItem.swift */; };
 		4018FA7D849296C16674B84E /* SunflowerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234FC6BBB2E20377E211E2A1 /* SunflowerApp.swift */; };
 		5A51DFFF6555D77E5E36B496 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A076D1FAE3E5910D6DA8D6B /* StatsView.swift */; };
-
 		62FE260CDED5C873388D846D /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519C893BDA425DE369F755B3 /* SummaryView.swift */; };
+		6B75702E87DCD018EA7E499D /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB92E112F71500B6C5009D86 /* MarketView.swift */; };
 		7B1FC471E08C553EAAF24F3A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E713783AA43D9B63E1F012E /* UserSettings.swift */; };
-
+		95326EC7499331715499CCFB /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C984BFFA360252E2AC12F22 /* NotificationManager.swift */; };
 		A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514646F1B10516E79D7D0143 /* TimerView.swift */; };
 		B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16438E21E0B2C4E54ECB72BA /* FlowerDrop.swift */; };
-
 		CFE21D46735215F66A92280B /* FocusSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF7624920C6AE9BB03830C4 /* FocusSession.swift */; };
 		F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8097FA49454B6330F7799975 /* FocusTag.swift */; };
 		F16DA1FE207B85236C50DA23 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AC160622868CADE0EB86F3C /* SettingsView.swift */; };
-		AA11BB22CC33DD44EE55FF66 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */; };
-		CC11DD22EE33FF44AA55BB66 /* GardenItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD22EE33FF44AA55BB66CC11 /* GardenItem.swift */; };
-		EE11FF22AA33BB44CC55DD66 /* MarketView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF22AA33BB44CC55DD66EE11 /* MarketView.swift */; };
+		F1A7FEFCFE7DF8A4348C4EBD /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = A574FE6D4BA83E0C27AD4F8A /* PrivacyInfo.xcprivacy */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -33,27 +31,26 @@
 		1E58D563423D3DA843658875 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		234FC6BBB2E20377E211E2A1 /* SunflowerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunflowerApp.swift; sourceTree = "<group>"; };
 		255135C73ADAF1AFCE33D479 /* Sunflower.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Sunflower.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		3C984BFFA360252E2AC12F22 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		4AF7624920C6AE9BB03830C4 /* FocusSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSession.swift; sourceTree = "<group>"; };
 		514646F1B10516E79D7D0143 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
 		519C893BDA425DE369F755B3 /* SummaryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SummaryView.swift; sourceTree = "<group>"; };
-
 		5A076D1FAE3E5910D6DA8D6B /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
 		7C432B2C400E5D7CFE900B70 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8097FA49454B6330F7799975 /* FocusTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTag.swift; sourceTree = "<group>"; };
 		8AC160622868CADE0EB86F3C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		97896476C6062C62E4007761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9820D40291546EB3256A10EF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
-
-		BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
-		DD22EE33FF44AA55BB66CC11 /* GardenItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenItem.swift; sourceTree = "<group>"; };
-		FF22AA33BB44CC55DD66EE11 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
+		A574FE6D4BA83E0C27AD4F8A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
+		BA6FCF6EF842C32C93916340 /* GardenItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenItem.swift; sourceTree = "<group>"; };
+		DB92E112F71500B6C5009D86 /* MarketView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MarketView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		016CB542DA4E46D763962C49 /* Timer */ = {
 			isa = PBXGroup;
 			children = (
-				FF22AA33BB44CC55DD66EE11 /* MarketView.swift */,
+				DB92E112F71500B6C5009D86 /* MarketView.swift */,
 				519C893BDA425DE369F755B3 /* SummaryView.swift */,
 				514646F1B10516E79D7D0143 /* TimerView.swift */,
 			);
@@ -64,7 +61,7 @@
 			isa = PBXGroup;
 			children = (
 				9820D40291546EB3256A10EF /* Color+Hex.swift */,
-				BB22CC33DD44EE55FF66AA11 /* NotificationManager.swift */,
+				3C984BFFA360252E2AC12F22 /* NotificationManager.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -93,13 +90,13 @@
 				16438E21E0B2C4E54ECB72BA /* FlowerDrop.swift */,
 				4AF7624920C6AE9BB03830C4 /* FocusSession.swift */,
 				8097FA49454B6330F7799975 /* FocusTag.swift */,
-				DD22EE33FF44AA55BB66CC11 /* GardenItem.swift */,
+				BA6FCF6EF842C32C93916340 /* GardenItem.swift */,
 				0E713783AA43D9B63E1F012E /* UserSettings.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
 		};
-			8F456665844BBCE0B8E30B81 /* Products */ = {
+		8F456665844BBCE0B8E30B81 /* Products */ = {
 			isa = PBXGroup;
 			children = (
 				255135C73ADAF1AFCE33D479 /* Sunflower.app */,
@@ -129,9 +126,9 @@
 				97896476C6062C62E4007761 /* Assets.xcassets */,
 				1E58D563423D3DA843658875 /* ContentView.swift */,
 				7C432B2C400E5D7CFE900B70 /* Info.plist */,
+				A574FE6D4BA83E0C27AD4F8A /* PrivacyInfo.xcprivacy */,
 				234FC6BBB2E20377E211E2A1 /* SunflowerApp.swift */,
 				072F8EDEC6D4F9B5D54C3F98 /* Extensions */,
-
 				10333BD52F07AB83411591F4 /* Models */,
 				09A0577EE7DA9E3C1CC87FA0 /* Views */,
 			);
@@ -198,6 +195,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				15F9E55885A90B8C6E650E2D /* Assets.xcassets in Resources */,
+				F1A7FEFCFE7DF8A4348C4EBD /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -213,15 +211,14 @@
 				B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */,
 				CFE21D46735215F66A92280B /* FocusSession.swift in Sources */,
 				F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */,
-
+				39E5C73024DCFF90E2423377 /* GardenItem.swift in Sources */,
+				6B75702E87DCD018EA7E499D /* MarketView.swift in Sources */,
+				95326EC7499331715499CCFB /* NotificationManager.swift in Sources */,
 				F16DA1FE207B85236C50DA23 /* SettingsView.swift in Sources */,
 				5A51DFFF6555D77E5E36B496 /* StatsView.swift in Sources */,
 				62FE260CDED5C873388D846D /* SummaryView.swift in Sources */,
 				4018FA7D849296C16674B84E /* SunflowerApp.swift in Sources */,
 				A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */,
-				AA11BB22CC33DD44EE55FF66 /* NotificationManager.swift in Sources */,
-				CC11DD22EE33FF44AA55BB66 /* GardenItem.swift in Sources */,
-				EE11FF22AA33BB44CC55DD66 /* MarketView.swift in Sources */,
 				7B1FC471E08C553EAAF24F3A /* UserSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -110,7 +110,7 @@ struct TimerView: View {
                         ZStack {
                             // Grass background
                             GeometryReader { geo in
-                                Image("GrassTile")
+                                Image("ground_texture")
                                     .resizable()
                                     .scaledToFill()
                                     .frame(width: geo.size.width, height: geo.size.height)
@@ -405,32 +405,23 @@ struct FlowerSprite: View {
     let flowerType: String
     var size: CGFloat = 20
 
-    private var symbol: String {
+    // doodle placeholder assets; damla's final flowers replace these 1:1 by name
+    private var assetName: String {
         switch flowerType {
-        case "sunflower": return "sun.max.fill"
-        case "daisy": return "sparkle"
-        case "tulip": return "leaf.fill"
-        case "rose": return "heart.fill"
-        case "lavender": return "star.fill"
-        default: return "sun.max.fill"
-        }
-    }
-
-    private var color: Color {
-        switch flowerType {
-        case "sunflower": return .warmYellow
-        case "daisy": return .white
-        case "tulip": return .red
-        case "rose": return .pink
-        case "lavender": return .purple
-        default: return .warmYellow
+        case "sunflower": return "flower_yellow"
+        case "daisy": return "flower_blue"
+        case "tulip": return "flower_red"
+        case "rose": return "flower_purple"
+        case "lavender": return "flower_purple"
+        default: return "flower_yellow"
         }
     }
 
     var body: some View {
-        Image(systemName: symbol)
-            .font(.system(size: size))
-            .foregroundColor(color)
+        Image(assetName)
+            .resizable()
+            .scaledToFit()
+            .frame(width: size * 2.2, height: size * 2.2)
     }
 }
 

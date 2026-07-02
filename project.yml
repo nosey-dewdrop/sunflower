@@ -27,9 +27,6 @@ targets:
     info:
       path: Sunflower/Info.plist
       properties:
-        UIAppFonts:
-          - PixelifySans-Regular.ttf
-          - PixelifySans-Bold.ttf
         UILaunchScreen:
           UIColorName: ""
         UISupportedInterfaceOrientations:
