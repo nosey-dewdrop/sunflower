@@ -22,6 +22,8 @@ Top-down garden: each finished pomodoro blooms a doodle flower on the ground. Ga
 - [x] doodle placeholder assets (pinterest crops, transparent, halo-cleaned)
 - [x] top-down garden: ground texture + doodle flowers
 - [x] garden shows today's flowers, fresh each morning
+- [x] slot system (jul 2): 12 fixed slots dodge the timer ui, no overlap ever, no scrolling;
+      13th flower takes the oldest slot. sizes: <60m small daisy, 60m medium, 90m large
 - [ ] damla's final doodle assets replace placeholders 1:1 by name (see assets list in tasks.md)
 
 ## Phase 4: Gentle Wilt
@@ -46,7 +48,8 @@ Top-down garden: each finished pomodoro blooms a doodle flower on the ground. Ga
 ## Phase 7: Money (day-1 paywall)
 - [x] sunflower pro: monthly, yearly, lifetime (storekit 2)
 - [x] paywall view + purchase error handling + restore
-- [x] free tier: 2 flower types; pro: all types
+- [x] decision (jul 2): flowers are NEVER sold, all types free; pro sells power (focuspomo model)
+- [ ] pro features to build before launch: month/year focus trends, calendar view, icloud sync
 - [x] local storekit config for sandbox testing
 - [ ] app store connect: create products, bank/tax setup (needs apple developer account)
 

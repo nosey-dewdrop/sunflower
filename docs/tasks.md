@@ -2,6 +2,9 @@
 
 ## Open
 - [ ] damla: final doodle assets (all app-side work is done, only these remain)
+- [ ] pro power features (pre-launch): month/year trends, calendar view, icloud sync
+- [ ] ux fixes from jul 2 review: dead show all button, stop confirmation, tag delete crash risk,
+      cumulative grace budget, notifications-off warning, midnight rollover, tag rename, week start setting
 - [ ] app store connect setup (products, bank, tax) once developer account is ready
 - [ ] decide fate of tag-tree system on the garden (keep or cut for simplicity)
 - [ ] screenshots + metadata + privacy policy hosting

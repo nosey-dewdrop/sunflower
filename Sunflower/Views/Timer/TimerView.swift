@@ -383,7 +383,10 @@ struct TimerView: View {
             handleFocusComplete()
         }
 
-        NotificationManager.shared.requestPermission()
+        // screenshot runs must stay free of system dialogs
+        if !ProcessInfo.processInfo.arguments.contains("-screenshots") {
+            NotificationManager.shared.requestPermission()
+        }
     }
 
     // MARK: - Button Actions
