@@ -311,6 +311,7 @@ struct TimerView: View {
         .onAppear {
             setupTimer()
             reconcilePersistedSession()
+            GardenSnapshotWriter.refresh(context: modelContext)
         }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(to: newPhase)
@@ -399,6 +400,7 @@ struct TimerView: View {
         NotificationManager.shared.cancelWiltWarning()
         clearPendingSession()
         sproutPhase = .none
+        GardenSnapshotWriter.refresh(context: modelContext)
 
         withAnimation {
             showFlowerEarned = true

@@ -17,6 +17,13 @@ targets:
       - path: Sunflower
         excludes:
           - "**/.DS_Store"
+    dependencies:
+      - target: SunflowerWidget
+    entitlements:
+      path: Sunflower/Sunflower.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.noseyDewdrop.sunflower
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.noseyDewdrop.sunflower
       INFOPLIST_FILE: Sunflower/Info.plist
@@ -32,3 +39,27 @@ targets:
         UISupportedInterfaceOrientations:
           - UIInterfaceOrientationPortrait
         UIRequiresFullScreen: true
+  SunflowerWidget:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: SunflowerWidget
+      - path: Sunflower/Shared/GardenSnapshot.swift
+      - path: Sunflower/Assets.xcassets
+    entitlements:
+      path: SunflowerWidget/SunflowerWidget.entitlements
+      properties:
+        com.apple.security.application-groups:
+          - group.com.noseyDewdrop.sunflower
+    settings:
+      PRODUCT_BUNDLE_IDENTIFIER: com.noseyDewdrop.sunflower.widget
+      INFOPLIST_FILE: SunflowerWidget/Info.plist
+      TARGETED_DEVICE_FAMILY: "1"
+      SWIFT_EMIT_LOC_STRINGS: true
+      DEVELOPMENT_TEAM: ""
+    info:
+      path: SunflowerWidget/Info.plist
+      properties:
+        CFBundleDisplayName: Sunflower
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
