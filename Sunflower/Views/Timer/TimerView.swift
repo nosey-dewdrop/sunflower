@@ -359,6 +359,7 @@ struct TimerView: View {
             let elapsed = timerManager.elapsedSeconds
             timerManager.stop()
             NotificationManager.shared.cancelAll()
+            LiveActivityManager.end()
             clearPendingSession()
 
             if elapsed >= 60 {
@@ -387,6 +388,9 @@ struct TimerView: View {
                 NotificationManager.shared.scheduleTimerComplete(in: currentSettings.pomoDuration, isFocus: true)
             }
             persistPendingSession()
+            if let end = timerManager.endDate {
+                LiveActivityManager.start(flowerType: pendingFlowerType, endDate: end)
+            }
             withAnimation(.spring(duration: 0.5)) {
                 sproutPhase = .growing
             }
@@ -414,6 +418,7 @@ struct TimerView: View {
         try? modelContext.save()
 
         NotificationManager.shared.cancelWiltWarning()
+        LiveActivityManager.end()
         clearPendingSession()
         sproutPhase = .none
         GardenSnapshotWriter.refresh(context: modelContext)
@@ -513,6 +518,7 @@ struct TimerView: View {
         let elapsed = Int(left.timeIntervalSince(sessionStartTime ?? left))
         timerManager.stop()
         NotificationManager.shared.cancelTimerComplete()
+        LiveActivityManager.end()
 
         if elapsed >= 60 {
             let session = FocusSession(
@@ -586,6 +592,7 @@ struct TimerView: View {
         let tagId = d.string(forKey: PendingSessionKey.tagId).flatMap(UUID.init)
         let tag = tags.first { $0.id == tagId }
         clearPendingSession()
+        LiveActivityManager.end()
 
         if end <= Date(), leftAt == nil || end.timeIntervalSince(leftAt!) <= graceSeconds {
             // finished within grace (or without leaving): the flower still blooms

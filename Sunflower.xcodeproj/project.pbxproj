@@ -8,12 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		0C826536C089240B9119F20E /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F91E652CEF53649D7384B206 /* OnboardingView.swift */; };
+		0C9B25B844739B5686C8F0C5 /* LiveActivityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9629FD80EB54AD83A6CBEEA7 /* LiveActivityManager.swift */; };
 		147A2238396D015941BDA244 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E58D563423D3DA843658875 /* ContentView.swift */; };
 		15F9E55885A90B8C6E650E2D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97896476C6062C62E4007761 /* Assets.xcassets */; };
 		24A68E30DB6D2279ADB34038 /* SunflowerWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6224BDCF80215B410190F7A /* SunflowerWidget.swift */; };
 		2B7FB9F47E5C8AA0D9C2A00F /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CEBCCA38D53AC42E5FBA8FC /* PaywallView.swift */; };
 		2BD7755C9E4D3E5BCAF49689 /* SunflowerWidget.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 2F9F1BB0684356FCBE650917 /* SunflowerWidget.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		2DA68F7E0090203EC44403F1 /* Color+Hex.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9820D40291546EB3256A10EF /* Color+Hex.swift */; };
+		33EDB131D3927059716690C2 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3517CCF34440DD10724D3BF7 /* FocusActivityAttributes.swift */; };
 		39E5C73024DCFF90E2423377 /* GardenItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA6FCF6EF842C32C93916340 /* GardenItem.swift */; };
 		4018FA7D849296C16674B84E /* SunflowerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 234FC6BBB2E20377E211E2A1 /* SunflowerApp.swift */; };
 		4A88A7C5039F3ADA457F8A5A /* GardenSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F06E39F50EBE5ED6139BD5 /* GardenSnapshot.swift */; };
@@ -21,10 +23,12 @@
 		5A51DFFF6555D77E5E36B496 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A076D1FAE3E5910D6DA8D6B /* StatsView.swift */; };
 		62FE260CDED5C873388D846D /* SummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 519C893BDA425DE369F755B3 /* SummaryView.swift */; };
 		7B1FC471E08C553EAAF24F3A /* UserSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E713783AA43D9B63E1F012E /* UserSettings.swift */; };
+		88777BA0A17957AEC488AF7E /* FocusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E19A47039AE37DCD9C7392 /* FocusLiveActivity.swift */; };
 		95326EC7499331715499CCFB /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C984BFFA360252E2AC12F22 /* NotificationManager.swift */; };
 		A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514646F1B10516E79D7D0143 /* TimerView.swift */; };
 		B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16438E21E0B2C4E54ECB72BA /* FlowerDrop.swift */; };
 		BBE7FE0D68953227357E1053 /* GardenSnapshotWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905A8BE6055D1D5D0FF17BAD /* GardenSnapshotWriter.swift */; };
+		C17C2514E4A4BC318F971704 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3517CCF34440DD10724D3BF7 /* FocusActivityAttributes.swift */; };
 		CFE21D46735215F66A92280B /* FocusSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4AF7624920C6AE9BB03830C4 /* FocusSession.swift */; };
 		DAF57862A64CB14582A63AC8 /* GardenSnapshot.swift in Sources */ = {isa = PBXBuildFile; fileRef = A8F06E39F50EBE5ED6139BD5 /* GardenSnapshot.swift */; };
 		F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8097FA49454B6330F7799975 /* FocusTag.swift */; };
@@ -66,7 +70,9 @@
 		234FC6BBB2E20377E211E2A1 /* SunflowerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunflowerApp.swift; sourceTree = "<group>"; };
 		24E14A8E84E5A7B7D244B676 /* StoreManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreManager.swift; sourceTree = "<group>"; };
 		255135C73ADAF1AFCE33D479 /* Sunflower.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = Sunflower.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		27E19A47039AE37DCD9C7392 /* FocusLiveActivity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusLiveActivity.swift; sourceTree = "<group>"; };
 		2F9F1BB0684356FCBE650917 /* SunflowerWidget.appex */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = "wrapper.app-extension"; path = SunflowerWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		3517CCF34440DD10724D3BF7 /* FocusActivityAttributes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusActivityAttributes.swift; sourceTree = "<group>"; };
 		3C984BFFA360252E2AC12F22 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
 		4AF7624920C6AE9BB03830C4 /* FocusSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusSession.swift; sourceTree = "<group>"; };
 		514646F1B10516E79D7D0143 /* TimerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerView.swift; sourceTree = "<group>"; };
@@ -77,6 +83,7 @@
 		8097FA49454B6330F7799975 /* FocusTag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusTag.swift; sourceTree = "<group>"; };
 		8AC160622868CADE0EB86F3C /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		905A8BE6055D1D5D0FF17BAD /* GardenSnapshotWriter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenSnapshotWriter.swift; sourceTree = "<group>"; };
+		9629FD80EB54AD83A6CBEEA7 /* LiveActivityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LiveActivityManager.swift; sourceTree = "<group>"; };
 		97896476C6062C62E4007761 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		9820D40291546EB3256A10EF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		A574FE6D4BA83E0C27AD4F8A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
@@ -102,6 +109,7 @@
 			children = (
 				9820D40291546EB3256A10EF /* Color+Hex.swift */,
 				905A8BE6055D1D5D0FF17BAD /* GardenSnapshotWriter.swift */,
+				9629FD80EB54AD83A6CBEEA7 /* LiveActivityManager.swift */,
 				3C984BFFA360252E2AC12F22 /* NotificationManager.swift */,
 				24E14A8E84E5A7B7D244B676 /* StoreManager.swift */,
 			);
@@ -142,6 +150,7 @@
 		4B4121AFEA71D703612265BC /* SunflowerWidget */ = {
 			isa = PBXGroup;
 			children = (
+				27E19A47039AE37DCD9C7392 /* FocusLiveActivity.swift */,
 				127ED1B2FD703EA0063BCBC5 /* Info.plist */,
 				E8CBC33ABD3DADBF7F72E7A3 /* SunflowerWidget.entitlements */,
 				F6224BDCF80215B410190F7A /* SunflowerWidget.swift */,
@@ -161,6 +170,7 @@
 		9014517289D6C2A5A617A6E6 /* Shared */ = {
 			isa = PBXGroup;
 			children = (
+				3517CCF34440DD10724D3BF7 /* FocusActivityAttributes.swift */,
 				A8F06E39F50EBE5ED6139BD5 /* GardenSnapshot.swift */,
 			);
 			path = Shared;
@@ -315,11 +325,13 @@
 				2DA68F7E0090203EC44403F1 /* Color+Hex.swift in Sources */,
 				147A2238396D015941BDA244 /* ContentView.swift in Sources */,
 				B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */,
+				33EDB131D3927059716690C2 /* FocusActivityAttributes.swift in Sources */,
 				CFE21D46735215F66A92280B /* FocusSession.swift in Sources */,
 				F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */,
 				39E5C73024DCFF90E2423377 /* GardenItem.swift in Sources */,
 				4A88A7C5039F3ADA457F8A5A /* GardenSnapshot.swift in Sources */,
 				BBE7FE0D68953227357E1053 /* GardenSnapshotWriter.swift in Sources */,
+				0C9B25B844739B5686C8F0C5 /* LiveActivityManager.swift in Sources */,
 				95326EC7499331715499CCFB /* NotificationManager.swift in Sources */,
 				0C826536C089240B9119F20E /* OnboardingView.swift in Sources */,
 				2B7FB9F47E5C8AA0D9C2A00F /* PaywallView.swift in Sources */,
@@ -337,6 +349,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C17C2514E4A4BC318F971704 /* FocusActivityAttributes.swift in Sources */,
+				88777BA0A17957AEC488AF7E /* FocusLiveActivity.swift in Sources */,
 				DAF57862A64CB14582A63AC8 /* GardenSnapshot.swift in Sources */,
 				24A68E30DB6D2279ADB34038 /* SunflowerWidget.swift in Sources */,
 			);

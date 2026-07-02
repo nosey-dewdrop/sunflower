@@ -111,5 +111,6 @@ struct SunflowerWidget: Widget {
 struct SunflowerWidgetBundle: WidgetBundle {
     var body: some Widget {
         SunflowerWidget()
+        FocusLiveActivity()
     }
 }

@@ -44,6 +44,7 @@ targets:
     info:
       path: Sunflower/Info.plist
       properties:
+        NSSupportsLiveActivities: true
         UILaunchScreen:
           UIColorName: LaunchBackground
           UIImageName: sprout
@@ -55,7 +56,7 @@ targets:
     platform: iOS
     sources:
       - path: SunflowerWidget
-      - path: Sunflower/Shared/GardenSnapshot.swift
+      - path: Sunflower/Shared
       - path: Sunflower/Assets.xcassets
     entitlements:
       path: SunflowerWidget/SunflowerWidget.entitlements
