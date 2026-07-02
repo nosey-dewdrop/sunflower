@@ -96,7 +96,6 @@ class TimerManager {
 struct TimerView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
-    @Environment(StoreManager.self) private var store
     @Query private var settings: [UserSettings]
     @Query private var tags: [FocusTag]
     @Query private var flowers: [FlowerDrop]
@@ -341,18 +340,13 @@ struct TimerView: View {
             modelContext.insert(FocusTag(name: "reading", colorHex: "DDA0DD"))
         }
 
-        let spots: [(String, String, Double, Double)] = [
-            ("sunflower", "large", 0.18, 0.62),
-            ("tulip", "medium", 0.78, 0.55),
-            ("daisy", "small", 0.42, 0.80),
-            ("rose", "medium", 0.62, 0.72),
-            ("lavender", "large", 0.30, 0.50),
-            ("daisy", "medium", 0.85, 0.82),
-            ("tulip", "small", 0.12, 0.84),
-            ("sunflower", "medium", 0.55, 0.58)
+        let demo: [(String, String)] = [
+            ("sunflower", "large"), ("tulip", "medium"), ("daisy", "small"), ("rose", "medium"),
+            ("lavender", "large"), ("daisy", "small"), ("tulip", "medium"), ("daisy", "small")
         ]
-        for (type, size, x, y) in spots {
-            let flower = FlowerDrop(flowerType: type, size: size, positionX: x, positionY: y)
+        for (index, item) in demo.enumerated() {
+            let slot = FlowerDrop.slotPosition(forTodayCount: index)
+            let flower = FlowerDrop(flowerType: item.0, size: item.1, positionX: slot.x, positionY: slot.y)
             modelContext.insert(flower)
         }
 
@@ -371,7 +365,13 @@ struct TimerView: View {
 
     private func recomputeTodayFlowers() {
         let todayStart = Calendar.current.startOfDay(for: Date())
-        todayFlowers = flowers.filter { $0.earnedAt >= todayStart }
+        // newest flowers win their slots; the screen never shows more than maxVisible
+        todayFlowers = Array(
+            flowers
+                .filter { $0.earnedAt >= todayStart }
+                .sorted { $0.earnedAt < $1.earnedAt }
+                .suffix(FlowerDrop.maxVisible)
+        )
     }
 
     private func setupTimer() {
@@ -414,9 +414,11 @@ struct TimerView: View {
             }
         } else {
             sessionStartTime = Date()
-            pendingFlowerType = FlowerDrop.randomType(isPro: store.isPro)
-            pendingFlowerX = Double.random(in: 0.1...0.9)
-            pendingFlowerY = Double.random(in: 0.5...0.85)
+            pendingFlowerType = FlowerDrop.typeForDuration(currentSettings.pomoDuration)
+            let todayCount = flowers.filter { $0.earnedAt >= Calendar.current.startOfDay(for: Date()) }.count
+            let slot = FlowerDrop.slotPosition(forTodayCount: todayCount)
+            pendingFlowerX = slot.x
+            pendingFlowerY = slot.y
             timerManager.start(duration: currentSettings.pomoDuration)
             if currentSettings.notificationsEnabled {
                 NotificationManager.shared.scheduleTimerComplete(in: currentSettings.pomoDuration, isFocus: true)

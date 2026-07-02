@@ -10,6 +10,8 @@ enum GardenSnapshotWriter {
         let allFlowers = (try? context.fetch(FetchDescriptor<FlowerDrop>())) ?? []
         let todayFlowers = allFlowers
             .filter { $0.earnedAt >= todayStart }
+            .sorted { $0.earnedAt < $1.earnedAt }
+            .suffix(FlowerDrop.maxVisible)
             .map { SnapshotFlower(type: $0.flowerType, x: $0.positionX, y: $0.positionY, size: Double($0.displaySize)) }
 
         let completed = ((try? context.fetch(FetchDescriptor<FocusSession>())) ?? []).filter { $0.completed }

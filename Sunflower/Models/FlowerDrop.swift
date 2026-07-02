@@ -19,12 +19,40 @@ final class FlowerDrop {
         self.earnedAt = Date()
     }
 
-    // <15 min = small, 15-30 min = medium, >30 min = large
+    // short sessions grow little daisies, 60 min grows them up, 90 min blooms big
     static func sizeForDuration(_ seconds: Int) -> String {
         let minutes = seconds / 60
-        if minutes >= 30 { return "large" }
-        if minutes >= 15 { return "medium" }
+        if minutes >= 90 { return "large" }
+        if minutes >= 60 { return "medium" }
         return "small"
+    }
+
+    static func typeForDuration(_ seconds: Int) -> String {
+        let minutes = seconds / 60
+        if minutes >= 90 { return ["sunflower", "lavender"].randomElement() ?? "sunflower" }
+        if minutes >= 60 { return ["tulip", "rose"].randomElement() ?? "tulip" }
+        return "daisy"
+    }
+
+    // MARK: - Garden slots
+
+    // the garden is one screen, never scrolls: 12 fixed slots that dodge the timer ui,
+    // a new bloom takes the oldest slot so the screen never holds more than 12 flowers
+    static let maxVisible = 12
+
+    static let gardenSlots: [(x: Double, y: Double)] = [
+        (0.15, 0.13), (0.50, 0.09), (0.85, 0.14),
+        (0.11, 0.30), (0.89, 0.32),
+        (0.09, 0.52), (0.91, 0.55),
+        (0.18, 0.70), (0.45, 0.67), (0.76, 0.72),
+        (0.30, 0.86), (0.66, 0.88)
+    ]
+
+    static func slotPosition(forTodayCount count: Int) -> (x: Double, y: Double) {
+        let slot = gardenSlots[count % gardenSlots.count]
+        let jitterX = Double.random(in: -0.02...0.02)
+        let jitterY = Double.random(in: -0.015...0.015)
+        return (min(0.95, max(0.05, slot.x + jitterX)), min(0.92, max(0.06, slot.y + jitterY)))
     }
 
     var displaySize: CGFloat {
@@ -35,11 +63,11 @@ final class FlowerDrop {
         }
     }
 
+    // all flower types are free; pro sells power, not petals
     static let flowerTypes = ["sunflower", "daisy", "tulip", "rose", "lavender"]
-    static let freeFlowerTypes = ["sunflower", "daisy"]
 
-    static func randomType(isPro: Bool = true) -> String {
-        (isPro ? flowerTypes : freeFlowerTypes).randomElement() ?? "sunflower"
+    static func randomType() -> String {
+        flowerTypes.randomElement() ?? "sunflower"
     }
 
     // tag color dots are drawn as doodle flowers; map each tag hex to the closest flower asset

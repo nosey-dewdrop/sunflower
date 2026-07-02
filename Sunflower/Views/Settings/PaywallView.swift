@@ -36,13 +36,14 @@ struct PaywallView: View {
                         .font(.system(size: 30, weight: .bold, design: .rounded))
                         .foregroundColor(.darkGreen)
 
-                    Text("grow a wilder garden")
+                    Text("see your focus grow")
                         .font(.system(size: 16, weight: .regular, design: .rounded))
                         .foregroundColor(.brown.opacity(0.8))
 
                     VStack(alignment: .leading, spacing: 14) {
-                        PaywallFeature(text: "every flower type in your garden")
-                        PaywallFeature(text: "seasonal flowers as they bloom in")
+                        PaywallFeature(text: "focus trends by month and year")
+                        PaywallFeature(text: "calendar view of your focus days")
+                        PaywallFeature(text: "icloud sync across your devices")
                         PaywallFeature(text: "all future pro features, forever")
                     }
                     .padding(.vertical, 8)

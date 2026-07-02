@@ -44,7 +44,7 @@ struct SettingsView: View {
                                 Text("Sunflower Pro")
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
-                                Text(store.isPro ? "Your garden grows wilder. Thank you!" : "Every flower type, seasonal blooms, more")
+                                Text(store.isPro ? "Your focus, in full bloom. Thank you!" : "Deep stats, calendar view, iCloud sync")
                                     .font(.system(size: 14, weight: .regular, design: .rounded))
                                     .foregroundColor(.textSecondary)
                             }
