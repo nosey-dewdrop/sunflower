@@ -73,9 +73,10 @@ struct SettingsView: View {
                     SettingsCard {
                         ForEach(tags) { tag in
                             HStack {
-                                Circle()
-                                    .fill(Color(hex: tag.colorHex))
-                                    .frame(width: 12, height: 12)
+                                Image(FlowerDrop.assetForTagColor(tag.colorHex))
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 22, height: 22)
                                 Text(tag.name)
                                     .font(.system(size: 16, weight: .regular, design: .rounded))
                                     .foregroundColor(.textPrimary)

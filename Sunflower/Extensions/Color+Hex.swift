@@ -31,6 +31,7 @@ extension Color {
     static let lightGreen = Color(hex: "A9CC7C")
     static let warmYellow = Color(hex: "F4D35E")
     static let cream = Color(hex: "FFFDF5")
+    static let beige = Color(hex: "F0E7D0")
     static let brown = Color(hex: "8B6914")
     static let cardBg = Color.white.opacity(0.15)
     static let textPrimary = Color.white

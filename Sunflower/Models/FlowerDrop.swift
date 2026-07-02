@@ -41,4 +41,15 @@ final class FlowerDrop {
     static func randomType(isPro: Bool = true) -> String {
         (isPro ? flowerTypes : freeFlowerTypes).randomElement() ?? "sunflower"
     }
+
+    // tag color dots are drawn as doodle flowers; map each tag hex to the closest flower asset
+    static func assetForTagColor(_ hex: String) -> String {
+        switch hex.uppercased() {
+        case "F4D35E", "FFEAA7": return "flower_yellow"
+        case "FF6B6B", "FF8C69": return "flower_red"
+        case "4ECDC4", "45B7D1", "96CEB4": return "flower_blue"
+        case "DDA0DD": return "flower_purple"
+        default: return "flower_yellow"
+        }
+    }
 }

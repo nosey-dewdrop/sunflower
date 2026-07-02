@@ -238,10 +238,10 @@ struct TimerView: View {
                                 } label: {
                                     Text(timerManager.isRunning ? "Stop" : "Start")
                                         .font(.system(size: 18, weight: .semibold, design: .rounded))
-                                        .foregroundColor(.white.opacity(0.9))
+                                        .foregroundColor(.darkGreen)
                                         .padding(.horizontal, 36)
                                         .padding(.vertical, 16)
-                                        .background(Color.white.opacity(0.15))
+                                        .background(Color.beige)
                                         .clipShape(Capsule())
                                 }
                                 .padding(.top, 12)
@@ -755,9 +755,10 @@ struct TagPickerSheet: View {
                                     dismiss()
                                 } label: {
                                     HStack {
-                                        Circle()
-                                            .fill(Color(hex: tag.colorHex))
-                                            .frame(width: 14, height: 14)
+                                        Image(FlowerDrop.assetForTagColor(tag.colorHex))
+                                            .resizable()
+                                            .scaledToFit()
+                                            .frame(width: 22, height: 22)
                                         Text(tag.name)
                                             .font(.system(size: 16, weight: .regular, design: .rounded))
                                             .foregroundColor(.textPrimary)
