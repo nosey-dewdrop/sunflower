@@ -41,9 +41,8 @@ struct PaywallView: View {
                         .foregroundColor(.brown.opacity(0.8))
 
                     VStack(alignment: .leading, spacing: 14) {
-                        PaywallFeature(text: "focus trends by month and year")
-                        PaywallFeature(text: "calendar view of your focus days")
-                        PaywallFeature(text: "icloud sync across your devices")
+                        PaywallFeature(text: "block distracting apps while you focus")
+                        PaywallFeature(text: "any focus length, 5 to 120 minutes")
                         PaywallFeature(text: "all future pro features, forever")
                     }
                     .padding(.vertical, 8)
