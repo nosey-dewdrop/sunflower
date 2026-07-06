@@ -34,6 +34,7 @@ targets:
       properties:
         com.apple.security.application-groups:
           - group.com.noseyDewdrop.sunflower
+        com.apple.developer.family-controls: true
     settings:
       PRODUCT_BUNDLE_IDENTIFIER: com.noseyDewdrop.sunflower
       INFOPLIST_FILE: Sunflower/Info.plist

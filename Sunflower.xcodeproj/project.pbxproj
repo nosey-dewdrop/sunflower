@@ -26,6 +26,7 @@
 		88777BA0A17957AEC488AF7E /* FocusLiveActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 27E19A47039AE37DCD9C7392 /* FocusLiveActivity.swift */; };
 		95326EC7499331715499CCFB /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C984BFFA360252E2AC12F22 /* NotificationManager.swift */; };
 		A3D9CB6AD58642885AD0523A /* TimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 514646F1B10516E79D7D0143 /* TimerView.swift */; };
+		ADCE2EA51EB2DBC4D89D5379 /* FocusShield.swift in Sources */ = {isa = PBXBuildFile; fileRef = B213DF8CD627EC6B3B9608F8 /* FocusShield.swift */; };
 		B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */ = {isa = PBXBuildFile; fileRef = 16438E21E0B2C4E54ECB72BA /* FlowerDrop.swift */; };
 		BBE7FE0D68953227357E1053 /* GardenSnapshotWriter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 905A8BE6055D1D5D0FF17BAD /* GardenSnapshotWriter.swift */; };
 		C17C2514E4A4BC318F971704 /* FocusActivityAttributes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3517CCF34440DD10724D3BF7 /* FocusActivityAttributes.swift */; };
@@ -88,6 +89,7 @@
 		9820D40291546EB3256A10EF /* Color+Hex.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Hex.swift"; sourceTree = "<group>"; };
 		A574FE6D4BA83E0C27AD4F8A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		A8F06E39F50EBE5ED6139BD5 /* GardenSnapshot.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenSnapshot.swift; sourceTree = "<group>"; };
+		B213DF8CD627EC6B3B9608F8 /* FocusShield.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FocusShield.swift; sourceTree = "<group>"; };
 		BA6FCF6EF842C32C93916340 /* GardenItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GardenItem.swift; sourceTree = "<group>"; };
 		E8CBC33ABD3DADBF7F72E7A3 /* SunflowerWidget.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = SunflowerWidget.entitlements; sourceTree = "<group>"; };
 		F6224BDCF80215B410190F7A /* SunflowerWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SunflowerWidget.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 			isa = PBXGroup;
 			children = (
 				9820D40291546EB3256A10EF /* Color+Hex.swift */,
+				B213DF8CD627EC6B3B9608F8 /* FocusShield.swift */,
 				905A8BE6055D1D5D0FF17BAD /* GardenSnapshotWriter.swift */,
 				9629FD80EB54AD83A6CBEEA7 /* LiveActivityManager.swift */,
 				3C984BFFA360252E2AC12F22 /* NotificationManager.swift */,
@@ -327,6 +330,7 @@
 				B8175385A4A8E541310BF349 /* FlowerDrop.swift in Sources */,
 				33EDB131D3927059716690C2 /* FocusActivityAttributes.swift in Sources */,
 				CFE21D46735215F66A92280B /* FocusSession.swift in Sources */,
+				ADCE2EA51EB2DBC4D89D5379 /* FocusShield.swift in Sources */,
 				F03DF731D0C1F036A5E9EEA5 /* FocusTag.swift in Sources */,
 				39E5C73024DCFF90E2423377 /* GardenItem.swift in Sources */,
 				4A88A7C5039F3ADA457F8A5A /* GardenSnapshot.swift in Sources */,

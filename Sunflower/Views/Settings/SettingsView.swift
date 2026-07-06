@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import FamilyControls
 
 struct SettingsView: View {
     @Environment(\.modelContext) private var modelContext
@@ -9,6 +10,9 @@ struct SettingsView: View {
     @State private var showAddTag = false
     @State private var newTagName = ""
     @State private var showPaywall = false
+    @State private var showAppPicker = false
+    @State private var shieldPermissionDenied = false
+    @Bindable private var shield = FocusShield.shared
     @Environment(StoreManager.self) private var store
 
     private var settings: UserSettings {
@@ -44,7 +48,7 @@ struct SettingsView: View {
                                 Text("Sunflower Pro")
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
-                                Text(store.isPro ? "Your focus, in full bloom. Thank you!" : "Deep stats, calendar view, iCloud sync")
+                                Text(store.isPro ? "Your focus, in full bloom. Thank you!" : "Block distracting apps, pick any focus length")
                                     .font(.system(size: 14, weight: .regular, design: .rounded))
                                     .foregroundColor(.textSecondary)
                             }
@@ -65,6 +69,68 @@ struct SettingsView: View {
 
                     SettingsCard {
                         SettingsRow(title: "Focus Duration", trailing: "\(settings.pomoDuration / 60) min") {}
+                    }
+
+                    // Focus Shield section (Pro)
+                    SettingsSectionHeader(title: "Focus Shield")
+
+                    SettingsCard {
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack(spacing: 6) {
+                                    Text("Block Apps While Focusing")
+                                        .font(.system(size: 16, weight: .medium, design: .rounded))
+                                        .foregroundColor(.textPrimary)
+                                    if !store.isPro {
+                                        Text("PRO")
+                                            .font(.system(size: 10, weight: .bold, design: .rounded))
+                                            .foregroundColor(.cream)
+                                            .padding(.horizontal, 6)
+                                            .padding(.vertical, 2)
+                                            .background(Color.darkGreen)
+                                            .clipShape(Capsule())
+                                    }
+                                }
+                                Text("Chosen apps stay closed until your flower blooms.")
+                                    .font(.system(size: 13, weight: .regular, design: .rounded))
+                                    .foregroundColor(.textSecondary)
+                            }
+                            Spacer()
+                            Toggle("", isOn: Binding(
+                                get: { shield.isEnabled && store.isPro },
+                                set: { newValue in
+                                    guard store.isPro else {
+                                        showPaywall = true
+                                        return
+                                    }
+                                    if newValue {
+                                        Task {
+                                            if await shield.authorize() {
+                                                shield.isEnabled = true
+                                                if !shield.hasSelection { showAppPicker = true }
+                                            } else {
+                                                shieldPermissionDenied = true
+                                            }
+                                        }
+                                    } else {
+                                        shield.isEnabled = false
+                                        shield.deactivate()
+                                    }
+                                }
+                            ))
+                            .tint(.darkGreen)
+                        }
+
+                        if store.isPro && shield.isEnabled {
+                            Divider().background(Color.textSecondary.opacity(0.15))
+
+                            SettingsRow(
+                                title: "Blocked Apps",
+                                trailing: shield.hasSelection ? "chosen" : "choose"
+                            ) {
+                                showAppPicker = true
+                            }
+                        }
                     }
 
                     // Tags section
@@ -159,6 +225,12 @@ struct SettingsView: View {
         }
         .sheet(isPresented: $showPaywall) {
             PaywallView()
+        }
+        .familyActivityPicker(isPresented: $showAppPicker, selection: $shield.selection)
+        .alert("Screen Time permission needed", isPresented: $shieldPermissionDenied) {
+            Button("ok", role: .cancel) {}
+        } message: {
+            Text("Allow Screen Time access in Settings so sunflower can hold your apps closed while you focus.")
         }
         .alert("New Tag", isPresented: $showAddTag) {
             TextField("tag name", text: $newTagName)
