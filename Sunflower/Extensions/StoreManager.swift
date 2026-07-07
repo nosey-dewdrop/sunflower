@@ -67,6 +67,9 @@ final class StoreManager {
                 if let transaction = try? verification.payloadValue {
                     await transaction.finish()
                     await refreshEntitlements()
+                } else {
+                    // unverified transaction: tell the user instead of failing silently
+                    purchaseError = "purchase couldn't be verified. try restore purchases"
                 }
             case .userCancelled:
                 break
