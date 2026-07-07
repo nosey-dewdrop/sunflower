@@ -133,7 +133,7 @@ struct SummaryView: View {
                         .font(.system(size: 28, weight: .bold, design: .rounded))
                         .foregroundColor(.textPrimary)
 
-                    Text(cachedDateLabel + " ,Today")
+                    Text(cachedDateLabel + ", Today")
                         .font(.system(size: 14, weight: .regular, design: .rounded))
                         .foregroundColor(.textSecondary)
 
@@ -318,6 +318,10 @@ struct SummaryView: View {
             recomputeAll()
         }
         .onChange(of: allSessions.count) {
+            recomputeAll()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged).receive(on: DispatchQueue.main)) { _ in
+            // app left open past midnight: date label and today stats roll over
             recomputeAll()
         }
     }

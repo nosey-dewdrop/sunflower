@@ -327,6 +327,13 @@ struct TimerView: View {
         .onChange(of: flowers.count) {
             recomputeTodayFlowers()
         }
+        .onChange(of: tags.count) {
+            // a tag deleted in settings must not leave a dangling reference here
+            if let sel = selectedTag,
+               !tags.contains(where: { $0.persistentModelID == sel.persistentModelID }) {
+                selectedTag = nil
+            }
+        }
         .onChange(of: scenePhase) { oldPhase, newPhase in
             handleScenePhaseChange(to: newPhase)
             if newPhase == .active {
@@ -336,6 +343,11 @@ struct TimerView: View {
         .onReceive(NotificationCenter.default.publisher(for: UIApplication.protectedDataWillBecomeUnavailableNotification)) { _ in
             // device lock signal: locking the phone to focus is never punished
             lastLockSignal = Date()
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged).receive(on: DispatchQueue.main)) { _ in
+            // app left open past midnight: the garden starts the new day fresh
+            recomputeTodayFlowers()
+            GardenSnapshotWriter.refresh(context: modelContext)
         }
     }
 

@@ -203,6 +203,12 @@ struct StatsView: View {
         .onChange(of: allSessions.count) {
             recomputeSessionsByHour()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .NSCalendarDayChanged).receive(on: DispatchQueue.main)) { _ in
+            // app left open past midnight: week row, header date and time marker roll over
+            selectedDay = Date()
+            recomputeWeekDays()
+            recomputeSessionsByHour()
+        }
     }
 }
 
