@@ -78,7 +78,16 @@ struct PaywallView: View {
                         .foregroundColor(.brown.opacity(0.45))
                         .multilineTextAlignment(.center)
                         .padding(.horizontal, 40)
-                        .padding(.bottom, 30)
+
+                    // app review 3.1.2: terms + privacy must be reachable from the paywall
+                    HStack(spacing: 16) {
+                        Link("terms of use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
+                        Link("privacy policy", destination: URL(string: "https://damlahelloworld.github.io/sunflower/privacy.html")!)
+                    }
+                    .font(.system(size: 11, weight: .regular, design: .rounded))
+                    .tint(.brown.opacity(0.45))
+                    .padding(.top, 2)
+                    .padding(.bottom, 30)
                 }
             }
 
