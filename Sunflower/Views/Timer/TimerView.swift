@@ -104,7 +104,6 @@ struct TimerView: View {
     @State private var timerManager = TimerManager()
     @State private var selectedTag: FocusTag?
     @State private var showTagPicker = false
-    @State private var showPaywall = false
     @State private var sessionStartTime: Date?
     @State private var showFlowerEarned = false
     @State private var showFlowerMissed = false
@@ -297,11 +296,6 @@ struct TimerView: View {
         .fullScreenCover(isPresented: $showDurationPicker) {
             DurationPickerView(
                 pickerMinutes: $pickerMinutes,
-                isPro: storeManager.isPro,
-                onUpgrade: {
-                    showDurationPicker = false
-                    showPaywall = true
-                },
                 onDone: {
                     currentSettings.pomoDuration = pickerMinutes * 60
                     timerManager.reset(duration: pickerMinutes * 60)
@@ -309,9 +303,6 @@ struct TimerView: View {
                     showDurationPicker = false
                 }
             )
-        }
-        .sheet(isPresented: $showPaywall) {
-            PaywallView()
         }
         .onAppear {
             setupTimer()
@@ -817,13 +808,8 @@ struct TagPickerSheet: View {
 
 struct DurationPickerView: View {
     @Binding var pickerMinutes: Int
-    let isPro: Bool
-    let onUpgrade: () -> Void
     let onDone: () -> Void
     @Environment(\.dismiss) private var dismiss
-
-    // the free rhythm; any other length is a pro thing
-    static let freeMinutes = [20, 25, 30]
 
     var body: some View {
         ZStack {
@@ -845,38 +831,10 @@ struct DurationPickerView: View {
 
                 Spacer().frame(height: 40)
 
-                if isPro {
-                    // Ruler, any length from 5 to 120
-                    HorizontalRulerPicker(selectedMinutes: $pickerMinutes)
-                        .frame(height: 60)
-                        .padding(.horizontal, 20)
-                } else {
-                    HStack(spacing: 14) {
-                        ForEach(Self.freeMinutes, id: \.self) { value in
-                            Button {
-                                withAnimation { pickerMinutes = value }
-                            } label: {
-                                Text("\(value)")
-                                    .font(.system(size: 20, weight: .bold, design: .rounded))
-                                    .foregroundColor(pickerMinutes == value ? .darkGreen : .white)
-                                    .frame(width: 64, height: 48)
-                                    .background(pickerMinutes == value ? Color.white : Color.white.opacity(0.2))
-                                    .clipShape(Capsule())
-                            }
-                        }
-                    }
-
-                    Button(action: onUpgrade) {
-                        HStack(spacing: 6) {
-                            Image(systemName: "lock.fill")
-                                .font(.system(size: 12))
-                            Text("any length, 5 to 120 min, with Pro")
-                                .font(.system(size: 14, weight: .semibold, design: .rounded))
-                        }
-                        .foregroundColor(.white.opacity(0.85))
-                        .padding(.top, 18)
-                    }
-                }
+                // Ruler, any length from 5 to 120, free for everyone
+                HorizontalRulerPicker(selectedMinutes: $pickerMinutes)
+                    .frame(height: 60)
+                    .padding(.horizontal, 20)
 
                 Spacer().frame(height: 40)
 

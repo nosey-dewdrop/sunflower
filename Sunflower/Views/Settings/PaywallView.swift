@@ -42,7 +42,7 @@ struct PaywallView: View {
 
                     VStack(alignment: .leading, spacing: 14) {
                         PaywallFeature(text: "block distracting apps while you focus")
-                        PaywallFeature(text: "any focus length, 5 to 120 minutes")
+                        PaywallFeature(text: "deep focus stats and insights")
                         PaywallFeature(text: "all future pro features, forever")
                     }
                     .padding(.vertical, 8)

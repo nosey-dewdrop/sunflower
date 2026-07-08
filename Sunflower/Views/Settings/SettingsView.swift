@@ -48,7 +48,7 @@ struct SettingsView: View {
                                 Text("Sunflower Pro")
                                     .font(.system(size: 18, weight: .bold, design: .rounded))
                                     .foregroundColor(.textPrimary)
-                                Text(store.isPro ? "Your focus, in full bloom. Thank you!" : "Block distracting apps, pick any focus length")
+                                Text(store.isPro ? "Your focus, in full bloom. Thank you!" : "Block distracting apps, see your focus grow")
                                     .font(.system(size: 14, weight: .regular, design: .rounded))
                                     .foregroundColor(.textSecondary)
                             }
