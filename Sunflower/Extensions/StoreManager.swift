@@ -12,6 +12,10 @@ final class StoreManager {
     var isPro = false
     var purchaseError: String?
     var isLoading = false
+    // false until the first products fetch returns, so the paywall can tell
+    // "still loading" apart from "loaded but empty / failed"
+    var didLoadProducts = false
+    var loadFailed = false
 
     private var updatesTask: Task<Void, Never>?
 
@@ -39,9 +43,19 @@ final class StoreManager {
         do {
             let loaded = try await Product.products(for: Self.allIDs)
             products = loaded.sorted { $0.price < $1.price }
+            loadFailed = products.isEmpty
         } catch {
-            purchaseError = "couldn't load products, check your connection"
+            products = []
+            loadFailed = true
         }
+        didLoadProducts = true
+    }
+
+    @MainActor
+    func retryLoad() async {
+        didLoadProducts = false
+        loadFailed = false
+        await loadProducts()
     }
 
     @MainActor

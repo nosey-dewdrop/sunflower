@@ -47,9 +47,29 @@ struct PaywallView: View {
                     }
                     .padding(.vertical, 8)
 
-                    if store.products.isEmpty {
+                    if !store.didLoadProducts {
                         ProgressView()
                             .padding(.vertical, 20)
+                    } else if store.products.isEmpty {
+                        VStack(spacing: 10) {
+                            Text("couldn't load pro plans right now")
+                                .font(.system(size: 14, weight: .medium, design: .rounded))
+                                .foregroundColor(.brown.opacity(0.8))
+                                .multilineTextAlignment(.center)
+                            Button {
+                                Task { await store.retryLoad() }
+                            } label: {
+                                Text("try again")
+                                    .font(.system(size: 15, weight: .semibold, design: .rounded))
+                                    .foregroundColor(.cream)
+                                    .padding(.horizontal, 28)
+                                    .padding(.vertical, 12)
+                                    .background(Color.darkGreen)
+                                    .clipShape(Capsule())
+                            }
+                        }
+                        .padding(.vertical, 16)
+                        .padding(.horizontal, 24)
                     } else {
                         VStack(spacing: 12) {
                             ForEach(store.products, id: \.id) { product in

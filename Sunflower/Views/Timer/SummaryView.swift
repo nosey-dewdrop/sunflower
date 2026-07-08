@@ -249,17 +249,6 @@ struct SummaryView: View {
                     .background(Color.white.opacity(0.3))
                     .clipShape(RoundedRectangle(cornerRadius: 18))
 
-                    // Show All button
-                    Button {} label: {
-                        Text("Show All")
-                            .font(.system(size: 16, weight: .medium, design: .rounded))
-                            .foregroundColor(.textSecondary)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 14)
-                            .background(Color.white.opacity(0.3))
-                            .clipShape(RoundedRectangle(cornerRadius: 18))
-                    }
-
                     // Flower Details
                     Text("Flower Details")
                         .font(.system(size: 18, weight: .bold, design: .rounded))
