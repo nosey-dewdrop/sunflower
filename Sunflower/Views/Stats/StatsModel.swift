@@ -1,5 +1,70 @@
 import SwiftUI
 import Foundation
+#if canImport(UIKit)
+import UIKit
+#endif
+
+// MARK: - Haptics (subtle, on-brand — light ticks only, never buzzy)
+enum StatsHaptics {
+    #if canImport(UIKit)
+    private static let selection = UISelectionFeedbackGenerator()
+    private static let lightImpact = UIImpactFeedbackGenerator(style: .light)
+    private static let softImpact = UIImpactFeedbackGenerator(style: .soft)
+    #endif
+
+    /// tab change — a crisp selection tick
+    static func tab() {
+        #if canImport(UIKit)
+        selection.selectionChanged()
+        selection.prepare()
+        #endif
+    }
+
+    /// committing a period swipe / chevron — a light impact
+    static func period() {
+        #if canImport(UIKit)
+        lightImpact.impactOccurred(intensity: 0.7)
+        lightImpact.prepare()
+        #endif
+    }
+
+    /// tapping a heatmap day or a bar — a soft, gentle tap
+    static func cell() {
+        #if canImport(UIKit)
+        softImpact.impactOccurred(intensity: 0.5)
+        softImpact.prepare()
+        #endif
+    }
+
+    /// hitting the current-period cap while swiping — the tiniest nudge
+    static func edge() {
+        #if canImport(UIKit)
+        softImpact.impactOccurred(intensity: 0.3)
+        #endif
+    }
+}
+
+// MARK: - Count-up number (interpolates to its value on appear / change, no fade)
+struct CountingNumber: View, Animatable {
+    var value: Double
+    /// how the interpolated Double is rendered as a String (keeps time formats correct mid-count)
+    let format: (Double) -> String
+    let font: Font
+    let color: Color
+
+    var animatableData: Double {
+        get { value }
+        set { value = newValue }
+    }
+
+    var body: some View {
+        Text(format(value))
+            .font(font)
+            .foregroundColor(color)
+            .monospacedDigit()
+            .contentTransition(.identity)
+    }
+}
 
 // MARK: - Design tokens (centralized so Damla can tweak colors/doodles later)
 // Everything the stats screens paint uses these — no scattered hex, no default gray.
