@@ -1,17 +1,22 @@
-# Sunflower
+# sunflower 🌻
 
-A pixel-art pomodoro timer app for iOS. Grow flowers as you focus.
+*a pomodoro timer where every finished focus session blooms a doodle flower.*
 
-## Features
-- Full pomodoro cycle: focus, short break, long break
-- Tag-based session tracking
-- Flower drops earned on completed sessions
-- Daily summary with timeline and tag breakdown
-- Stats with streak tracking and bar charts
-- Customizable timer durations and break settings
+## what is this?
+a whimsy pomodoro app for iOS: you focus, a hand-drawn flower blooms in your top-down garden. the garden resets every morning — yesterday's flowers were yesterday's work — but your streak lives on.
 
-## Tech
-- SwiftUI + SwiftData
-- iOS 17.0+
-- Pixelify Sans pixel font
-- No external dependencies
+## features
+- full pomodoro cycle with custom session lengths (5 to 120 minutes), free for everyone
+- a daily doodle garden that grows as you focus
+- streaks that persist across days
+- deep stats: day, week, month, calendar heatmap, tag donut, trends
+- focus shield: block distracting apps during sessions (Screen Time)
+- widget for the garden at a glance
+
+## technologies
+- SwiftUI + SwiftData, Swift Charts for stats
+- FamilyControls for the focus shield
+- no external dependencies
+
+## where this is going
+heading to the App Store — the garden is waiting for its final hand-drawn flowers.
