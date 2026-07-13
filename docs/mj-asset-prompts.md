@@ -2,6 +2,11 @@
 
 Goal: replace every placeholder 1:1 (same names, docs/tasks.md list) + new garden life Damla asked for (grass tufts, bugs). Damla generates in MJ, Claude chroma-keys to transparent PNG, trims, and drops into the imagesets. No code changes needed for the 13 existing slots; grass + bugs get a small garden-decor code pass after assets exist.
 
+## STATUS 13 Tem evening — read this first, it overrides the recipes below
+- The wax crayon recipe below is DEAD for stickers (Damla: looks like a scanned crayon drawing). Also rejected: photo paper sticker look, thin fineliner, thick chunky mascot outline. Style is STILL OPEN; live candidate = childlike shapes + storybook painterly rendering. Do not run more blind rounds — get a concrete reference from Damla first.
+- ground_texture DECIDED: plain calm green (dense grass textures tire the eyes on a 25 min screen). Grass life comes from a DYNAMIC sprite layer instead: ~50 single childlike doodle blades/tufts generated as MJ ASSET SHEETS (many per image), Claude cuts them to grass_blade_01..N. Wind + finger response in SwiftUI (Canvas + TimelineView + springs); NO texture-warp shader in v1.
+- New sprite slots added on top of the table below: grass blade sheet, decor_daisy, decor_ladybug, decor_bee, decor_snail.
+
 ## The style (read before generating)
 
 The current placeholders define it exactly:

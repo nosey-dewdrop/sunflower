@@ -4,7 +4,7 @@ Whimsy pomodoro iOS app: each finished pomodoro blooms a doodle flower in a top-
 
 ## Status
 Current phase: Launch
-Last session: 2026-07-08 — Pro repositioned (custom session length free; Pro = Focus Shield + deep stats), real stats built and gated, App Review code fixes done, privacy policy live, builds clean.
+Last session: 2026-07-13 — asset production moved to Midjourney (Damla cannot draw them): prompt pack in docs/mj-asset-prompts.md, long style iteration (sticker style still open, storybook painterly is the live candidate), garden ground decided as plain calm base + dynamic grass sprite layer.
 
 ## Roadmap
 ### Phase 1: Foundation
@@ -16,6 +16,8 @@ Last session: 2026-07-08 — Pro repositioned (custom session length free; Pro =
 - [x] Focus Shield via FamilyControls (Extensions/FocusShield.swift)
 
 ### Phase 3: Polish & Launch
+- [ ] assets via Midjourney: Damla generates from docs/mj-asset-prompts.md into mj-raw/, Claude cuts to transparent PNGs and places 1:1 by name (sticker style still open; ground = plain calm green)
+- [ ] dynamic grass layer: ~50 childlike doodle blade sprites from MJ asset sheets (grass_blade_01..N), wind sway + finger response with Canvas + TimelineView + spring physics, daisies and bugs as reacting sprites (ladybug flees finger); no texture-warp shader in v1 (water ripple risk), shader parked as polish
 - [ ] FamilyControls entitlement request to Apple (takes days; option: ship v1 without shield, add as update)
 - [ ] onboarding page that primes notification permission before the cold system prompt
 - [ ] Damla: App Store Connect products, Paid Apps agreement, DEVELOPMENT_TEAM in project.yml, screenshots, final icon and doodles
