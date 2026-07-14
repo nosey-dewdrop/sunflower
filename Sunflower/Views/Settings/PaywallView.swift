@@ -102,7 +102,7 @@ struct PaywallView: View {
                     // app review 3.1.2: terms + privacy must be reachable from the paywall
                     HStack(spacing: 16) {
                         Link("terms of use", destination: URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!)
-                        Link("privacy policy", destination: URL(string: "https://damlahelloworld.github.io/sunflower/privacy.html")!)
+                        Link("privacy policy", destination: URL(string: "https://nosey-dewdrop.github.io/sunflower/privacy.html")!)
                     }
                     .font(.system(size: 11, weight: .regular, design: .rounded))
                     .tint(.brown.opacity(0.45))
