@@ -20,3 +20,6 @@ a whimsy pomodoro app for iOS: you focus, a hand-drawn flower blooms in your top
 
 ## where this is going
 heading to the App Store — the garden is waiting for its final hand-drawn flowers.
+
+---
+built by [Damla Su Bilge](https://noseydewdrop.com)
